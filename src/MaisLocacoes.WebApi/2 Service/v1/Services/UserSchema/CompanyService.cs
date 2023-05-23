@@ -1,0 +1,69 @@
+﻿using AutoMapper;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;
+using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
+using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.Entity.UserSchema;
+using Repository.v1.IRepository.UserSchema;
+using Service.v1.IServices.UserSchema;
+using System.Net;
+
+namespace Service.v1.Services.UserSchema
+{
+    public class CompanyService : ICompanyService
+    {
+        private readonly ICompanyRepository _companyRepository;
+        private readonly ICompanyAddressService _companyAddressService;
+        private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public CompanyService(ICompanyRepository companyRepository,
+            ICompanyAddressService companyAddressService,
+            IMapper mapper,
+            IHttpContextAccessor httpContextAccessor)
+        {
+            _companyRepository = companyRepository;
+            _companyAddressService = companyAddressService;
+            _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<CreateCompanyResponse> CreateCompany(CompanyRequest companyRequest)
+        {
+            var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
+
+            if (existsCompany != null)
+                throw new HttpRequestException("Empresa já cadastrada", null, HttpStatusCode.BadRequest);
+
+            var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
+
+            var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
+
+            companyEntity.CompanyAddressId = companyAddressResponse.Id;
+            companyEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            companyEntity = await _companyRepository.CreateCompany(companyEntity);
+
+            var companyResponse = _mapper.Map<CreateCompanyResponse>(companyEntity);
+            companyResponse.CompanyAddress = _mapper.Map<CreateCompanyAddressResponse>(companyAddressResponse);
+
+            return companyResponse;
+        }
+
+        public async Task<GetCompanyResponse> GetByCnpj(string cnpj)
+        {
+            var companyEntity = await _companyRepository.GetByCnpj(cnpj) ??
+                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
+            var companyAddressResponse = _mapper.Map<GetCompanyAddressResponse>(companyEntity.CompanyAddressEntity);
+
+            var companyResponse = _mapper.Map<GetCompanyResponse>(companyEntity);
+
+            companyResponse.CompanyAddress = companyAddressResponse;
+
+            return companyResponse;
+        }
+    }
+}

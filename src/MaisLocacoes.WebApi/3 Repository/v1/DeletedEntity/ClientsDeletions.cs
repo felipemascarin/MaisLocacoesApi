@@ -1,0 +1,110 @@
+﻿using MaisLocacoes.WebApi.Context;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity
+{
+    [Table(nameof(TableNameEnum.ClientsDeletions))]
+    public class ClientsDeletions
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int ClientsDeletionsId { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Type { get; set; }
+
+        public int? AddressId { get; set; }
+
+        [StringLength(11)]
+        [Column(TypeName = "char")]
+        public string? Cpf { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Rg { get; set; }
+
+        [StringLength(14)]
+        [Column(TypeName = "char")]
+        public string? Cnpj { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? CompanyName { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? ClientName { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? StateRegister { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? FantasyName { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Cel { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Tel { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Email { get; set; }
+
+        public DateTime? BornDate { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Career { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? CivilStatus { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Segment { get; set; }
+
+        [StringLength(2048)]
+        [Column(TypeName = "character varying(2048)")]
+        public string? CpfDocumentUrl { get; set; }
+
+        [StringLength(2048)]
+        [Column(TypeName = "character varying(2048)")]
+        public string? CnpjDocumentUrl { get; set; }
+
+        [StringLength(2048)]
+        [Column(TypeName = "character varying(2048)")]
+        public string? AddressDocumentUrl { get; set; }
+
+        [StringLength(2048)]
+        [Column(TypeName = "character varying(2048)")]
+        public string? ClientPictureUrl { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Status { get; set; }
+
+        public DateTime? CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? CreatedBy { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? UpdatedBy { get; set; }
+
+        public DateTime DeletedAt { get; set; }
+
+        public string? DeletedBy { get; set; }
+    }
+}
