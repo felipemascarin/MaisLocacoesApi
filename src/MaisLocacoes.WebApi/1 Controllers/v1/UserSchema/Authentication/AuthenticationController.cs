@@ -51,8 +51,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(loginValidationErros);
                 }
 
-                if (!await FireBaseAuthentication.IsFirebaseTokenValid(loginRequest.GoogleToken))
-                    return Forbid();
+                //if (!await FireBaseAuthentication.IsFirebaseTokenValid(loginRequest.GoogleToken))
+                    //return Forbid();
 
                 return Ok(await _authenticationService.Login(loginRequest));
             }
