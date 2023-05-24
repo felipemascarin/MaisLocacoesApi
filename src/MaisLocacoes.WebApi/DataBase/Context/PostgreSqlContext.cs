@@ -59,7 +59,6 @@ namespace MaisLocacoes.WebApi.Context
         {
             if (_httpContextAccessor.HttpContext != null)
             {
-                //Ajusta o schema
                 if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
                 {
                     var schema = JwtManager.ExtractSchemaByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1]);
