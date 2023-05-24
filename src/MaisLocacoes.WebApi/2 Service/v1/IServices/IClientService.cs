@@ -1,8 +1,6 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Service.v1.IServices
 {

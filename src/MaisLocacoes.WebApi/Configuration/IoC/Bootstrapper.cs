@@ -6,6 +6,7 @@ using MaisLocacoes.WebApi._3_Repository.v1.Repository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
 using MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema;
@@ -70,6 +71,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<LoginRequest>, LoginValidator>();
             services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
             services.AddScoped<IValidator<CompanyRequest>, CompanyValidator>();
+            services.AddScoped<IValidator<CompanyAddressRequest>, CompanyAddressValidator>();
             services.AddScoped<IValidator<UserRequest>, UserValidator>();
             services.AddScoped<IValidator<AddressRequest>, AddressValidator>();
             services.AddScoped<IValidator<BillRequest>, BillValidator>();

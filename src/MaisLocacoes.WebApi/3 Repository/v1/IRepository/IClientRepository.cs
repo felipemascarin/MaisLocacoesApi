@@ -1,7 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using Repository.v1.Entity;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Repository.v1.IRepository
 {

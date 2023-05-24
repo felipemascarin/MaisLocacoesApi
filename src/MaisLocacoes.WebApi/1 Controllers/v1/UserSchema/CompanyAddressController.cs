@@ -1,6 +1,4 @@
 ﻿using FluentValidation;
-using MaisLocacoes.WebApi.Controllers.v1;
-using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
@@ -12,6 +10,8 @@ using Newtonsoft.Json;
 
 namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
 {
+    [Route("api/v1/companyaddress")]
+    [ApiController]
     public class CompanyAddressController : Controller
     {
         private readonly ICompanyAddressService _companyAddressService;
