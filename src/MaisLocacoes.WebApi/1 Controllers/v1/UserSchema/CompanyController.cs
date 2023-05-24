@@ -31,8 +31,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpPost]
         public async Task<IActionResult> CreateCompany([FromBody] CompanyRequest companyRequest)
         {
@@ -60,8 +60,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpGet("{cnpj}")]
         public async Task<IActionResult> GetByCnpj(string cnpj)
         {

@@ -30,8 +30,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserRequest userRequest)
         {
@@ -59,8 +59,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpGet("{email}")]
         public async Task<IActionResult> GetByEmail(string email)
         {
