@@ -69,15 +69,15 @@ namespace Service.v1.Services.UserSchema
 
         public async Task<bool> UpdateCompany(CompanyRequest companyRequest, string cnpj)
         {
-            if(companyRequest.Cnpj != cnpj)
+            var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
+                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
+            if (companyRequest.Cnpj != cnpj)
             {
                 var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
                 if (existsCompany != null)
                     throw new HttpRequestException("O Cnpj novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
             }
-
-            var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
-                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             companyForUpdate.Cnpj = companyRequest.Cnpj;
             companyForUpdate.CompanyName = companyRequest.CompanyName;
