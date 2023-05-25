@@ -38,6 +38,10 @@ namespace Service.v1.Services.UserSchema
             if (existsCompany != null)
                 throw new HttpRequestException("Empresa já cadastrada", null, HttpStatusCode.BadRequest);
 
+            existsCompany = await _companyRepository.GetByEmail(companyRequest.Email);
+            if (existsCompany != null)
+                throw new HttpRequestException("Email já cadastrado", null, HttpStatusCode.BadRequest);
+
             var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
 
             var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
@@ -74,9 +78,16 @@ namespace Service.v1.Services.UserSchema
 
             if (companyRequest.Cnpj != cnpj)
             {
-                var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
-                if (existsCompany != null)
+                var existsCnpj = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
+                if (existsCnpj != null)
                     throw new HttpRequestException("O Cnpj novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
+            }
+
+            if (companyRequest.Email != companyForUpdate.Email)
+            {
+                var existsEmail = await _companyRepository.GetByEmail(companyRequest.Email);
+                if (existsEmail != null)
+                    throw new HttpRequestException("O Email novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
             }
 
             companyForUpdate.Cnpj = companyRequest.Cnpj;

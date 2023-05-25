@@ -9,6 +9,7 @@ namespace Repository.v1.IRepository.UserSchema
     {
         Task<CompanyEntity> CreateCompany(CompanyEntity companyEntity);
         Task<CompanyEntity> GetByCnpj(string cnpj);
+        Task<CompanyEntity> GetByEmail(string email);
         Task<int> UpdateCompany(CompanyEntity companyForUpdate);
     }
 }
