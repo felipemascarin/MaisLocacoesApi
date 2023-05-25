@@ -168,10 +168,6 @@ namespace Service.v1.Services
                 clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
                 clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-            if(!string.IsNullOrEmpty(clientForUpdate.Cnpj))
-                var clientForUpdate = await _clientRepository.GetByCnpj(clientRequest.Cnpj) ??
-                    throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
-
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
                     throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);
 
