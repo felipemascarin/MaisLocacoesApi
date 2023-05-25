@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
+using Service.v1.IServices;
 using Service.v1.IServices.UserSchema;
 using System.Net;
 
@@ -64,6 +65,53 @@ namespace Service.v1.Services.UserSchema
             companyResponse.CompanyAddress = companyAddressResponse;
 
             return companyResponse;
+        }
+
+        public async Task<bool> UpdateCompany(CompanyRequest companyRequest, string cnpj)
+        {
+            if(companyRequest.Cnpj != cnpj)
+            {
+                var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
+                if (existsCompany != null)
+                    throw new HttpRequestException("O Cnpj novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
+            }
+
+            var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
+                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
+            companyForUpdate.Cnpj = companyRequest.Cnpj;
+            companyForUpdate.CompanyName = companyRequest.CompanyName;
+            companyForUpdate.StateRegister = companyRequest.StateRegister;
+            companyForUpdate.FantasyName = companyRequest.FantasyName;
+            companyForUpdate.Cel = companyRequest.Cel;
+            companyForUpdate.Tel = companyRequest.Tel;
+            companyForUpdate.Email = companyRequest.Email;
+            companyForUpdate.Segment = companyRequest.Segment;
+            companyForUpdate.PjDocumentUrl = companyRequest.PjDocumentUrl;
+            companyForUpdate.AddressDocumentUrl = companyRequest.AddressDocumentUrl;
+            companyForUpdate.LogoUrl = companyRequest.LogoUrl;
+            companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore;
+            companyForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (!await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id))
+                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a empresa", null, HttpStatusCode.InternalServerError);
+
+            if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> UpdateStatus(string status, string cnpj)
+        {
+            var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
+                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
+            companyForUpdate.Status = status;
+            companyForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;
+            else return false;
         }
     }
 }

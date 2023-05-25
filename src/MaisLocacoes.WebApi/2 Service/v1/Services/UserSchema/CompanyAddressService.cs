@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;

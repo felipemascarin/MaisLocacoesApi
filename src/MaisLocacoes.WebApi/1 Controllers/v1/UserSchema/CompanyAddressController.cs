@@ -104,5 +104,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
+
+        //Não possui delete
     }
 }

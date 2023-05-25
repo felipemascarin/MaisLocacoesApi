@@ -8,7 +8,6 @@ namespace MaisLocacoes.WebApi.Service.v1.IServices.UserSchema
     {
         Task<CreateCompanyAddressResponse> CreateCompanyAddress(CompanyAddressRequest companyAddressRequest);
         Task<GetCompanyAddressResponse> GetById(int companyAddressId);
-        
         Task<bool> UpdateCompanyAddress(CompanyAddressRequest companyAddressRequest, int id);
     }
 }

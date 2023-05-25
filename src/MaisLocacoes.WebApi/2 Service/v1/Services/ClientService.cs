@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -125,6 +126,26 @@ namespace Service.v1.Services
                 var clientForUpdate = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
+            if (!string.IsNullOrEmpty(clientRequest.Cnpj))
+            {
+                if (clientRequest.Cnpj != clientForUpdate.Cnpj)
+                {
+                    var existsCnpj = await _clientRepository.GetByCnpj(clientRequest.Cnpj);
+                    if (existsCnpj != null)
+                        throw new HttpRequestException("O CNPJ novo já está cadastrado em outro cliente", null, HttpStatusCode.BadRequest);
+                }
+            }
+
+            if (string.IsNullOrEmpty(clientRequest.Cnpj))
+            {
+                if (clientRequest.Cpf != clientForUpdate.Cpf)
+                {
+                    var existsCpf = await _clientRepository.GetByCpf(clientRequest.Cpf);
+                    if (existsCpf != null)
+                        throw new HttpRequestException("O CPF novo já está cadastrado em outro cliente", null, HttpStatusCode.BadRequest);
+                }
+            }
+
                 clientForUpdate.Type = clientRequest.Type;
                 clientForUpdate.Cpf = clientRequest.Cpf;
                 clientForUpdate.Rg = clientRequest.Rg;
@@ -146,6 +167,10 @@ namespace Service.v1.Services
                 clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
                 clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
                 clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if(!string.IsNullOrEmpty(clientForUpdate.Cnpj))
+                var clientForUpdate = await _clientRepository.GetByCnpj(clientRequest.Cnpj) ??
+                    throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
                     throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);

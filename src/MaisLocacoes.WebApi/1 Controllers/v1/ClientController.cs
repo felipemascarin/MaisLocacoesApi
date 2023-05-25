@@ -138,7 +138,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _clientService.UpdateClient(clientRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Nenhuma alteração realizada na tabela clientes"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar o cliente"));
             }
             catch (HttpRequestException ex)
             {
@@ -160,7 +160,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest("Insira um status válido");
 
                 if (await _clientService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Nenhuma alteração realizada na tabela clientes"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar o cliente"));
             }
             catch (HttpRequestException ex)
             {

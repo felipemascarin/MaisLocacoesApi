@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -79,5 +82,54 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{cnpj}")]
+        public async Task<IActionResult> UpdateCompany([FromBody] CompanyRequest companyRequest, string cnpj)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateCompany {@dateTime} {@companyRequest} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyRequest), cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedCompany = _companyValidator.Validate(companyRequest);
+
+                if (!validatedCompany.IsValid)
+                {
+                    var companyValidationErros = new List<string>();
+                    validatedCompany.Errors.ForEach(error => companyValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(companyValidationErros);
+                }
+
+                if (await _companyService.UpdateCompany(companyRequest, cnpj)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("cnpj/{cnpj}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, string cnpj)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, status, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (!CompanyStatus.CompanyStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
+
+                if (await _companyService.UpdateStatus(status, cnpj)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
     }
 }
