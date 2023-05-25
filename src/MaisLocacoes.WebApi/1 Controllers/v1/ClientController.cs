@@ -149,7 +149,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPut("{id}, {status}")]
+        [HttpPut("id/{id}/status/{status}")]
         public async Task<IActionResult> UpdateStatus(string status, int id)
         {
             try
