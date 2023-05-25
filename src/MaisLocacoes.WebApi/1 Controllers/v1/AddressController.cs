@@ -71,7 +71,6 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 var address = await _addressService.GetById(id);
-                if (address.Id <= 0) return NotFound("Endereço não encontrado");
                 return Ok(address);
             }
             catch (HttpRequestException ex)

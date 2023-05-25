@@ -100,7 +100,7 @@ namespace Service.v1.Services
 
                 foreach (var item in clientForRentDtoResponse)
                 {
-                    if (item.Cpf != null && item.Cnpj == null)
+                    if (!string.IsNullOrEmpty(item.Cpf) && string.IsNullOrEmpty(item.Cnpj))
                         clientForRentResponse.Add(new GetClientForRentResponse
                         {
                             Id = item.Id,
@@ -108,7 +108,7 @@ namespace Service.v1.Services
                             DocumentNumber = item.Cpf
                         });
 
-                    if (item.Cnpj != null && item.Cpf == null)
+                    if (!string.IsNullOrEmpty(item.Cnpj) && string.IsNullOrEmpty(item.Cpf))
                         clientForRentResponse.Add(new GetClientForRentResponse
                         {
                             Id = item.Id,
