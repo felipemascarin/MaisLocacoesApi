@@ -23,7 +23,10 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? UpdatedBy { get; set; }
+
         public string? UpdatedByanderson{ get; set; }
+
+        public bool IsManyParts { get; set; }
 
         public ICollection<ProductEntity> Products { get; set; }
         public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }

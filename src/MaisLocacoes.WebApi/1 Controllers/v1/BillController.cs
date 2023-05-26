@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using System.Net;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -48,7 +48,12 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedBill.Errors.ForEach(error => billValidationErros.Add(error.ErrorMessage));
                     return BadRequest(billValidationErros);
                 }
-                return await Task.FromResult(Ok(billRequest));
+
+                var billCreated = await _billService.CreateBill(billRequest);
+
+                //return CreatedAtAction(nameof(GetById), new { id = billCreated.Id }, billCreated);
+
+                return Ok(billCreated);
             }
             catch (HttpRequestException ex)
             {

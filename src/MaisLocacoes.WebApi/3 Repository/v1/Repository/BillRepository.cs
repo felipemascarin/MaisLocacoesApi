@@ -1,8 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
+using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository;
-using System.Net;
 
 namespace Repository.v1.Repository
 {
@@ -13,6 +12,13 @@ namespace Repository.v1.Repository
         public BillRepository(PostgreSqlContext context)
         {
             _context = context;
+        }
+
+        public async Task<BillEntity> CreateBill(BillEntity billEntity)
+        {
+            await _context.Bills.AddAsync(billEntity);
+            await _context.SaveChangesAsync();
+            return billEntity;
         }
     }
 }

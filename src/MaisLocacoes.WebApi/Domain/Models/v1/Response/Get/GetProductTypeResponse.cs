@@ -2,5 +2,7 @@
 {
     public class GetProductTypeResponse
     {
+        public string Type { get; set; }
+        public bool IsManyParts { get; set; }
     }
 }
