@@ -61,8 +61,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpGet("{email}")]
-        public async Task<IActionResult> GetByEmail(string email)
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> GetByEmailOdCpf(string email)
         {
             try
             {
@@ -71,6 +71,76 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                 var user = await _userService.GetByEmail(email);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
                 return Ok(user);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        //[Authorize]
+        //[TokenValidationDataBase]
+        [HttpGet("cpf/{cpf}")]
+        public async Task<IActionResult> GetByCpf(string cpf)
+        {
+            try
+            {
+                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} User:{@email}", System.DateTime.Now, cpf, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var user = await _userService.GetByCpf(cpf);
+                return Ok(user);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{email}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserRequest userRequest, string email)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(userRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedUser = _userValidator.Validate(userRequest);
+
+                if (!validatedUser.IsValid)
+                {
+                    var userValidationErros = new List<string>();
+                    validatedUser.Errors.ForEach(error => userValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(userValidationErros);
+                }
+
+                if (await _userService.UpdateUser(userRequest, email)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        //updatestatus
+
+
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteByEmail(string email)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteByEmail {@dateTime} email:{@email} User:{@email}", System.DateTime.Now, email, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _userService.DeleteByEmail(email)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
             }
             catch (HttpRequestException ex)
             {

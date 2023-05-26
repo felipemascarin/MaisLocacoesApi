@@ -12,6 +12,6 @@ namespace Service.v1.IServices
         Task<IEnumerable<GetClientForRentResponse>> GetClientsForRent();
         Task<bool> UpdateClient(ClientRequest clientRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
-        Task<bool> DeleteByStatus(int id);
+        Task<bool> DeleteById(int id);
     }
 }

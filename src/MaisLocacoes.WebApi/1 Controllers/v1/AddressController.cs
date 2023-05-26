@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using MaisLocacoes.WebApi.Controllers.v1.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -9,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using System.Net;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {

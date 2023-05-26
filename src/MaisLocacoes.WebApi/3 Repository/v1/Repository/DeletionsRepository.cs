@@ -1,9 +1,9 @@
 ﻿using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
+using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
 using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
-using System.Net;
+using Repository.v1.Entity.UserSchema;
 
 namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
 {
@@ -26,6 +26,19 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         public async Task<int> DeleteClient(ClientEntity clientForDelete)
         {
             _context.Clients.Remove(clientForDelete);
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<UsersDeletions> CreateUsersDeletions(UsersDeletions userForDelete)
+        {
+            await _context.UsersDeletions.AddAsync(userForDelete);
+            await _context.SaveChangesAsync();
+            return userForDelete;
+        }
+
+        public async Task<int> DeleteUser(UserEntity userForDelete)
+        {
+            _context.Users.Remove(userForDelete);
             return await _context.SaveChangesAsync();
         }
     }

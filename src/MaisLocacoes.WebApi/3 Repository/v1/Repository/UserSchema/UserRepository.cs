@@ -24,6 +24,9 @@ namespace Repository.v1.Repository.UserSchema
         public async Task<bool> UserHasToken(string token, string email) => await _context.Users.Where(u => u.Email == email).AnyAsync(u => u.LastToken == token);
 
         public async Task<UserEntity> GetByEmail(string email) => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+
+        public async Task<UserEntity> GetByCpf(string cpf) => await _context.Users.FirstOrDefaultAsync(u => u.Cpf == cpf);
+
         public async Task<bool> UserExists(string email, string cpf) => await _context.Users.AnyAsync(u => u.Email == email || u.Cpf == cpf);
 
         public async Task<int> UpdateUser(UserEntity userForUpdate)

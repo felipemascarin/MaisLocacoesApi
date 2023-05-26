@@ -188,7 +188,7 @@ namespace Service.v1.Services
                 else return false;
         }
 
-        public async Task<bool> DeleteByStatus(int id)
+        public async Task<bool> DeleteById(int id)
         {
                 var clientEntity = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);

@@ -89,7 +89,6 @@ namespace Configuration
                 config.CreateMap<SupplierEntity, GetSupplierResponse>();
 
                 config.CreateMap<UserEntity, UsersDeletions>();
-                config.CreateMap<AddressEntity, AddressesDeletions>();
                 config.CreateMap<BillEntity, BillsDeletions>();
                 config.CreateMap<ClientEntity, ClientsDeletions>();
                 config.CreateMap<CompanyTuitionEntity, CompanyTuitionsDeletions>();

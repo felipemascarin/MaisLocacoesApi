@@ -172,13 +172,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteByStatus(int id)
+        public async Task<IActionResult> DeleteById(int id)
         {
             try
             {
-                _logger.LogInformation("DeleteByStatus {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                if (await _clientService.DeleteByStatus(id)) return Ok();
+                if (await _clientService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o cliente"));
             }
             catch (HttpRequestException ex)
