@@ -23,7 +23,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Valor de Longitude se inserido deve ser válido ")
                 .When(qg => qg.Longitude != null);
 
-            //Chama o validator do Address
             RuleFor(qg => qg.Address).SetValidator(new AddressValidator());
         }
     }

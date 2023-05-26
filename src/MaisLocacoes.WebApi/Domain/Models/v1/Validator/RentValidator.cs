@@ -13,17 +13,17 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 result > 0)
                .WithMessage("Id do cliente deve ser um número inteiro maior que 0");
 
-            RuleFor(rent => rent.Status)
-                .Must(status => RentStatus.RentStatusEnum.Contains(status.ToLower()))
-                .WithMessage("O Status informado deve existir");
-
             RuleFor(rent => rent.Carriage)
                 .Must(carriage => decimal.TryParse(carriage.ToString(), out var result) &&
                  result >= 0)
                 .WithMessage("Valor de frete se inserido deve ser válido e maior que 0")
                 .When(rent => rent.Carriage != null);
 
-            //Chama o validator do Address
+            RuleFor(rent => rent.Status)
+                .Must(status => RentStatus.RentStatusEnum.Contains(status.ToLower()))
+                .WithMessage("Valor do status se inserido deve ser válido")
+                .When(rent => !string.IsNullOrEmpty(rent.Status));
+
             RuleFor(rent => rent.Address).SetValidator(new AddressValidator());
         }
     }

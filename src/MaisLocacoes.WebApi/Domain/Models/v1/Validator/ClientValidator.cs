@@ -182,7 +182,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("ClientPictureUrl ultrapassou o limite máximo de caracteres")
                 .When(client => !string.IsNullOrEmpty(client.ClientPictureUrl));
 
-            //Chama o validator do Address
+
             RuleFor(client => client.Address).SetValidator(new AddressValidator());
         }
     }

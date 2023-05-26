@@ -84,7 +84,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                  result >= 0 && result <= 500)
                 .WithMessage("Notificar dias antes deve ser um número de 0 à 500");
 
-            //Chama o validator do Address
             RuleFor(company => company.CompanyAddress).SetValidator(new CompanyAddressValidator());
         }
     }

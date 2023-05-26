@@ -6,5 +6,7 @@ namespace Repository.v1.IRepository
     public interface IBillRepository
     {
         Task<BillEntity> CreateBill(BillEntity billEntity);
+        Task<BillEntity> GetById(int id);
+        Task<int> UpdateBill(BillEntity billForUpdate);
     }
 }

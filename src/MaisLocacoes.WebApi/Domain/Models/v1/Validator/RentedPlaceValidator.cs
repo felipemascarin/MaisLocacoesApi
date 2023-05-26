@@ -39,7 +39,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("A Data de partida se inserida deve ser uma data válida")
                 .When(client => client.ArrivalDate != null);
 
-            //Chama o validator do Address
             RuleFor(qg => qg.Address).SetValidator(new AddressValidator());
         }
     }

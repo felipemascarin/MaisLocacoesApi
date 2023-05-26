@@ -41,7 +41,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Email ultrapassou o limite máximo de caracteres")
                 .When(supplier => !string.IsNullOrEmpty(supplier.Email));
 
-            //Chama o validator do Address
             RuleFor(supplier => supplier.Address).SetValidator(new AddressValidator());
         }
     }

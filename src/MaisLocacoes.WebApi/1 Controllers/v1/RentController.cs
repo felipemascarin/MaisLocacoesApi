@@ -1,7 +1,10 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -71,6 +74,56 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var rent = await _rentService.GetById(id);
                 return Ok(rent);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRent([FromBody] RentRequest rentRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateRent {@dateTime} {@rentRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedRent = _rentValidator.Validate(rentRequest);
+
+                if (!validatedRent.IsValid)
+                {
+                    var rentValidationErros = new List<string>();
+                    validatedRent.Errors.ForEach(error => rentValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(rentValidationErros);
+                }
+
+                if (await _rentService.UpdateRent(rentRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("id/{id}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email}", System.DateTime.Now, status, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (!RentStatus.RentStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
+
+                if (await _rentService.UpdateStatus(status, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
             }
             catch (HttpRequestException ex)
             {

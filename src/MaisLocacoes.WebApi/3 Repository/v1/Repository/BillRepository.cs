@@ -1,6 +1,6 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository;
 
 namespace Repository.v1.Repository
@@ -19,6 +19,14 @@ namespace Repository.v1.Repository
             await _context.Bills.AddAsync(billEntity);
             await _context.SaveChangesAsync();
             return billEntity;
+        }
+
+        public async Task<BillEntity> GetById(int id) => await _context.Bills.FirstOrDefaultAsync(b => b.Id == id);
+
+        public async Task<int> UpdateBill(BillEntity billForUpdate)
+        {
+            _context.Bills.Update(billForUpdate);
+            return await _context.SaveChangesAsync();
         }
     }
 }

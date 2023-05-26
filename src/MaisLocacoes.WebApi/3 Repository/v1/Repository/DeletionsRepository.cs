@@ -41,5 +41,18 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
             _context.Users.Remove(userForDelete);
             return await _context.SaveChangesAsync();
         }
+
+        public async Task<BillsDeletions> CreateBillsDeletions(BillsDeletions billForDelete)
+        {
+            await _context.BillsDeletions.AddAsync(billForDelete);
+            await _context.SaveChangesAsync();
+            return billForDelete;
+        }
+
+        public async Task<int> DeleteBill(BillEntity billForDelete)
+        {
+            _context.Bills.Remove(billForDelete);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

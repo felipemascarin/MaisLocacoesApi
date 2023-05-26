@@ -24,5 +24,11 @@ namespace Repository.v1.Repository
         public async Task<RentEntity> GetById(int id) => await _context.Rents.Include(r => r.AddressEntity).FirstOrDefaultAsync(r => r.Id == id);
 
         public async Task<bool> RentExists(int id) => await _context.Rents.AnyAsync(r => r.Id == id);
+
+        public async Task<int> UpdateRent(RentEntity rentForUpdate)
+        {
+            _context.Rents.Update(rentForUpdate);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

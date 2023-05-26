@@ -1,11 +1,11 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -37,7 +37,7 @@ namespace Service.v1.Services
             var existsClient = await _clientRepository.ClientExists(rentRequest.ClientId);
             if (!existsClient)
             {
-                throw new HttpRequestException("Não existe esse cliente", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
             }
 
             var addressResponse = await _addressService.CreateAddress(rentRequest.Address);
@@ -67,6 +67,44 @@ namespace Service.v1.Services
             RentResponse.Address = RentAddressResponse;
 
             return RentResponse;
+        }
+
+        public async Task<bool> UpdateRent(RentRequest rentRequest, int id)
+        {
+            var rentForUpdate = await _rentRepository.GetById(id) ??
+                throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
+
+            if (rentRequest.ClientId != rentForUpdate.ClientId)
+            {
+                var existsClient = await _clientRepository.ClientExists(rentRequest.ClientId);
+                if (!existsClient)
+                    throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
+            }
+
+            rentForUpdate.ClientId = rentRequest.ClientId;
+            rentForUpdate.Carriage = rentRequest.Carriage;
+            rentForUpdate.Status = rentRequest.Status;
+            rentForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (!await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id))
+                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a locação", null, HttpStatusCode.InternalServerError);
+
+            if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> UpdateStatus(string status, int id)
+        {
+            var rentForUpdate = await _rentRepository.GetById(id) ??
+                throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
+
+            rentForUpdate.Status = status;
+            rentForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
+            else return false;
         }
     }
 }

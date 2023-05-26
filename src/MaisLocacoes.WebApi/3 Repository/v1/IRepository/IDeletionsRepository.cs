@@ -11,5 +11,7 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.IRepository
         Task<int> DeleteClient(ClientEntity clientForDelete);
         Task<UsersDeletions> CreateUsersDeletions(UsersDeletions userForDelete);
         Task<int> DeleteUser(UserEntity userForDelete);
+        Task<BillsDeletions> CreateBillsDeletions(BillsDeletions billForDelete);
+        Task<int> DeleteBill(BillEntity billForDelete);
     }
 }

@@ -8,8 +8,8 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Request
     public class RentRequest
     {
         public int ClientId { get; set; }
-        public string Status { get; set; }
         public decimal? Carriage { get; set; }
+        public string? Status { get; set; }
         public virtual AddressRequest Address { get; set; }
     }
 }
