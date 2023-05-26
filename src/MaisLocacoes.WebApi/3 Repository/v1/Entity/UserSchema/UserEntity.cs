@@ -56,6 +56,10 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(2048)")]
         public string? CpfDocumentUrl { get; set; }
 
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Status { get; set; }
+
         [StringLength(3000)]
         [Column(TypeName = "character varying(3000)")]
         public string? LastToken { get; set; }

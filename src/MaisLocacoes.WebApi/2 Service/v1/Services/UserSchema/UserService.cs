@@ -118,6 +118,19 @@ namespace Service.v1.Services.UserSchema
             else return false;
         }
 
+        public async Task<bool> UpdateStatus(string status, string email)
+        {
+            var userForUpdate = await _userRepository.GetByEmail(email) ??
+                throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
+
+            userForUpdate.Status = status;
+            userForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            userForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
+            else return false;
+        }
+
         public async Task<bool> DeleteByEmail(string email)
         {
             var userEntity = await _userRepository.GetByEmail(email) ??

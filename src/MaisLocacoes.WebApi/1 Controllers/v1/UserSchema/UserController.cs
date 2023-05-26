@@ -1,9 +1,8 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
-using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
@@ -50,7 +49,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
                 var userCreated = await _userService.CreateUser(userRequest);
 
-                return Ok(userCreated); //implementar createdat
+                return Ok(userCreated);
             }
             catch (HttpRequestException ex)
             {
@@ -98,8 +97,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpPut("{email}")]
         public async Task<IActionResult> UpdateUser([FromBody] UserRequest userRequest, string email)
         {
@@ -126,13 +125,31 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //updatestatus
+        //[Authorize]
+        //[TokenValidationDataBase]
+        [HttpPut("email/{email}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, string email)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} User:{@email}", System.DateTime.Now, status, email, JwtManager.GetEmailByToken(_httpContextAccessor));
 
+                if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
 
+                if (await _userService.UpdateStatus(status, email)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
 
-        [Authorize]
-        [TokenValidationDataBase]
-        [HttpDelete("{id}")]
+        //[Authorize]
+        //[TokenValidationDataBase]
+        [HttpDelete("{email}")]
         public async Task<IActionResult> DeleteByEmail(string email)
         {
             try

@@ -42,7 +42,6 @@ namespace MaisLocacoes.WebApi.Context
         public DbSet<RentEntity> Rents { get; set; }
         public DbSet<SupplierEntity> Suppliers { get; set; }
         public DbSet<UsersDeletions> UsersDeletions { get; set; }
-        public DbSet<AddressesDeletions> AddressesDeletions { get; set; }
         public DbSet<BillsDeletions> BillsDeletions { get; set; }
         public DbSet<ClientsDeletions> ClientsDeletions { get; set; }
         public DbSet<CompanyTuitionsDeletions> CompanyTuitionsDeletions { get; set; }
@@ -203,6 +202,10 @@ namespace MaisLocacoes.WebApi.Context
                .Property(x => x.Status)
                .HasDefaultValue(CompanyStatus.CompanyStatusEnum.ElementAt(0));
 
+            modelBuilder.Entity<UserEntity>()
+               .Property(x => x.Status)
+               .HasDefaultValue(UserStatus.UserStatusEnum.ElementAt(0));
+
             modelBuilder.Entity<BillEntity>()
                 .Property(x => x.Status)
                 .HasDefaultValue(BillStatus.BillStatusEnum.ElementAt(0));
@@ -221,10 +224,6 @@ namespace MaisLocacoes.WebApi.Context
 
             //Definindo valor Default DeletedAt para Deletions
             modelBuilder.Entity<UsersDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<AddressesDeletions>()
                 .Property(x => x.DeletedAt)
                 .HasDefaultValueSql(currenteTimestampUtc);
 

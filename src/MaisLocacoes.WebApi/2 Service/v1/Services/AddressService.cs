@@ -4,13 +4,9 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
-using System;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Service.v1.Services
 {

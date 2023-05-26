@@ -13,5 +13,6 @@
         public string? Cel { get; set; }
         public string? CivilStatus { get; set; }
         public string? CpfDocumentUrl { get; set; }
+        public string Status { get; set; }
     }
 }

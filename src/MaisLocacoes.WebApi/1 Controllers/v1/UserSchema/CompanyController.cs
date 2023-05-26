@@ -79,8 +79,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpPut("{cnpj}")]
         public async Task<IActionResult> UpdateCompany([FromBody] CompanyRequest companyRequest, string cnpj)
         {
@@ -107,8 +107,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        //[Authorize]
+        //[TokenValidationDataBase]
         [HttpPut("cnpj/{cnpj}/status/{status}")]
         public async Task<IActionResult> UpdateStatus(string status, string cnpj)
         {

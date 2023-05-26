@@ -53,6 +53,10 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema
         [Column(TypeName = "character varying(2048)")]
         public string? CpfDocumentUrl { get; set; }
 
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Status { get; set; }
+
         public DateTime? CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }

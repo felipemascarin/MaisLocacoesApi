@@ -1,6 +1,4 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using Repository.v1.Entity;
+﻿using Repository.v1.Entity;
 
 namespace Repository.v1.IRepository
 {

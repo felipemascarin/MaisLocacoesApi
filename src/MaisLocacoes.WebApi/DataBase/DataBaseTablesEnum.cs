@@ -21,7 +21,6 @@
         public const string Suppliers = "Suppliers";
 
         public const string UsersDeletions = "UsersDeletions";
-        public const string AddressesDeletions = "AddressesDeletions";
         public const string BillsDeletions = "BillsDeletions";
         public const string ClientsDeletions = "ClientsDeletions";
         public const string CompanyTuitionsDeletions = "CompanyTuitionsDeletions";
