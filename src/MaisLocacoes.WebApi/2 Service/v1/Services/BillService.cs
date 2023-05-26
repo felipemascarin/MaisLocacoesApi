@@ -30,8 +30,11 @@ namespace Service.v1.Services
 
         public async Task<CreateBillResponse> CreateBill(BillRequest billRequest)
         {
-            _ = await _rentRepository.GetById(billRequest.RentId) ??
+            var existsRent = await _rentRepository.RentExists(billRequest.RentId);
+            if (!existsRent)
+            {
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+            }
 
             var billEntity = _mapper.Map<BillEntity>(billRequest);
 

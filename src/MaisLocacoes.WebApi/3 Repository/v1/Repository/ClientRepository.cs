@@ -29,6 +29,8 @@ namespace Repository.v1.Repository
 
         public async Task<ClientEntity> GetById(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
 
+        public async Task<bool> ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id);
+
         public async Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query)
         {
             if (query == null)

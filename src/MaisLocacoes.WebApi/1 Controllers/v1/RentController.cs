@@ -40,8 +40,6 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("CreateRent {@dateTime} {@rentRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                //Verificar se terá mudança no status devido a data (agendada, alugada)
-
                 var validatedRent = _rentValidator.Validate(rentRequest);
 
                 if (!validatedRent.IsValid)
@@ -50,7 +48,10 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedRent.Errors.ForEach(error => rentValidationErros.Add(error.ErrorMessage));
                     return BadRequest(rentValidationErros);
                 }
-                return await Task.FromResult(Ok(rentRequest));
+
+                var rentCreated = await _rentService.CreateRent(rentRequest);
+
+                return CreatedAtAction(nameof(GetById), new { id = rentCreated.Id }, rentCreated);
             }
             catch (HttpRequestException ex)
             {
@@ -68,8 +69,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var client = await _rentService.GetById(id);
-                return Ok(client);
+                var rent = await _rentService.GetById(id);
+                return Ok(rent);
             }
             catch (HttpRequestException ex)
             {

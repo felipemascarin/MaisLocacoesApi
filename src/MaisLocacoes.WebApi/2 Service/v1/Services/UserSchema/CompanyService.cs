@@ -52,7 +52,7 @@ namespace Service.v1.Services.UserSchema
             companyEntity = await _companyRepository.CreateCompany(companyEntity);
 
             var companyResponse = _mapper.Map<CreateCompanyResponse>(companyEntity);
-            companyResponse.CompanyAddress = _mapper.Map<CreateCompanyAddressResponse>(companyAddressResponse);
+            companyResponse.CompanyAddress = companyAddressResponse;
 
             return companyResponse;
         }

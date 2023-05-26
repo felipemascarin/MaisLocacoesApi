@@ -55,7 +55,7 @@ namespace Service.v1.Services
                 clientEntity = await _clientRepository.CreateClient(clientEntity);
 
                 var clientResponse = _mapper.Map<CreateClientResponse>(clientEntity);
-                clientResponse.Address = _mapper.Map<CreateAddressResponse>(addressResponse);
+                clientResponse.Address = addressResponse;
 
                 return clientResponse;
         }
