@@ -2,5 +2,6 @@
 {
     public interface IOsService
     {
+        Task<bool> DeleteById(int id);
     }
 }

@@ -129,11 +129,23 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteById(int id)
-        //{
-        //}
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _billService.DeleteById(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
     }
 }

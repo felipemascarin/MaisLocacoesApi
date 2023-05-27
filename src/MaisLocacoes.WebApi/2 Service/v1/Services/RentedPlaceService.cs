@@ -1,5 +1,8 @@
-﻿using Repository.v1.IRepository;
+﻿using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
+using System.Net;
 
 namespace Service.v1.Services
 {

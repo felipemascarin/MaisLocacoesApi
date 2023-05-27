@@ -48,6 +48,6 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? DeliveryObservation { get; set; }
 
-        public bool Deleted { get; set; }
+        public bool? Deleted { get; set; }
     }
 }

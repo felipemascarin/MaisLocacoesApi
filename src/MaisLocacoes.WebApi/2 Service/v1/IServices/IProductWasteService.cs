@@ -2,5 +2,6 @@
 {
     public interface IProductWasteService
     {
+        Task<bool> DeleteById(int id);
     }
 }

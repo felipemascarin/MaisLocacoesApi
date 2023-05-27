@@ -5,6 +5,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -182,8 +183,17 @@ namespace Service.v1.Services
                 else return false;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //}
+        public async Task<bool> DeleteById(int id)
+        {
+            var clientForDelete = await _clientRepository.GetById(id) ??
+               throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
+
+            clientForDelete.Deleted = true;
+            clientForDelete.UpdatedAt = System.DateTime.UtcNow;
+            clientForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _clientRepository.UpdateClient(clientForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

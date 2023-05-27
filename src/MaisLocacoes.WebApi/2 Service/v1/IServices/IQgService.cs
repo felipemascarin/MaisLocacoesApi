@@ -2,5 +2,6 @@
 {
     public interface IQgService
     {
+        Task<bool> DeleteById(int id);
     }
 }

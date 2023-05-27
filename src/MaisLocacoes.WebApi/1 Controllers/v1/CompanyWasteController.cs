@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -48,6 +49,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(companyWasteValidationErros);
                 }
                 return await Task.FromResult(Ok(companyWasteRequest));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _companyWasteService.DeleteById(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
             }
             catch (HttpRequestException ex)
             {

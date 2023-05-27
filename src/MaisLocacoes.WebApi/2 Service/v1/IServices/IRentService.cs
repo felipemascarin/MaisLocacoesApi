@@ -9,5 +9,6 @@ namespace Service.v1.IServices
         Task<RentResponse> GetById(int id);
         Task<bool> UpdateRent(RentRequest rentRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
+        Task<bool> DeleteById(int id);
     }
 }

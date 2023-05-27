@@ -6,5 +6,6 @@ namespace Service.v1.IServices
     public interface IProductTypeService
     {
         Task<ProductTypeResponse> CreateProductType(ProductTypeRequest productTypeRequest);
+        Task<bool> DeleteById(int id);
     }
 }

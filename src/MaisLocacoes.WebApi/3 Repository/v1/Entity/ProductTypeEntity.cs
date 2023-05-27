@@ -31,7 +31,7 @@ namespace Repository.v1.Entity
 
         public bool IsManyParts { get; set; }
 
-        public bool Deleted { get; set; }
+        public bool? Deleted { get; set; }
 
         public ICollection<ProductEntity> Products { get; set; }
         public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }

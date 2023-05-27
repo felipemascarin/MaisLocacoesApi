@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -29,16 +30,15 @@ namespace Service.v1.Services
 
         public async Task<ProductResponse> CreateProduct(ProductRequest productRequest)
         {
-            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId, productRequest.Code);
-
-            if (existsProduct != null)
-                throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
-
             var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
             if (!existsProductType)
             {
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
             }
+
+            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId, productRequest.Code);
+            if (existsProduct != null)
+                throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
@@ -108,5 +108,18 @@ namespace Service.v1.Services
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
             else return false;
         }
+
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //    var productForDelete = await _productRepository.GetById(id) ??
+        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+        //    productForDelete.Deleted = true;
+        //    productForDelete.UpdatedAt = System.DateTime.UtcNow;
+        //    productForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+        //    if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
+        //    else return false;
+        //}
     }
 }

@@ -96,9 +96,17 @@ namespace Service.v1.Services
             else return false;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //Atualizar o UpdatedAt e UpdatedBy quando o deleted for para true
-        //}
+       public async Task<bool> DeleteById(int id)
+        {
+            var billForDelete = await _billRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            billForDelete.Deleted = true;
+            billForDelete.UpdatedAt = System.DateTime.UtcNow;
+            billForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _billRepository.UpdateBill(billForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

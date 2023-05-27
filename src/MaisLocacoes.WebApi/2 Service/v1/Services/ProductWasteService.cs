@@ -1,5 +1,8 @@
-﻿using Repository.v1.IRepository;
+﻿using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
+using System.Net;
 
 namespace Service.v1.Services
 {
@@ -14,5 +17,18 @@ namespace Service.v1.Services
             _productWasteRepository = productWasteRepository;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //    var productWasteForDelete = await _productWasteRepository.GetById(id) ??
+        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+        //    productWasteForDelete.Deleted = true;
+        //    productWasteForDelete.UpdatedAt = System.DateTime.UtcNow;
+        //    productWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+        //    if (await _productWasteRepository.UpdateProductWaste(productWasteForDelete) > 0) return true;
+        //    else return false;
+        //}
     }
 }

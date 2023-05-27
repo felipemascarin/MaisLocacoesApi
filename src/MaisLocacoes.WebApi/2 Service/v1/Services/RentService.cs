@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -104,5 +105,18 @@ namespace Service.v1.Services
             if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
             else return false;
         }
+
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //    var rentForDelete = await _rentRepository.GetById(id) ??
+        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+        //    rentForDelete.Deleted = true;
+        //    rentForDelete.UpdatedAt = System.DateTime.UtcNow;
+        //    rentForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+        //    if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
+        //    else return false;
+        //}
     }
 }

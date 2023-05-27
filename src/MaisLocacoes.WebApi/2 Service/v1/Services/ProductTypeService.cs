@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -40,5 +41,18 @@ namespace Service.v1.Services
 
             return productTypeResponse;
         }
+
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //    var productTypeForDelete = await _productTypeRepository.GetById(id) ??
+        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+        //    productTypeForDelete.Deleted = true;
+        //    productTypeForDelete.UpdatedAt = System.DateTime.UtcNow;
+        //    productTypeForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+        //    if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;
+        //    else return false;
+        //}
     }
 }

@@ -2,5 +2,6 @@
 {
     public interface ICompanyTuitionService
     {
+        Task<bool> DeleteById(int id);
     }
 }

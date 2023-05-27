@@ -2,5 +2,6 @@
 {
     public interface ISupplierService
     {
+        Task<bool> DeleteById(int id);
     }
 }
