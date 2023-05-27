@@ -98,6 +98,7 @@ namespace Service.v1.Services
 
         //public async Task<bool> DeleteById(int id)
         //{
+        //Atualizar o UpdatedAt e UpdatedBy quando o deleted for para true
         //}
     }
 }

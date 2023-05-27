@@ -82,11 +82,6 @@ namespace MaisLocacoes.WebApi.Context
                 .HasIndex(e => e.Email)
                 .IsUnique();
 
-            //Definindo chaves compostas:
-            modelBuilder.Entity<ProductEntity>()
-                .HasKey(p => new { p.ProductType, p.Code });
-
-
             //Definindo valor Default NotifyDaysBefore de CompanyEntity:
             modelBuilder.Entity<CompanyEntity>()
                 .Property(p => p.NotifyDaysBefore)
@@ -173,6 +168,51 @@ namespace MaisLocacoes.WebApi.Context
                 .Property(x => x.CreatedAt)
                 .HasDefaultValueSql(currenteTimestampUtc);
 
+            //Definindo valores Default para os deleteds:
+            modelBuilder.Entity<BillEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ClientEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<CompanyTuitionEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<OsEntity>()
+               .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ProductEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ProductTuitionEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<ProductTypeEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false); ;
+
+            modelBuilder.Entity<ProductWasteEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<QgEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<RentEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
+            modelBuilder.Entity<SupplierEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
             //Definindo valor Default para campo Country em AddressEntity
             modelBuilder.Entity<AddressEntity>()
                 .Property(x => x.Country)
@@ -205,7 +245,6 @@ namespace MaisLocacoes.WebApi.Context
 
            
             //Definindo ForeignKey para as entidades:
-
             modelBuilder.Entity<CompanyEntity>()
             .HasOne<CompanyAddressEntity>(many => many.CompanyAddressEntity)
             .WithMany(one => one.Companies)
@@ -239,7 +278,7 @@ namespace MaisLocacoes.WebApi.Context
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
             .WithMany(one => one.ProductTuitions)
-            .HasForeignKey(many => new { many.ProductType })
+            .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
@@ -251,7 +290,7 @@ namespace MaisLocacoes.WebApi.Context
             modelBuilder.Entity<ProductEntity>()
             .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
             .WithMany(one => one.Products)
-            .HasForeignKey(many => new { many.ProductType })
+            .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<QgEntity>()
@@ -269,7 +308,7 @@ namespace MaisLocacoes.WebApi.Context
             modelBuilder.Entity<RentedPlaceEntity>()
             .HasOne<ProductEntity>(many => many.ProductEntity)
             .WithMany(one => one.RentedPlaces)
-            .HasForeignKey(many => new { many.ProductType, many.ProductCode })
+            .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
 
             modelBuilder.Entity<RentEntity>()

@@ -9,8 +9,8 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Request
     public class ProductTuitionRequest
     {
         public int RentId { get; set; }
-        public string ProductType { get; set; }
-        public string ProductCode { get; set; }
+        public int ProductTypeId { get; set; }
+        public string? ProductCode { get; set; }
         public decimal Value { get; set; }
         public DateTime InitialDateTime { get; set; }
         public DateTime FinalDateTime { get; set; }

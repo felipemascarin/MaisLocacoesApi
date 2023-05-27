@@ -11,8 +11,7 @@ namespace Repository.v1.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public string ProductType { get; set; }
-        public string ProductCode { get; set; }
+        public int ProductId { get; set; }
         public virtual ProductEntity ProductEntity { get; set; }
 
         public int AddressId { get; set; }

@@ -3,7 +3,7 @@
     public class ProductRequest
     {
         public string Code { get; set; }
-        public string ProductType { get; set; }
+        public int ProductTypeId { get; set; }
         public int? SupplierId { get; set; }
         public string? Description { get; set; }
         public DateTime? DateBought { get; set; }

@@ -7,16 +7,16 @@ namespace Repository.v1.Entity
     [Table(TableNameEnum.Products)]
     public class ProductEntity
     {
-        //[Key] Chave composta configurada na classe PostgreSqlContext
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         [Required]
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string Code { get; set; }
 
-        [StringLength(255)]
-        [Column(TypeName = "character varying(255)")]
-        public string ProductType { get; set; }
-
+        public int ProductTypeId { get; set; }
         public virtual ProductTypeEntity ProductTypeEntity { get; set; }
 
         public int? SupplierId { get; set; }
@@ -52,6 +52,8 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? UpdatedBy { get; set; }
+
+        public bool Deleted { get; set; }
 
         public ICollection<RentedPlaceEntity> RentedPlaces { get; set; }
     }

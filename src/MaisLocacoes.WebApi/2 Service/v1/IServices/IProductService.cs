@@ -6,7 +6,8 @@ namespace Service.v1.IServices
     public interface IProductService
     {
         Task<ProductResponse> CreateProduct(ProductRequest productRequest);
-        Task<ProductResponse> GetByTypeCode(string type, string code);
-        Task<bool> UpdateProduct(ProductRequest productRequest, string type, string code);
+        Task<ProductResponse> GetById(int id);
+        Task<ProductResponse> GetByTypeCode(int typeId, string code);
+        Task<bool> UpdateProduct(ProductRequest productRequest, int id);
     }
 }

@@ -21,7 +21,7 @@ namespace Repository.v1.Repository
             return billEntity;
         }
 
-        public async Task<BillEntity> GetById(int id) => await _context.Bills.FirstOrDefaultAsync(b => b.Id == id);
+        public async Task<BillEntity> GetById(int id) => await _context.Bills.FirstOrDefaultAsync(b => b.Id == id && b.Deleted == false);
 
         public async Task<int> UpdateBill(BillEntity billForUpdate)
         {

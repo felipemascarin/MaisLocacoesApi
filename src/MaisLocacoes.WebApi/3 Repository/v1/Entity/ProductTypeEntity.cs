@@ -8,6 +8,9 @@ namespace Repository.v1.Entity
     public class ProductTypeEntity
     {
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string Type { get; set; }
@@ -27,6 +30,8 @@ namespace Repository.v1.Entity
         public string? UpdatedByanderson{ get; set; }
 
         public bool IsManyParts { get; set; }
+
+        public bool Deleted { get; set; }
 
         public ICollection<ProductEntity> Products { get; set; }
         public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }

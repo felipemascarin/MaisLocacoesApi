@@ -29,12 +29,12 @@ namespace Service.v1.Services
 
         public async Task<ProductResponse> CreateProduct(ProductRequest productRequest)
         {
-            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductType, productRequest.Code);
+            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId, productRequest.Code);
 
             if (existsProduct != null)
                 throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
 
-            var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductType);
+            var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
             if (!existsProductType)
             {
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
@@ -51,9 +51,9 @@ namespace Service.v1.Services
             return productResponse;
         }
 
-        public async Task<ProductResponse> GetByTypeCode(string type, string code)
+        public async Task<ProductResponse> GetById(int id)
         {
-            var productEntity = await _productRepository.GetByTypeCode(type, code) ??
+            var productEntity = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             var productResponse = _mapper.Map<ProductResponse>(productEntity);
@@ -61,30 +61,40 @@ namespace Service.v1.Services
             return productResponse;
         }
 
-        public async Task<bool> UpdateProduct(ProductRequest productRequest, string type, string code)
+        public async Task<ProductResponse> GetByTypeCode(int typeId, string code)
         {
-            var productForUpdate = await _productRepository.GetByTypeCode(type, code) ??
+            var productEntity = await _productRepository.GetByTypeCode(typeId, code) ??
+                throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
+
+            var productResponse = _mapper.Map<ProductResponse>(productEntity);
+
+            return productResponse;
+        }
+
+        public async Task<bool> UpdateProduct(ProductRequest productRequest, int id)
+        {
+            var productForUpdate = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.BadRequest);
 
-            if (type.ToLower() != productRequest.ProductType.ToLower() || code.ToLower() != productRequest.Code.ToLower())
+            if (productRequest.ProductTypeId != productForUpdate.ProductTypeId || productRequest.Code.ToLower() != productForUpdate.Code.ToLower())
             {
-                if (type.ToLower() != productRequest.ProductType.ToLower())
+                if (productRequest.ProductTypeId != productForUpdate.ProductTypeId)
                 {
-                    var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductType);
+                    var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
                     if (!existsProductType)
                     {
-                        throw new HttpRequestException("Tipo de produto inserido não existe", null, HttpStatusCode.BadRequest);
+                        throw new HttpRequestException("Esse tipo de produto não existe", null, HttpStatusCode.BadRequest);
                     }
                 }
 
-                var existsTypeCode = await _productRepository.ProductExists(productRequest.ProductType, productRequest.Code);
+                var existsTypeCode = await _productRepository.ProductExists(productRequest.ProductTypeId, productRequest.Code);
                 if (existsTypeCode)
                 {
                     throw new HttpRequestException("O código para esse tipo do produto já existe", null, HttpStatusCode.BadRequest);
                 }
             }
 
-            productForUpdate.ProductType = productRequest.ProductType;
+            productForUpdate.ProductTypeId = productRequest.ProductTypeId;
             productForUpdate.Code = productRequest.Code;
             productForUpdate.SupplierId = productRequest.SupplierId;
             productForUpdate.Description = productRequest.Description;

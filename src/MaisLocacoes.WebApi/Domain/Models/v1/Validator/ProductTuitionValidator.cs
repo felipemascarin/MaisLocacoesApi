@@ -12,17 +12,15 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 result > 0)
                .WithMessage("Id da locação deve ser um número inteiro maior que 0");
 
-            RuleFor(product => product.ProductType)
-                .Must(productType => !string.IsNullOrEmpty(productType))
-                .WithMessage("O Tipo de produto é obrigatório")
-                .MaximumLength(255)
-                .WithMessage("O Tipo de produto ultrapassou o limite máximo de caracteres");
+            RuleFor(productTuition => productTuition.ProductTypeId)
+               .Must(productTypeId => int.TryParse(productTypeId.ToString(), out var result) &&
+                result > 0)
+               .WithMessage("Id do tipo de produto deve ser um número inteiro maior que 0");
 
             RuleFor(product => product.ProductCode)
-                .Must(productCode => !string.IsNullOrEmpty(productCode))
-                .WithMessage("O Código do produto é obrigatório")
                 .MaximumLength(255)
-                .WithMessage("O Código do produto ultrapassou o limite máximo de caracteres");
+                .WithMessage("O Código do produto ultrapassou o limite máximo de caracteres")
+               .When(product => !string.IsNullOrEmpty(product.ProductCode));
 
             RuleFor(product => product.Value)
                 .Must(value => decimal.TryParse(value.ToString(), out var result) &&

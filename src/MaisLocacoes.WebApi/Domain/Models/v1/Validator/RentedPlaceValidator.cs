@@ -7,17 +7,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
     {
         public RentedPlaceValidator()
         {
-            RuleFor(rentedPlace => rentedPlace.ProductType)
-                .Must(productType => !string.IsNullOrEmpty(productType))
-                .WithMessage("O Tipo de produto é obrigatório")
-                .MaximumLength(255)
-                .WithMessage("O Tipo de produto ultrapassou o limite máximo de caracteres");
-
-            RuleFor(rentedPlace => rentedPlace.ProductCode)
-                .Must(productCode => !string.IsNullOrEmpty(productCode))
-                .WithMessage("O Código do produto é obrigatório")
-                .MaximumLength(255)
-                .WithMessage("O Código do produto ultrapassou o limite máximo de caracteres");
+            RuleFor(rentedPlace => rentedPlace.ProductId)
+               .Must(productId => int.TryParse(productId.ToString(), out var result) &&
+                result > 0)
+               .WithMessage("Id do tipo de produto deve ser um número inteiro maior que 0");
 
             RuleFor(rentedPlace => rentedPlace.RentId)
                .Must(rentId => int.TryParse(rentId.ToString(), out var result) &&

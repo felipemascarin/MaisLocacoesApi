@@ -63,14 +63,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("type/{type}/code/{code}")]
-        public async Task<IActionResult> GetByTypeCode(string type, string code)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                _logger.LogInformation("GetByTypeCode {@dateTime} type:{@type} code:{@code} User:{@email}", System.DateTime.Now, type, code, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var product = await _productService.GetByTypeCode(type, code);
+                var product = await _productService.GetById(id);
                 return Ok(product);
             }
             catch (HttpRequestException ex)
@@ -82,12 +82,31 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPut("type/{type}/code/{code}")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest, string type, string code)
+        [HttpGet("typeId/{typeId}/code/{code}")]
+        public async Task<IActionResult> GetByTypeCode(int typeId, string code)
         {
             try
             {
-                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} type:{@type} code:{@code} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productRequest), type, code, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email}", System.DateTime.Now, typeId, code, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var product = await _productService.GetByTypeCode(typeId, code);
+                return Ok(product);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 var validatedProduct = _productValidator.Validate(productRequest);
 
@@ -98,7 +117,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(productValidationErros);
                 }
 
-                if (await _productService.UpdateProduct(productRequest, type, code)) return Ok();
+                if (await _productService.UpdateProduct(productRequest, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o produto"));
             }
             catch (HttpRequestException ex)

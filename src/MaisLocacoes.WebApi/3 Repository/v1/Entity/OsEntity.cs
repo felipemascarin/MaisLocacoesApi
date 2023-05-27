@@ -47,5 +47,7 @@ namespace Repository.v1.Entity
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]
         public string? DeliveryObservation { get; set; }
+
+        public bool Deleted { get; set; }
     }
 }

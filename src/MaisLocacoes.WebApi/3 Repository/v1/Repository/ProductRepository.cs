@@ -21,9 +21,11 @@ namespace Repository.v1.Repository
             return productEntity;
         }
 
-        public async Task<ProductEntity> GetByTypeCode(string type, string code) => await _context.Products.FirstOrDefaultAsync(p => p.ProductType.ToLower() == type.ToLower() && p.Code.ToLower() == code.ToLower());
+        public async Task<ProductEntity> GetById(int id) => await _context.Products.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+
+        public async Task<ProductEntity> GetByTypeCode(int typeId, string code) => await _context.Products.FirstOrDefaultAsync(p => p.ProductTypeId == typeId && p.Code.ToLower() == code.ToLower() && p.Deleted == false);
         
-        public async Task<bool> ProductExists(string type, string code) => await _context.Products.AnyAsync(p => p.ProductType.ToLower() == type.ToLower() && p.Code.ToLower() == code.ToLower());
+        public async Task<bool> ProductExists(int typeId, string code) => await _context.Products.AnyAsync(p => p.ProductTypeId == typeId && p.Code.ToLower() == code.ToLower() && p.Deleted == false);
 
         public async Task<int> UpdateProduct(ProductEntity productForUpdate)
         {

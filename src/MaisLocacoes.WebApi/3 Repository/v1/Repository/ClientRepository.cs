@@ -23,20 +23,20 @@ namespace Repository.v1.Repository
             return clientEntity;
         }
 
-        public async Task<ClientEntity> GetByCpf(string cpf) => await _context.Clients.FirstOrDefaultAsync(c => c.Cpf == cpf);
+        public async Task<ClientEntity> GetByCpf(string cpf) => await _context.Clients.FirstOrDefaultAsync(c => c.Cpf == cpf && c.Deleted == false);
         
-        public async Task<ClientEntity> GetByCnpj(string cnpj) => await _context.Clients.FirstOrDefaultAsync(c => c.Cnpj == cnpj);
+        public async Task<ClientEntity> GetByCnpj(string cnpj) => await _context.Clients.FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
 
-        public async Task<ClientEntity> GetById(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
+        public async Task<ClientEntity> GetById(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
 
-        public async Task<bool> ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id);
+        public async Task<bool> ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id && c.Deleted == false);
 
         public async Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query)
         {
             if (query == null)
-            return await _context.Clients.Skip((page - 1) * items).Take(items).Include(c => c.AddressEntity).ToListAsync();
+            return await _context.Clients.Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).Include(c => c.AddressEntity).ToListAsync();
             else
-            return await _context.Clients.Where(c =>
+            return await _context.Clients.Where(c => c.Deleted == false && (
                  c.Cpf.Contains(query) ||
                  c.Cnpj.Contains(query) ||
                  c.CompanyName.ToLower().Contains(query.ToLower()) ||
@@ -45,14 +45,14 @@ namespace Repository.v1.Repository
                  c.FantasyName.ToLower().Contains(query.ToLower()) ||
                  c.Cel.ToLower().Contains(query.ToLower()) ||
                  c.Tel.ToLower().Contains(query.ToLower()) ||
-                 c.Email.ToLower().Contains(query.ToLower()))
+                 c.Email.ToLower().Contains(query.ToLower())))
                  .Include(c => c.AddressEntity)
                  .Skip((page - 1) * items).Take(items).Include(c => c.AddressEntity).ToListAsync();
         }
 
         public async Task<IEnumerable<GetClientForRentDtoResponse>> GetClientsForRent() 
             => await _context.Clients
-                .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0))
+                .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0) && c.Deleted == false)
                 .Select(c => new GetClientForRentDtoResponse 
                 { 
                     Id = c.Id,
