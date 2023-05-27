@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -10,8 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
-using System.Net;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -86,7 +82,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Updatebill([FromBody] BillRequest billRequest, int id)
+        public async Task<IActionResult> UpdateBill([FromBody] BillRequest billRequest, int id)
         {
             try
             {

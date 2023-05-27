@@ -14,5 +14,8 @@ namespace Repository.v1.Repository
         {
             _context = context;
         }
+
+        public async Task<bool> ProductTypeExists(string type) => await _context.ProductTypes.AnyAsync(p => p.Type.ToLower() == type.ToLower());
+
     }
 }

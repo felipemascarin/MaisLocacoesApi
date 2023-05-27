@@ -2,5 +2,6 @@
 {
     public interface IProductTypeRepository
     {
+        Task<bool> ProductTypeExists(string type);
     }
 }

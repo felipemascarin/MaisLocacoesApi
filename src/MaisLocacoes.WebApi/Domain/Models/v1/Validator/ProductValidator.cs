@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Utils.Enums;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
 {

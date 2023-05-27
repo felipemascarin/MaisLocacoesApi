@@ -26,6 +26,17 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //Injeção de dependência:
 Bootstrapper.Configure(builder.Services);
 
+//Add Cors
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowOrigin", builder =>
+    {
+        builder.AllowAnyOrigin()
+               .AllowAnyMethod()
+               .AllowAnyHeader();
+    });
+});
+
 //Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -119,6 +130,8 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler("/error");
 
 app.UseMiddleware<ExceptionMiddleware>();
+
+app.UseCors("AllowOrigin");
 
 app.UseHttpsRedirection();
 
