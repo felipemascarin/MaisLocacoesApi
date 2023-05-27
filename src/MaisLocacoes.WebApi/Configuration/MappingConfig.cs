@@ -4,10 +4,8 @@ using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
@@ -21,72 +19,55 @@ namespace Configuration
             var mappingConfig = new MapperConfiguration(config =>
             {
                 config.CreateMap<CompanyRequest, CompanyEntity>();
-                config.CreateMap<CompanyEntity, CreateCompanyResponse>();
-                config.CreateMap<CompanyEntity, GetCompanyResponse>();
+                config.CreateMap<CompanyEntity, CompanyResponse>();
 
                 config.CreateMap<CompanyAddressRequest, CompanyAddressEntity>();
-                config.CreateMap<CompanyAddressEntity, CreateCompanyAddressResponse>();
-                config.CreateMap<CompanyAddressEntity, GetCompanyAddressResponse>();
+                config.CreateMap<CompanyAddressEntity, CompanyAddressResponse>();
 
                 config.CreateMap<UserRequest, UserEntity>();
-                config.CreateMap<UserEntity, CreateUserResponse>();
-                config.CreateMap<UserEntity, GetUserResponse>();
+                config.CreateMap<UserEntity, UserResponse>();
 
                 config.CreateMap<ClientRequest, ClientEntity>();
-                config.CreateMap<ClientEntity, CreateClientResponse>();
-                config.CreateMap<ClientEntity, GetClientResponse>();                
+                config.CreateMap<ClientEntity, ClientResponse>();            
 
                 config.CreateMap<AddressRequest, AddressEntity>();
-                config.CreateMap<AddressEntity, CreateAddressResponse>();
-                config.CreateMap<AddressEntity, GetAddressResponse>();
+                config.CreateMap<AddressEntity, AddressResponse>();
 
                 config.CreateMap<BillRequest, BillEntity>();
-                config.CreateMap<BillEntity, CreateBillResponse>();
-                config.CreateMap<BillEntity, GetBillResponse>();
+                config.CreateMap<BillEntity, BillResponse>();
 
                 config.CreateMap<CompanyTuitionRequest, CompanyTuitionEntity>();
-                config.CreateMap<CompanyTuitionEntity, CreateCompanyTuitionResponse>();
-                config.CreateMap<CompanyTuitionEntity, GetCompanyTuitionResponse>();
+                config.CreateMap<CompanyTuitionEntity, CompanyTuitionResponse>();
 
                 config.CreateMap<CompanyWasteRequest, CompanyWasteEntity>();
-                config.CreateMap<CompanyWasteEntity, CreateCompanyWasteResponse>();
-                config.CreateMap<CompanyWasteEntity, GetCompanyWasteResponse>();
+                config.CreateMap<CompanyWasteEntity, CompanyWasteResponse>();
 
                 config.CreateMap<OsRequest, OsEntity>();
-                config.CreateMap<OsEntity, CreateOsResponse>();
-                config.CreateMap<OsEntity, GetOsResponse>();
+                config.CreateMap<OsEntity, OsResponse>();
 
                 config.CreateMap<ProductRequest, ProductEntity>();
-                config.CreateMap<ProductEntity, CreateProductResponse>();
-                config.CreateMap<ProductEntity, GetProductResponse>();
+                config.CreateMap<ProductEntity, ProductResponse>();
 
                 config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
-                config.CreateMap<ProductTuitionEntity, CreateProductTuitionResponse>();
-                config.CreateMap<ProductTuitionEntity, GetProductTuitionResponse>();
+                config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
 
                 config.CreateMap<ProductTypeRequest, ProductTypeEntity>();
-                config.CreateMap<ProductTypeEntity, CreateProductTypeResponse>();
-                config.CreateMap<ProductTypeEntity, GetProductTypeResponse>();
+                config.CreateMap<ProductTypeEntity, ProductTypeResponse>();
 
                 config.CreateMap<ProductWasteRequest, ProductWasteEntity>();
-                config.CreateMap<ProductWasteEntity, CreateProductWasteResponse>();
-                config.CreateMap<ProductWasteEntity, GetProductWasteResponse>();
+                config.CreateMap<ProductWasteEntity, ProductWasteResponse>();
 
                 config.CreateMap<QgRequest, QgEntity>();
-                config.CreateMap<QgEntity, CreateQgResponse>();
-                config.CreateMap<QgEntity, GetQgResponse>();
+                config.CreateMap<QgEntity, QgResponse>();
 
                 config.CreateMap<RentedPlaceRequest, RentedPlaceEntity>();
-                config.CreateMap<RentedPlaceEntity, CreateRentedPlaceResponse>();
-                config.CreateMap<RentedPlaceEntity, GetRentedPlaceResponse>();
+                config.CreateMap<RentedPlaceEntity, RentedPlaceResponse>();
 
                 config.CreateMap<RentRequest, RentEntity>();
-                config.CreateMap<RentEntity, CreateRentResponse>();
-                config.CreateMap<RentEntity, GetRentResponse>();
+                config.CreateMap<RentEntity, RentResponse>();
 
                 config.CreateMap<SupplierRequest, SupplierEntity>();
-                config.CreateMap<SupplierEntity, CreateSupplierResponse>();
-                config.CreateMap<SupplierEntity, GetSupplierResponse>();
+                config.CreateMap<SupplierEntity, SupplierResponse>();
 
                 config.CreateMap<UserEntity, UsersDeletions>();
                 config.CreateMap<BillEntity, BillsDeletions>();

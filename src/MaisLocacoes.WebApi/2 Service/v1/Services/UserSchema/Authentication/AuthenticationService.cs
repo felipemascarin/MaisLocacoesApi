@@ -1,7 +1,7 @@
 ﻿using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema.Authentication;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository.UserSchema;

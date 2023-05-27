@@ -2,8 +2,7 @@
 using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -34,7 +33,7 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CreateClientResponse> CreateClient(ClientRequest clientRequest)
+        public async Task<ClientResponse> CreateClient(ClientRequest clientRequest)
         {
                 ClientEntity existsClient;
                 if (string.IsNullOrEmpty(clientRequest.Cnpj))
@@ -54,27 +53,27 @@ namespace Service.v1.Services
 
                 clientEntity = await _clientRepository.CreateClient(clientEntity);
 
-                var clientResponse = _mapper.Map<CreateClientResponse>(clientEntity);
+                var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
                 clientResponse.Address = addressResponse;
 
                 return clientResponse;
         }
 
-        public async Task<GetClientResponse> GetById(int id)
+        public async Task<ClientResponse> GetById(int id)
         {
                 var clientEntity = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-                var clientAddressResponse = _mapper.Map<GetAddressResponse>(clientEntity.AddressEntity);
+                var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
 
-                var clientResponse = _mapper.Map<GetClientResponse>(clientEntity);
+                var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
 
                 clientResponse.Address = clientAddressResponse;
 
                 return clientResponse;
         }
 
-        public async Task<IEnumerable<GetClientResponse>> GetClientsByPage(int items, int page, string query)
+        public async Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query)
         {
                 if (items <= 0 || page <= 0)
                     throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
@@ -83,11 +82,11 @@ namespace Service.v1.Services
 
                 var clientsEntityListLenght = clientsEntityList.ToList().Count;
 
-                var clientsResponseList = _mapper.Map<IEnumerable<GetClientResponse>>(clientsEntityList);
+                var clientsResponseList = _mapper.Map<IEnumerable<ClientResponse>>(clientsEntityList);
 
                 for (int i = 0; i < clientsEntityListLenght; i++)
                 {
-                    clientsResponseList.ElementAt(i).Address = _mapper.Map<GetAddressResponse>(clientsEntityList.ElementAt(i).AddressEntity);
+                    clientsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(clientsEntityList.ElementAt(i).AddressEntity);
                 }
 
                 return clientsResponseList;

@@ -1,6 +1,6 @@
-﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Create
+﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response
 {
-    public class CreateClientResponse
+    public class ClientResponse
     {
         public int Id { get; set; }
         public string Type { get; set; }
@@ -23,6 +23,10 @@
         public string AddressDocumentUrl { get; set; }
         public string ClientPictureUrl { get; set; }
         public string Status { get; set; }
-        public CreateAddressResponse Address { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public AddressResponse Address { get; set; }
     }
 }

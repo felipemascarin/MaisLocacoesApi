@@ -2,13 +2,10 @@
 using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -35,7 +32,7 @@ namespace Service.v1.Services
             _deletionsRepository = deletionsRepository;
         }
 
-        public async Task<CreateBillResponse> CreateBill(BillRequest billRequest)
+        public async Task<BillResponse> CreateBill(BillRequest billRequest)
         {
             var existsRent = await _rentRepository.RentExists(billRequest.RentId);
             if (!existsRent)
@@ -49,17 +46,17 @@ namespace Service.v1.Services
 
             billEntity = await _billRepository.CreateBill(billEntity);
 
-            var billResponse = _mapper.Map<CreateBillResponse>(billEntity);
+            var billResponse = _mapper.Map<BillResponse>(billEntity);
 
             return billResponse;
         }
 
-        public async Task<GetBillResponse> GetById(int id)
+        public async Task<BillResponse> GetById(int id)
         {
             var billEntity = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var billResponse = _mapper.Map<GetBillResponse>(billEntity);
+            var billResponse = _mapper.Map<BillResponse>(billEntity);
 
             return billResponse;
         }

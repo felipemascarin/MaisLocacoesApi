@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -29,7 +27,7 @@ namespace Service.v1.Services
             _productTypeRepository = productTypeRepository;
         }
 
-        public async Task<CreateProductResponse> CreateProduct(ProductRequest productRequest)
+        public async Task<ProductResponse> CreateProduct(ProductRequest productRequest)
         {
             var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductType, productRequest.Code);
 
@@ -48,17 +46,17 @@ namespace Service.v1.Services
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
-            var productResponse = _mapper.Map<CreateProductResponse>(productEntity);
+            var productResponse = _mapper.Map<ProductResponse>(productEntity);
 
             return productResponse;
         }
 
-        public async Task<GetProductResponse> GetByTypeCode(string type, string code)
+        public async Task<ProductResponse> GetByTypeCode(string type, string code)
         {
             var productEntity = await _productRepository.GetByTypeCode(type, code) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-            var productResponse = _mapper.Map<GetProductResponse>(productEntity);
+            var productResponse = _mapper.Map<ProductResponse>(productEntity);
 
             return productResponse;
         }

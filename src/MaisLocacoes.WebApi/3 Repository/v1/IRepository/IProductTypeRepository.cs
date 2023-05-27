@@ -1,7 +1,10 @@
-﻿namespace Repository.v1.IRepository
+﻿using Repository.v1.Entity;
+
+namespace Repository.v1.IRepository
 {
     public interface IProductTypeRepository
     {
+        Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity);
         Task<bool> ProductTypeExists(string type);
     }
 }

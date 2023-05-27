@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -32,7 +30,7 @@ namespace Service.v1.Services
             _addressService = addressService;
         }
 
-        public async Task<CreateRentResponse> CreateRent(RentRequest rentRequest)
+        public async Task<RentResponse> CreateRent(RentRequest rentRequest)
         {
             var existsClient = await _clientRepository.ClientExists(rentRequest.ClientId);
             if (!existsClient)
@@ -49,20 +47,20 @@ namespace Service.v1.Services
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
 
-            var rentResponse = _mapper.Map<CreateRentResponse>(rentEntity);
+            var rentResponse = _mapper.Map<RentResponse>(rentEntity);
             rentResponse.Address = addressResponse;
 
             return rentResponse;
         }
 
-        public async Task<GetRentResponse> GetById(int id)
+        public async Task<RentResponse> GetById(int id)
         {
             var rentEntity = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            var RentAddressResponse = _mapper.Map<GetAddressResponse>(rentEntity.AddressEntity);
+            var RentAddressResponse = _mapper.Map<AddressResponse>(rentEntity.AddressEntity);
 
-            var RentResponse = _mapper.Map<GetRentResponse>(rentEntity);
+            var RentResponse = _mapper.Map<RentResponse>(rentEntity);
 
             RentResponse.Address = RentAddressResponse;
 

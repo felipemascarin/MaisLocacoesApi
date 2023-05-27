@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
 using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
-using Repository.v1.Repository.UserSchema;
 using Service.v1.IServices.UserSchema;
 using System.Net;
 
@@ -35,7 +32,7 @@ namespace Service.v1.Services.UserSchema
             _deletionsRepository = deletionsRepository;
         }
 
-        public async Task<CreateUserResponse> CreateUser(UserRequest userRequest)
+        public async Task<UserResponse> CreateUser(UserRequest userRequest)
         {
             var existsUser = await _userRepository.UserExists(userRequest.Email, userRequest.Cpf);
             if (existsUser)
@@ -51,25 +48,25 @@ namespace Service.v1.Services.UserSchema
 
             userEntity = await _userRepository.CreateUser(userEntity);
 
-            return _mapper.Map<CreateUserResponse>(userEntity);
+            return _mapper.Map<UserResponse>(userEntity);
         }
 
-        public async Task<GetUserResponse> GetByEmail(string email)
+        public async Task<UserResponse> GetByEmail(string email)
         {
             var userEntity = await _userRepository.GetByEmail(email) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-            var userResponse = _mapper.Map<GetUserResponse>(userEntity);
+            var userResponse = _mapper.Map<UserResponse>(userEntity);
 
             return userResponse;
         }
 
-        public async Task<GetUserResponse> GetByCpf(string cpf)
+        public async Task<UserResponse> GetByCpf(string cpf)
         {
             var userEntity = await _userRepository.GetByCpf(cpf) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-            var userResponse = _mapper.Map<GetUserResponse>(userEntity);
+            var userResponse = _mapper.Map<UserResponse>(userEntity);
 
             return userResponse;
         }

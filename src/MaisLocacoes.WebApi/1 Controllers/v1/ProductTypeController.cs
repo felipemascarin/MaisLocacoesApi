@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -47,7 +48,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedProductType.Errors.ForEach(error => productTypeValidationErros.Add(error.ErrorMessage));
                     return BadRequest(productTypeValidationErros);
                 }
-                return await Task.FromResult(Ok(productTypeRequest));
+                var productTypeCreated = await _productTypeService.CreateProductType(productTypeRequest);
+
+                return Ok(productTypeCreated);
             }
             catch (HttpRequestException ex)
             {

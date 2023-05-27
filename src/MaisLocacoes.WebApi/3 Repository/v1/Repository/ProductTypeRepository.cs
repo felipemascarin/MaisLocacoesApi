@@ -1,6 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using System.Net;
 
@@ -13,6 +14,13 @@ namespace Repository.v1.Repository
         public ProductTypeRepository(PostgreSqlContext context)
         {
             _context = context;
+        }
+
+        public async Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity)
+        {
+            await _context.ProductTypes.AddAsync(productTypeEntity);
+            await _context.SaveChangesAsync();
+            return productTypeEntity;
         }
 
         public async Task<bool> ProductTypeExists(string type) => await _context.ProductTypes.AnyAsync(p => p.Type.ToLower() == type.ToLower());

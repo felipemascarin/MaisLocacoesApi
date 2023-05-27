@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema.Authentication;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Repository.v1.IRepository.UserSchema;
 using System.IdentityModel.Tokens.Jwt;

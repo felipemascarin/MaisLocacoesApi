@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -25,7 +24,7 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CreateAddressResponse> CreateAddress(AddressRequest addressRequest)
+        public async Task<AddressResponse> CreateAddress(AddressRequest addressRequest)
         {
             var addressEntity = _mapper.Map<AddressEntity>(addressRequest);
 
@@ -33,13 +32,13 @@ namespace Service.v1.Services
 
             addressEntity = await _addressRepository.CreateAddress(addressEntity);
 
-            return _mapper.Map<CreateAddressResponse>(addressEntity);
+            return _mapper.Map<AddressResponse>(addressEntity);
         }
 
-        public async Task<GetAddressResponse> GetById(int addressId)
+        public async Task<AddressResponse> GetById(int addressId)
         {
             var addressEntity = await _addressRepository.GetById(addressId);
-            return _mapper.Map<GetAddressResponse>(addressEntity);
+            return _mapper.Map<AddressResponse>(addressEntity);
         }
 
         public async Task<bool> UpdateAddress(AddressRequest addressRequest, int id)

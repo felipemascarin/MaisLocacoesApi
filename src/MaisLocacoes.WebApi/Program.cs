@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,7 +28,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 //Injeção de dependência:
 Bootstrapper.Configure(builder.Services);
 
-//Add Cors
+//Add Cors - permite requisições de servidor web para servidor web
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowOrigin", builder =>

@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.IRepository.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
@@ -26,7 +24,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CreateCompanyAddressResponse> CreateCompanyAddress(CompanyAddressRequest companyAddressRequest)
+        public async Task<CompanyAddressResponse> CreateCompanyAddress(CompanyAddressRequest companyAddressRequest)
         {
             var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressRequest);
 
@@ -34,15 +32,15 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
 
             companyAddressEntity = await _companyAddressRepository.CreateCompanyAddress(companyAddressEntity);
 
-            return _mapper.Map<CreateCompanyAddressResponse>(companyAddressEntity);
+            return _mapper.Map<CompanyAddressResponse>(companyAddressEntity);
         }
 
-        public async Task<GetCompanyAddressResponse> GetById(int companyAddressId)
+        public async Task<CompanyAddressResponse> GetById(int companyAddressId)
         {
             var CompanyAddressEntity = await _companyAddressRepository.GetById(companyAddressId) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            return _mapper.Map<GetCompanyAddressResponse>(CompanyAddressEntity);
+            return _mapper.Map<CompanyAddressResponse>(CompanyAddressEntity);
         }
 
         public async Task<bool> UpdateCompanyAddress(CompanyAddressRequest companyAddressRequest, int id)
