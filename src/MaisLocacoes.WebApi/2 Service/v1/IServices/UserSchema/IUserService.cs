@@ -10,6 +10,6 @@ namespace Service.v1.IServices.UserSchema
         Task<UserResponse> GetByCpf(string cpf);
         Task<bool> UpdateUser(UserRequest userRequest, string email);
         Task<bool> UpdateStatus(string status, string email);
-        Task<bool> DeleteByEmail(string email);
+        //Task<bool> DeleteByEmail(string email);
     }
 }

@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
-using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -15,21 +13,18 @@ namespace Service.v1.Services.UserSchema
     {
         private readonly IUserRepository _userRepository;
         private readonly ICompanyRepository _companyRepository;
-        private readonly IDeletionsRepository _deletionsRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserService(IUserRepository userRepository,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor,
-            ICompanyRepository companyRepository,
-            IDeletionsRepository deletionsRepository)
+            ICompanyRepository companyRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _companyRepository = companyRepository;
-            _deletionsRepository = deletionsRepository;
         }
 
         public async Task<UserResponse> CreateUser(UserRequest userRequest)
@@ -128,19 +123,8 @@ namespace Service.v1.Services.UserSchema
             else return false;
         }
 
-        public async Task<bool> DeleteByEmail(string email)
-        {
-            var userEntity = await _userRepository.GetByEmail(email) ??
-                throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
-
-            var userForDelete = _mapper.Map<UsersDeletions>(userEntity);
-            userForDelete.DeletedAt = System.DateTime.UtcNow;
-            userForDelete.DeletedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-
-            await _deletionsRepository.CreateUsersDeletions(userForDelete);
-
-            if (await _deletionsRepository.DeleteUser(userEntity) > 0) return true;
-            else return false;
-        }
+        //public async Task<bool> DeleteByEmail(string email)
+        //{
+        //}
     }
 }

@@ -24,6 +24,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Valor do status se inserido deve ser válido")
                 .When(rent => !string.IsNullOrEmpty(rent.Status));
 
+            RuleFor(rent => rent.FirstDueDate)
+               .Must(firstDueDate => DateTime.TryParse(firstDueDate.ToString(), out var result))
+               .WithMessage("A Data se inserida deve ser uma data válida")
+               .When(rent => rent.FirstDueDate != null);
+
             RuleFor(rent => rent.Address).SetValidator(new AddressValidator());
         }
     }

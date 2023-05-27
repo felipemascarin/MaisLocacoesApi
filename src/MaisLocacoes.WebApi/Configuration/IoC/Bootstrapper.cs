@@ -1,8 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
-using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
-using MaisLocacoes.WebApi._3_Repository.v1.Repository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -66,7 +64,6 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IRentedPlaceRepository, RentedPlaceRepository>();
             services.AddScoped<IRentRepository, RentRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
-            services.AddScoped<IDeletionsRepository, DeletionsRepository>();
 
             services.AddScoped<IValidator<LoginRequest>, LoginValidator>();
             services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();

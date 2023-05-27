@@ -74,11 +74,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             if (companyRequest.Cnpj != cnpj)
-            {
-                var existsCnpj = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
-                if (existsCnpj != null)
-                    throw new HttpRequestException("O Cnpj novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
-            }
+                    throw new HttpRequestException("Não é possível alterar o CNPJ de uma empresa cadastrada", null, HttpStatusCode.BadRequest);
 
             if (companyRequest.Email != companyForUpdate.Email)
             {
@@ -87,7 +83,6 @@ namespace Service.v1.Services.UserSchema
                     throw new HttpRequestException("O Email novo já está cadastrado em outra empresa", null, HttpStatusCode.BadRequest);
             }
 
-            companyForUpdate.Cnpj = companyRequest.Cnpj;
             companyForUpdate.CompanyName = companyRequest.CompanyName;
             companyForUpdate.StateRegister = companyRequest.StateRegister;
             companyForUpdate.FantasyName = companyRequest.FantasyName;

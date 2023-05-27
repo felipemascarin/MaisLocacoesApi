@@ -149,21 +149,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpDelete("{email}")]
-        public async Task<IActionResult> DeleteByEmail(string email)
-        {
-            try
-            {
-                _logger.LogInformation("DeleteByEmail {@dateTime} email:{@email} User:{@email}", System.DateTime.Now, email, JwtManager.GetEmailByToken(_httpContextAccessor));
-
-                if (await _userService.DeleteByEmail(email)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
-                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
-            }
-        }
+        //[HttpDelete("{email}")]
+        //public async Task<IActionResult> DeleteByEmail(string email)
+        //{
+        //}
     }
 }

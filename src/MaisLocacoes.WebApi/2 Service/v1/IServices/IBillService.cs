@@ -9,6 +9,6 @@ namespace Service.v1.IServices
         Task<BillResponse> GetById(int id);
         Task<bool> UpdateBill(BillRequest billRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
-        Task<bool> DeleteById(int id);
+        //Task<bool> DeleteById(int id);
     }
 }

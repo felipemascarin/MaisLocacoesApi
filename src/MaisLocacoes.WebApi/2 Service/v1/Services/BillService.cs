@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
-using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -15,13 +13,11 @@ namespace Service.v1.Services
     {
         private readonly IBillRepository _billRepository;
         private readonly IRentRepository _rentRepository;
-        private readonly IDeletionsRepository _deletionsRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public BillService(IBillRepository billRepository,
             IRentRepository rentRepository,
-            IDeletionsRepository deletionsRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
@@ -29,7 +25,6 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _rentRepository = rentRepository;
-            _deletionsRepository = deletionsRepository;
         }
 
         public async Task<BillResponse> CreateBill(BillRequest billRequest)
@@ -101,19 +96,8 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> DeleteById(int id)
-        {
-            var billEntity = await _billRepository.GetById(id) ??
-                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
-
-            var billForDelete = _mapper.Map<BillsDeletions>(billEntity);
-            billForDelete.DeletedAt = System.DateTime.UtcNow;
-            billForDelete.DeletedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-
-            await _deletionsRepository.CreateBillsDeletions(billForDelete);
-
-            if (await _deletionsRepository.DeleteBill(billEntity) > 0) return true;
-            else return false;
-        }
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //}
     }
 }

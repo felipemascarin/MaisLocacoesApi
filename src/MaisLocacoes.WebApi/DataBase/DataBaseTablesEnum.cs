@@ -19,18 +19,5 @@
         public const string RentedPlaces = "RentedPlaces";
         public const string Rents = "Rents";
         public const string Suppliers = "Suppliers";
-
-        public const string UsersDeletions = "UsersDeletions";
-        public const string BillsDeletions = "BillsDeletions";
-        public const string ClientsDeletions = "ClientsDeletions";
-        public const string CompanyTuitionsDeletions = "CompanyTuitionsDeletions";
-        public const string CompanyWastesDeletions = "CompanyWastesDeletions";
-        public const string ProductsDeletions = "ProductsDeletions";
-        public const string ProductTuitionsDeletions = "ProductTuitionsDeletions";
-        public const string ProductTypesDeletions = "ProductTypesDeletions";
-        public const string ProductWastesDeletions = "ProductWastesDeletions";
-        public const string QgsDeletions = "QgsDeletions";
-        public const string RentedPlacesDeletions = "RentedPlacesDeletions";
-        public const string SuppliersDeletions = "SuppliersDeletions";
     }
 }

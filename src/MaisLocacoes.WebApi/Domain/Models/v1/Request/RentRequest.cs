@@ -10,6 +10,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Request
         public int ClientId { get; set; }
         public decimal? Carriage { get; set; }
         public string? Status { get; set; }
+        public DateTime? FirstDueDate { get; set; }
         public virtual AddressRequest Address { get; set; }
     }
 }

@@ -1,6 +1,4 @@
-﻿using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
-using MaisLocacoes.WebApi.DataBase;
+﻿using MaisLocacoes.WebApi.DataBase;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -41,18 +39,6 @@ namespace MaisLocacoes.WebApi.Context
         public DbSet<RentedPlaceEntity> RentedPlaces { get; set; }
         public DbSet<RentEntity> Rents { get; set; }
         public DbSet<SupplierEntity> Suppliers { get; set; }
-        public DbSet<UsersDeletions> UsersDeletions { get; set; }
-        public DbSet<BillsDeletions> BillsDeletions { get; set; }
-        public DbSet<ClientsDeletions> ClientsDeletions { get; set; }
-        public DbSet<CompanyTuitionsDeletions> CompanyTuitionsDeletions { get; set; }
-        public DbSet<CompanyWastesDeletions> CompanyWastesDeletions { get; set; }
-        public DbSet<ProductsDeletions> ProductsDeletions { get; set; }
-        public DbSet<ProductTuitionsDeletions> ProductTuitionsDeletions { get; set; }
-        public DbSet<ProductTypesDeletions> ProductTypesDeletions { get; set; }
-        public DbSet<ProductWastesDeletions> ProductWastesDeletions { get; set; }
-        public DbSet<QgsDeletions> QgsDeletions { get; set; }
-        public DbSet<RentedPlacesDeletions> RentedPlacesDeletions { get; set; }
-        public DbSet<SuppliersDeletions> SuppliersDeletions { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -85,11 +71,6 @@ namespace MaisLocacoes.WebApi.Context
             modelBuilder.Entity<UserEntity>(entity =>
             {
                 entity.ToTable(nameof(TableNameEnum.Users), "users");
-            });
-
-            modelBuilder.Entity<UsersDeletions>(entity =>
-            {
-                entity.ToTable(nameof(TableNameEnum.UsersDeletions), "users");
             });
 
             //Definindo valores Unique com Fluent API:
@@ -222,59 +203,7 @@ namespace MaisLocacoes.WebApi.Context
                .Property(x => x.Status)
                .HasDefaultValue(ClientStatus.ClientStatusEnum.ElementAt(0));
 
-            //Definindo valor Default DeletedAt para Deletions
-            modelBuilder.Entity<UsersDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<BillsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<ClientsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<CompanyTuitionsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<CompanyWastesDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<ProductsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<ProductTuitionsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<ProductTypesDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<ProductWastesDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<QgsDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<RentedPlacesDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-            modelBuilder.Entity<SuppliersDeletions>()
-                .Property(x => x.DeletedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
-
-
-
-
-
+           
             //Definindo ForeignKey para as entidades:
 
             modelBuilder.Entity<CompanyEntity>()

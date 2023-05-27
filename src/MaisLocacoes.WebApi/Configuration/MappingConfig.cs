@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
@@ -68,19 +66,6 @@ namespace Configuration
 
                 config.CreateMap<SupplierRequest, SupplierEntity>();
                 config.CreateMap<SupplierEntity, SupplierResponse>();
-
-                config.CreateMap<UserEntity, UsersDeletions>();
-                config.CreateMap<BillEntity, BillsDeletions>();
-                config.CreateMap<ClientEntity, ClientsDeletions>();
-                config.CreateMap<CompanyTuitionEntity, CompanyTuitionsDeletions>();
-                config.CreateMap<CompanyWasteEntity, CompanyWastesDeletions>();
-                config.CreateMap<ProductEntity, ProductsDeletions>();
-                config.CreateMap<ProductTuitionEntity, ProductTuitionsDeletions>();
-                config.CreateMap<ProductTypeEntity, ProductTypesDeletions>();
-                config.CreateMap<ProductWasteEntity, ProductWastesDeletions>();
-                config.CreateMap<QgEntity, QgsDeletions>();
-                config.CreateMap<RentedPlaceEntity, RentedPlacesDeletions>();
-                config.CreateMap<SupplierEntity, SuppliersDeletions>();
             });
             return mappingConfig;
         }

@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using MaisLocacoes.WebApi._3_Repository.v1.DeletedEntity;
-using MaisLocacoes.WebApi._3_Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
@@ -16,20 +14,17 @@ namespace Service.v1.Services
     {
         private readonly IClientRepository _clientRepository;
         private readonly IAddressService _addressService;
-        private readonly IDeletionsRepository _deletionsRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ClientService(IClientRepository clientRepository,
             IMapper mapper,
             IAddressService addressService,
-            IDeletionsRepository deletionsRepository,
             IHttpContextAccessor httpContextAccessor)
         {
             _clientRepository = clientRepository;
             _mapper = mapper;
             _addressService = addressService;
-            _deletionsRepository = deletionsRepository;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -187,19 +182,8 @@ namespace Service.v1.Services
                 else return false;
         }
 
-        public async Task<bool> DeleteById(int id)
-        {
-                var clientEntity = await _clientRepository.GetById(id) ??
-                    throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
-
-                var clientForDelete = _mapper.Map<ClientsDeletions>(clientEntity);
-                clientForDelete.DeletedAt = System.DateTime.UtcNow;
-                clientForDelete.DeletedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-
-            await _deletionsRepository.CreateClientsDeletions(clientForDelete);
-
-                if (await _deletionsRepository.DeleteClient(clientEntity) > 0) return true;
-                else return false;
-        }
+        //public async Task<bool> DeleteById(int id)
+        //{
+        //}
     }
 }
