@@ -1,4 +1,6 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using Repository.v1.Repository;
 using Service.v1.IServices;
@@ -18,17 +20,32 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //    var companyTuitionForDelete = await _companyTuitionRepository.GetById(id) ??
-        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+        public Task<CompanyTuitionResponse> CreateCompanyTuition(CompanyTuitionRequest companyTuitionRequest)
+        {
+            throw new NotImplementedException();
+        }
 
-        //    companyTuitionForDelete.Deleted = true;
-        //    companyTuitionForDelete.UpdatedAt = System.DateTime.UtcNow;
-        //    companyTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+        public Task<CompanyTuitionResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
 
-        //    if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;
-        //    else return false;
-        //}
+        public Task<bool> UpdateCompanyTuition(CompanyTuitionRequest companyTuitionRequest, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> DeleteById(int id)
+        {
+            var companyTuitionForDelete = await _companyTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+            companyTuitionForDelete.Deleted = true;
+            companyTuitionForDelete.UpdatedAt = System.DateTime.UtcNow;
+            companyTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

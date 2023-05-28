@@ -1,8 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using System.Net;
 
 namespace Repository.v1.Repository
 {
@@ -13,6 +12,21 @@ namespace Repository.v1.Repository
         public ProductTuitionRepository(PostgreSqlContext context)
         {
             _context = context;
+        }
+
+        public async Task<ProductTuitionEntity> CreateProductTuition(ProductTuitionEntity productTuitionEntity)
+        {
+            await _context.ProductTuitions.AddAsync(productTuitionEntity);
+            await _context.SaveChangesAsync();
+            return productTuitionEntity;
+        }
+
+        public async Task<ProductTuitionEntity> GetById(int id) => await _context.ProductTuitions.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+
+        public async Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate)
+        {
+            _context.ProductTuitions.Update(productTuitionForUpdate);
+            return await _context.SaveChangesAsync();
         }
     }
 }

@@ -42,17 +42,17 @@ namespace Service.v1.Services
             return productTypeResponse;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //    var productTypeForDelete = await _productTypeRepository.GetById(id) ??
-        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+        public async Task<bool> DeleteById(int id)
+        {
+            var productTypeForDelete = await _productTypeRepository.GetById(id) ??
+                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
-        //    productTypeForDelete.Deleted = true;
-        //    productTypeForDelete.UpdatedAt = System.DateTime.UtcNow;
-        //    productTypeForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTypeForDelete.Deleted = true;
+            productTypeForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productTypeForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-        //    if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;
-        //    else return false;
-        //}
+            if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

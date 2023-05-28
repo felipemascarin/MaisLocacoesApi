@@ -1,8 +1,7 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
-using System.Net;
 
 namespace Service.v1.Services
 {
@@ -16,6 +15,21 @@ namespace Service.v1.Services
         {
             _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public Task<RentedPlaceResponse> CreateRentedPlace(RentedPlaceRequest rentedPlaceRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<RentedPlaceResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> UpdateRentedPlace(RentedPlaceRequest rentedPlaceRequest, int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,9 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using System.Net;
 
 namespace Repository.v1.Repository
 {
@@ -27,5 +25,10 @@ namespace Repository.v1.Repository
 
         public async Task<bool> ProductTypeExists(int id) => await _context.ProductTypes.AnyAsync(p => p.Id == id && p.Deleted == false);
 
+        public async Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate)
+        {
+            _context.ProductTypes.Update(productTypeForUpdate);
+            return await _context.SaveChangesAsync();
+        }
     }
 }

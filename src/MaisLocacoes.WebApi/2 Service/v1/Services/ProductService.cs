@@ -109,17 +109,17 @@ namespace Service.v1.Services
             else return false;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //    var productForDelete = await _productRepository.GetById(id) ??
-        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+        public async Task<bool> DeleteById(int id)
+        {
+            var productForDelete = await _productRepository.GetById(id) ??
+                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
-        //    productForDelete.Deleted = true;
-        //    productForDelete.UpdatedAt = System.DateTime.UtcNow;
-        //    productForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productForDelete.Deleted = true;
+            productForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-        //    if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
-        //    else return false;
-        //}
+            if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

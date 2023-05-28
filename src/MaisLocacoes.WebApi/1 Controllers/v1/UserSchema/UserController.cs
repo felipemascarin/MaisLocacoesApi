@@ -146,12 +146,5 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
-
-        //[Authorize]
-        //[TokenValidationDataBase]
-        //[HttpDelete("{email}")]
-        //public async Task<IActionResult> DeleteByEmail(string email)
-        //{
-        //}
     }
 }

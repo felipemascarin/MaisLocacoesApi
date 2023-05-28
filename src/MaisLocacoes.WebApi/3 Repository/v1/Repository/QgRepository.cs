@@ -1,7 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using System.Net;
 
 namespace Repository.v1.Repository
 {
@@ -12,6 +12,21 @@ namespace Repository.v1.Repository
         public QgRepository(PostgreSqlContext context)
         {
             _context = context;
+        }
+
+        public async Task<QgEntity> CreateQg(QgEntity qgEntity)
+        {
+            await _context.Qgs.AddAsync(qgEntity);
+            await _context.SaveChangesAsync();
+            return qgEntity;
+        }
+
+        public async Task<QgEntity> GetById(int id) => await _context.Qgs.FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+
+        public async Task<int> UpdateQg(QgEntity qgForUpdate)
+        {
+            _context.Qgs.Update(qgForUpdate);
+            return await _context.SaveChangesAsync();
         }
     }
 }

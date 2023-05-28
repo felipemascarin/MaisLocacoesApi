@@ -17,17 +17,17 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        //public async Task<bool> DeleteById(int id)
-        //{
-        //    var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
-        //        throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+        public async Task<bool> DeleteById(int id)
+        {
+            var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
+                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
-        //    companyWasteForDelete.Deleted = true;
-        //    companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow;
-        //    companyWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyWasteForDelete.Deleted = true;
+            companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow;
+            companyWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-        //    if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;
-        //    else return false;
-        //}
+            if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;
+            else return false;
+        }
     }
 }

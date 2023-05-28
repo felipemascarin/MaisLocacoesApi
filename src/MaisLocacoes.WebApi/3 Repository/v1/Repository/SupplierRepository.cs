@@ -1,7 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using System.Net;
 
 namespace Repository.v1.Repository
 {
@@ -12,6 +12,21 @@ namespace Repository.v1.Repository
         public SupplierRepository(PostgreSqlContext context)
         {
             _context = context;
+        }
+
+        public async Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity)
+        {
+            await _context.Suppliers.AddAsync(supplierEntity);
+            await _context.SaveChangesAsync();
+            return supplierEntity;
+        }
+
+        public async Task<SupplierEntity> GetById(int id) => await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
+
+        public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
+        {
+            _context.Suppliers.Update(supplierForUpdate);
+            return await _context.SaveChangesAsync();
         }
     }
 }
