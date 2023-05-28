@@ -108,7 +108,7 @@ namespace Service.v1.Services
         public async Task<bool> DeleteById(int id)
         {
             var rentForDelete = await _rentRepository.GetById(id) ??
-                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+                throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             rentForDelete.Deleted = true;
             rentForDelete.UpdatedAt = System.DateTime.UtcNow;

@@ -109,10 +109,23 @@ namespace Service.v1.Services
             else return false;
         }
 
+        public async Task<bool> UpdateStatus(string status, int id)
+        {
+            var productForUpdate = await _productRepository.GetById(id) ??
+                    throw new HttpRequestException("produto não encontrado", null, HttpStatusCode.NotFound);
+
+            productForUpdate.Status = status;
+            productForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
+            else return false;
+        }
+
         public async Task<bool> DeleteById(int id)
         {
             var productForDelete = await _productRepository.GetById(id) ??
-                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+                throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             productForDelete.Deleted = true;
             productForDelete.UpdatedAt = System.DateTime.UtcNow;

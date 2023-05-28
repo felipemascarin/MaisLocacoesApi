@@ -15,7 +15,8 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             RuleFor(rentedPlace => rentedPlace.RentId)
                .Must(rentId => int.TryParse(rentId.ToString(), out var result) &&
                 result > 0)
-               .WithMessage("Id da locação deve ser um número inteiro maior que 0");
+               .WithMessage("Id da locação não é obrigatório, mas se inserido deve ser um número inteiro maior que 0")
+               .When(rentedPlace => rentedPlace.RentId != null);
 
             RuleFor(qg => qg.Latitude)
                 .Must(latitude => double.TryParse(latitude.ToString(), out var result))

@@ -21,7 +21,7 @@ namespace Repository.v1.Repository
             return rentedPlaceEntity;
         }
 
-        public async Task<RentedPlaceEntity> GetById(int id) => await _context.RentedPlaces.FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
+        public async Task<RentedPlaceEntity> GetById(int id) => await _context.RentedPlaces.FirstOrDefaultAsync(r => r.Id == id);
 
         public async Task<int> UpdateRentedPlace(RentedPlaceEntity rentedPlaceForUpdate)
         {

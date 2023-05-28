@@ -15,6 +15,8 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string Type { get; set; }
 
+        public bool IsManyParts { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
@@ -26,10 +28,6 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? UpdatedBy { get; set; }
-
-        public string? UpdatedByanderson{ get; set; }
-
-        public bool IsManyParts { get; set; }
 
         public bool? Deleted { get; set; }
 

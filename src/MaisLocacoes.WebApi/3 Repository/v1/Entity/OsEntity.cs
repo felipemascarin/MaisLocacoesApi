@@ -32,6 +32,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? Description { get; set; }
 
+        [StringLength(1000)]
+        [Column(TypeName = "character varying(1000)")]
+        public string? DeliveryObservation { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
@@ -43,10 +47,6 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? UpdatedBy { get; set; }
-
-        [StringLength(1000)]
-        [Column(TypeName = "character varying(1000)")]
-        public string? DeliveryObservation { get; set; }
 
         public bool? Deleted { get; set; }
     }

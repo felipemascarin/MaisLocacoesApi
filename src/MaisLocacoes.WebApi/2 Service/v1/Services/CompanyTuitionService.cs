@@ -33,22 +33,39 @@ namespace Service.v1.Services
 
             companyTuitionEntity = await _companyTuitionRepository.CreateCompanyTuition(companyTuitionEntity);
 
-            var companyTuitionResponse = _mapper.Map<companyTuitionResponse>(companyTuitionEntity);
+            var companyTuitionResponse = _mapper.Map<CompanyTuitionResponse>(companyTuitionEntity);
 
             return companyTuitionResponse;
         }
 
         public async Task<CompanyTuitionResponse> GetById(int id)
         {
-            throw new NotImplementedException();
+            var companyTuitionEntity = await _companyTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+            var companyTuitionResponse = _mapper.Map<CompanyTuitionResponse>(companyTuitionEntity);
+
+            return companyTuitionResponse;
         }
 
         public async Task<bool> UpdateCompanyTuition(CompanyTuitionRequest companyTuitionRequest, int id)
         {
-            throw new NotImplementedException();
+            var companyTuitionForUpdate = await _companyTuitionRepository.GetById(id) ??
+               throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+
+            companyTuitionForUpdate.AsaasNumber = companyTuitionRequest.AsaasNumber;
+            companyTuitionForUpdate.TuitionNumber = companyTuitionRequest.TuitionNumber;
+            companyTuitionForUpdate.Value = companyTuitionRequest.Value;
+            companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
+            companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate;
+            companyTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate) > 0) return true;
+            else return false;
         }
 
-        public async async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(int id)
         {
             var companyTuitionForDelete = await _companyTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);

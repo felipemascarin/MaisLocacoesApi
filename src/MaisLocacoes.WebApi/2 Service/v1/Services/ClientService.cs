@@ -117,7 +117,7 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateClient(ClientRequest clientRequest, int id)
         {
-                var clientForUpdate = await _clientRepository.GetById(id) ??
+            var clientForUpdate = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             if (!string.IsNullOrEmpty(clientRequest.Cnpj))

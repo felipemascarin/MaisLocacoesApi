@@ -21,6 +21,8 @@ namespace Repository.v1.Repository
             return productTypeEntity;
         }
 
+        public async Task<ProductTypeEntity> GetById(int id) => await _context.ProductTypes.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+
         public async Task<bool> ProductTypeExists(string type) => await _context.ProductTypes.AnyAsync(p => p.Type.ToLower() == type.ToLower() && p.Deleted == false);
 
         public async Task<bool> ProductTypeExists(int id) => await _context.ProductTypes.AnyAsync(p => p.Id == id && p.Deleted == false);

@@ -1,7 +1,10 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+﻿using AutoMapper;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -11,33 +14,59 @@ namespace Service.v1.Services
     {
         private readonly ICompanyWasteRepository _companyWasteRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMapper _mapper;
 
         public CompanyWasteService(ICompanyWasteRepository companyWasteRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IMapper mapper)
         {
             _companyWasteRepository = companyWasteRepository;
             _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
         public async Task<CompanyWasteResponse> CreateCompanyWaste(CompanyWasteRequest companyWasteRequest)
         {
-            throw new NotImplementedException();
+            var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
+
+            companyWasteEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            companyWasteEntity = await _companyWasteRepository.CreateCompanyWaste(companyWasteEntity);
+
+            var companyWasteResponse = _mapper.Map<CompanyWasteResponse>(companyWasteEntity);
+
+            return companyWasteResponse;
         }
 
         public async Task<CompanyWasteResponse> GetById(int id)
         {
-            throw new NotImplementedException();
+            var companyWasteEntity = await _companyWasteRepository.GetById(id) ??
+                throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
+
+            var companyWasteResponse = _mapper.Map<CompanyWasteResponse>(companyWasteEntity);
+
+            return companyWasteResponse;
         }
 
         public async Task<bool> UpdateCompanyWaste(CompanyWasteRequest companyWasteRequest, int id)
         {
-            throw new NotImplementedException();
+            var companyWasteForUpdate = await _companyWasteRepository.GetById(id) ??
+               throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
+
+            companyWasteForUpdate.Description = companyWasteRequest.Description;
+            companyWasteForUpdate.Value = companyWasteRequest.Value;
+            companyWasteForUpdate.Date = companyWasteRequest.Date;
+            companyWasteForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyWasteForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
+            else return false;
         }
 
-        public async async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(int id)
         {
             var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
-                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+                throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             companyWasteForDelete.Deleted = true;
             companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow;

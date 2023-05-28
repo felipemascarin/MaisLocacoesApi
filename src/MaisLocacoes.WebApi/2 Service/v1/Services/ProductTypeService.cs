@@ -44,18 +44,41 @@ namespace Service.v1.Services
 
         public async Task<ProductTypeResponse> GetById(int id)
         {
-            throw new NotImplementedException();
+            var productTypeEntity = await _productTypeRepository.GetById(id) ??
+                throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
+
+            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productTypeEntity);
+
+            return productTypeResponse;
         }
 
         public async Task<bool> UpdateProductType(ProductTypeRequest productTypeRequest, int id)
         {
-            throw new NotImplementedException();
+            var productTypeForUpdate = await _productTypeRepository.GetById(id) ??
+                throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
+
+            if (productTypeRequest.Type.ToLower() != productTypeForUpdate.Type.ToLower())
+            {
+                var existsproductType = await _productTypeRepository.ProductTypeExists(productTypeRequest.Type);
+                if (existsproductType)
+                {
+                    throw new HttpRequestException("Não foi possível alterar, já existe esse tipo de produto", null, HttpStatusCode.BadRequest);
+                }
+            }
+
+            productTypeForUpdate.Type = productTypeRequest.Type;
+            productTypeForUpdate.IsManyParts = productTypeRequest.IsManyParts;
+            productTypeForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTypeForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _productTypeRepository.UpdateProductType(productTypeForUpdate) > 0) return true;
+            else return false;
         }
 
-        public async async Task<bool> DeleteById(int id)
+        public async Task<bool> DeleteById(int id)
         {
             var productTypeForDelete = await _productTypeRepository.GetById(id) ??
-                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
+                throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
             productTypeForDelete.Deleted = true;
             productTypeForDelete.UpdatedAt = System.DateTime.UtcNow;

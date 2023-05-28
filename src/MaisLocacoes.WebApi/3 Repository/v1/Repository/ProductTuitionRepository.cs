@@ -23,6 +23,8 @@ namespace Repository.v1.Repository
 
         public async Task<ProductTuitionEntity> GetById(int id) => await _context.ProductTuitions.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
 
+        public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode) => await _context.ProductTuitions.AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId && p.ProductCode.ToLower() == productCode.ToLower() && p.Deleted == false);
+
         public async Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate)
         {
             _context.ProductTuitions.Update(productTuitionForUpdate);

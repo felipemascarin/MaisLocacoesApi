@@ -8,7 +8,6 @@ namespace Service.v1.IServices
         Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest);
         Task<ProductTuitionResponse> GetById(int id);
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
-        Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
     }
 }
