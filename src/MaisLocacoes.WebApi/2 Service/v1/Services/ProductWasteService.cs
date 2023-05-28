@@ -1,4 +1,6 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using Repository.v1.Repository;
 using Service.v1.IServices;
@@ -16,6 +18,21 @@ namespace Service.v1.Services
         {
             _productWasteRepository = productWasteRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<ProductWasteResponse> CreateProductWaste(ProductWasteRequest productWasteRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ProductWasteResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateProductWaste(ProductWasteRequest productWasteRequest, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteById(int id)

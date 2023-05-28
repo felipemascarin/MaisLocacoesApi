@@ -1,6 +1,7 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -16,6 +17,21 @@ namespace Service.v1.Services
         {
             _qgRepository = qgRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<QgResponse> CreateQg(QgRequest qgRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<QgResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateQg(QgRequest qgRequest, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteById(int id)

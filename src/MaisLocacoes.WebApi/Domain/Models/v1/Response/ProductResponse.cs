@@ -2,6 +2,7 @@
 {
     public class ProductResponse
     {
+        public int Id { get; set; }
         public string Code { get; set; }
         public string ProductType { get; set; }
         public int? SupplierId { get; set; }

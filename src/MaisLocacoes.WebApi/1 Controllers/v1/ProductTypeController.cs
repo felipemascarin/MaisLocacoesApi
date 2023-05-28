@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -61,6 +60,55 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productType = await _productTypeService.GetById(id);
+                return Ok(productType);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProductType([FromBody] ProductTypeRequest productTypeRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateProductType {@dateTime} {@productTypeRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTypeRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedProductType = _productTypeValidator.Validate(productTypeRequest);
+
+                if (!validatedProductType.IsValid)
+                {
+                    var productTypeValidationErros = new List<string>();
+                    validatedProductType.Errors.ForEach(error => productTypeValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(productTypeValidationErros);
+                }
+
+                if (await _productTypeService.UpdateProductType(productTypeRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteById(int id)
         {
@@ -69,7 +117,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productTypeService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

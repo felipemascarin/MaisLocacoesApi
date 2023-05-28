@@ -1,6 +1,7 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -16,6 +17,21 @@ namespace Service.v1.Services
         {
             _supplierRepository = supplierRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<SupplierResponse> CreateSupplier(SupplierRequest supplierRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<SupplierResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateSupplier(SupplierRequest supplierRequest, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteById(int id)

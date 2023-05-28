@@ -98,7 +98,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _billService.UpdateBill(billRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -120,7 +120,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest("Insira um status válido");
 
                 if (await _billService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -139,7 +139,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _billService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

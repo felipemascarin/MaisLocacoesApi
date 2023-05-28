@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -48,7 +47,57 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedQg.Errors.ForEach(error => qgValidationErros.Add(error.ErrorMessage));
                     return BadRequest(qgValidationErros);
                 }
-                return await Task.FromResult(Ok(qgRequest));
+
+                var qgCreated = await _qgService.CreateQg(qgRequest);
+
+                return CreatedAtAction(nameof(GetById), new { id = qgCreated.Id }, qgCreated);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var qg = await _qgService.GetById(id);
+                return Ok(qg);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateQg([FromBody] QgRequest qgRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(qgRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedQg = _qgValidator.Validate(qgRequest);
+
+                if (!validatedQg.IsValid)
+                {
+                    var qgValidationErros = new List<string>();
+                    validatedQg.Errors.ForEach(error => qgValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(qgValidationErros);
+                }
+
+                if (await _qgService.UpdateQg(qgRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -67,7 +116,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _qgService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

@@ -42,7 +42,17 @@ namespace Service.v1.Services
             return productTypeResponse;
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<ProductTypeResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateProductType(ProductTypeRequest productTypeRequest, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async async Task<bool> DeleteById(int id)
         {
             var productTypeForDelete = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);

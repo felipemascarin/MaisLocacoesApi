@@ -1,7 +1,5 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -10,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -101,7 +98,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _rentService.UpdateRent(rentRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -123,7 +120,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest("Insira um status válido");
 
                 if (await _rentService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -142,7 +139,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _rentService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

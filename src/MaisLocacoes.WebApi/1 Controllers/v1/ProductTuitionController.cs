@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -48,7 +47,57 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedProductTuition.Errors.ForEach(error => productTuitionValidationErros.Add(error.ErrorMessage));
                     return BadRequest(productTuitionValidationErros);
                 }
-                return await Task.FromResult(Ok(productTuitionRequest));
+
+                var productTuitionCreated = await _productTuitionService.CreateProductTuition(productTuitionRequest);
+
+                return CreatedAtAction(nameof(GetById), new { id = productTuitionCreated.Id }, productTuitionCreated);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var _productTuition = await _productTuitionService.GetById(id);
+                return Ok(_productTuition);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProductTuition([FromBody] ProductTuitionRequest productTuitionRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateproductTuition {@dateTime} {@productTuitionRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedProductTuition = _productTuitionValidator.Validate(productTuitionRequest);
+
+                if (!validatedProductTuition.IsValid)
+                {
+                    var productTuitionValidationErros = new List<string>();
+                    validatedProductTuition.Errors.ForEach(error => productTuitionValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(productTuitionValidationErros);
+                }
+
+                if (await _productTuitionService.UpdateProductTuition(productTuitionRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -67,7 +116,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productTuitionService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

@@ -1,4 +1,6 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
@@ -15,6 +17,26 @@ namespace Service.v1.Services
         {
             _osRepository = osRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<OsResponse> CreateOs(OsRequest osRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<OsResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateOs(OsRequest osRequest, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateStatus(string status, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteById(int id)

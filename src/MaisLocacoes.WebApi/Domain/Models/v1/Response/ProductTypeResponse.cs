@@ -2,7 +2,7 @@
 {
     public class ProductTypeResponse
     {
-
+        public int Id { get; set; }
         public string Type { get; set; }
         public bool IsManyParts { get; set; }
         public string CreatedBy { get; set; }

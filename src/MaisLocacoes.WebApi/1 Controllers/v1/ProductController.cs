@@ -1,15 +1,13 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -23,7 +21,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductController(IProductService productService,
-            IValidator<ProductRequest> productValidator,
+        IValidator<ProductRequest> productValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
@@ -53,7 +51,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var productCreated = await _productService.CreateProduct(productRequest);
 
-                return Ok(productCreated);
+                return CreatedAtAction(nameof(GetById), new { id = productCreated.Id }, productCreated);
             }
             catch (HttpRequestException ex)
             {
@@ -119,7 +117,29 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _productService.UpdateProduct(productRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o produto"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("id/{id}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email}", System.DateTime.Now, status, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (!ProductStatus.ProductStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
+
+                if (await _productService.UpdateStatus(status, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -138,7 +158,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -48,7 +47,57 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedProductWaste.Errors.ForEach(error => productWasteValidationErros.Add(error.ErrorMessage));
                     return BadRequest(productWasteValidationErros);
                 }
-                return await Task.FromResult(Ok(productWasteRequest));
+
+                var productWasteCreated = await _productWasteService.CreateProductWaste(productWasteRequest);
+
+                return CreatedAtAction(nameof(GetById), new { id = productWasteCreated.Id }, productWasteCreated);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var companyWaste = await _productWasteService.GetById(id);
+                return Ok(companyWaste);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProductWaste([FromBody] ProductWasteRequest productWasteRequest, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateProductWaste {@dateTime} {@ProductWasteRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productWasteRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var validatedProductWaste = _productWasteValidator.Validate(productWasteRequest);
+
+                if (!validatedProductWaste.IsValid)
+                {
+                    var productWasteValidationErros = new List<string>();
+                    validatedProductWaste.Errors.ForEach(error => productWasteValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(productWasteValidationErros);
+                }
+
+                if (await _productWasteService.UpdateProductWaste(productWasteRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {
@@ -67,7 +116,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productWasteService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar a fatura"));
+                else return StatusCode(500, new GenericException("Não foi possível deletar"));
             }
             catch (HttpRequestException ex)
             {

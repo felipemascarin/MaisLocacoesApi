@@ -1,4 +1,6 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
@@ -17,7 +19,22 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task<CompanyWasteResponse> CreateCompanyWaste(CompanyWasteRequest companyWasteRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<CompanyWasteResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateCompanyWaste(CompanyWasteRequest companyWasteRequest, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async async Task<bool> DeleteById(int id)
         {
             var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);

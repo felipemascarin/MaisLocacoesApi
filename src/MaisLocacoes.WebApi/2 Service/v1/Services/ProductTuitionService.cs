@@ -1,4 +1,6 @@
-﻿using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using Repository.v1.Repository;
 using Service.v1.IServices;
@@ -16,6 +18,26 @@ namespace Service.v1.Services
         {
             _productTuitionRepository = productTuitionRepository;
             _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<ProductTuitionResponse> GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> UpdateStatus(string status, int id)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<bool> DeleteById(int id)

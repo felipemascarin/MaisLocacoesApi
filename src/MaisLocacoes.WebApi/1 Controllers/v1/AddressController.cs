@@ -96,7 +96,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _addressService.UpdateAddress(addressRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o endereço"));
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
             {

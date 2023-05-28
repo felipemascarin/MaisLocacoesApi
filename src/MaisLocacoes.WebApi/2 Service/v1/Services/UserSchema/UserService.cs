@@ -122,9 +122,5 @@ namespace Service.v1.Services.UserSchema
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
             else return false;
         }
-
-        //public async Task<bool> DeleteByEmail(string email)
-        //{
-        //}
     }
 }

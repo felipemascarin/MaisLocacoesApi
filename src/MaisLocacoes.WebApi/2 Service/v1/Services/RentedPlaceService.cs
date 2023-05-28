@@ -17,17 +17,17 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public Task<RentedPlaceResponse> CreateRentedPlace(RentedPlaceRequest rentedPlaceRequest)
+        public async Task<RentedPlaceResponse> CreateRentedPlace(RentedPlaceRequest rentedPlaceRequest)
         {
             throw new NotImplementedException();
         }
 
-        public Task<RentedPlaceResponse> GetById(int id)
+        public async Task<RentedPlaceResponse> GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateRentedPlace(RentedPlaceRequest rentedPlaceRequest, int id)
+        public async Task<bool> UpdateRentedPlace(RentedPlaceRequest rentedPlaceRequest, int id)
         {
             throw new NotImplementedException();
         }

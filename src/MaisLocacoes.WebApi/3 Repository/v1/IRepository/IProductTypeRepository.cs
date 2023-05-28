@@ -7,5 +7,6 @@ namespace Repository.v1.IRepository
         Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity);
         Task<bool> ProductTypeExists(string type);
         Task<bool> ProductTypeExists(int id);
+        Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate);
     }
 }
