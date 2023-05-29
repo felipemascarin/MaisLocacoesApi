@@ -68,6 +68,34 @@ namespace Service.v1.Services
                 return clientResponse;
         }
 
+        public async Task<ClientResponse> GetByCpf(string cpf)
+        {
+            var clientEntity = await _clientRepository.GetByCpf(cpf) ??
+                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
+
+            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
+
+            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+
+            clientResponse.Address = clientAddressResponse;
+
+            return clientResponse;
+        }
+
+        public async Task<ClientResponse> GetByCnpj(string cnpj)
+        {
+            var clientEntity = await _clientRepository.GetByCnpj(cnpj) ??
+                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
+
+            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
+
+            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+
+            clientResponse.Address = clientAddressResponse;
+
+            return clientResponse;
+        }
+
         public async Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query)
         {
                 if (items <= 0 || page <= 0)

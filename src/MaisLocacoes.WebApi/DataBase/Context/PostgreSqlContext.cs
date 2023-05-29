@@ -339,7 +339,7 @@ namespace MaisLocacoes.WebApi.Context
         public void CreateSchema(string schemaName)
         {
             this.Database.ExecuteSqlRaw(NewSchemaSqlCreator.SqlQueryForNewSchema(schemaName));
-            this.Database.ExecuteSqlRaw(NewSchemaSqlCreator.SqlQueryForAtualizeSchemasTablesAndFks());
+            this.Database.ExecuteSqlRaw(NewSchemaSqlCreator.SqlQueryForAtualizeSchemasTablesAndFks(schemaName));
         }
     }
 }

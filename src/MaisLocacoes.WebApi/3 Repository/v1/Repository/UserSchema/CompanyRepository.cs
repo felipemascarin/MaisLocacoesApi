@@ -16,9 +16,9 @@ namespace Repository.v1.Repository.UserSchema
 
         public async Task<CompanyEntity> CreateCompany(CompanyEntity companyEntity)
         {
+            _context.CreateSchema(companyEntity.Cnpj);
             await _context.Companies.AddAsync(companyEntity);
             await _context.SaveChangesAsync();
-            _context.CreateSchema(companyEntity.Cnpj);
             return companyEntity;
         }
 

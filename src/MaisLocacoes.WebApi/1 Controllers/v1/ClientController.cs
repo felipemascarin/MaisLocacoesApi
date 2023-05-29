@@ -63,7 +63,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
@@ -71,6 +71,44 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 var client = await _clientService.GetById(id);
+                return Ok(client);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("cpf/{cpf}")]
+        public async Task<IActionResult> GetByCpf(string cpf)
+        {
+            try
+            {
+                _logger.LogInformation("GetBycpf {@dateTime} cpf:{@cpf} User:{@email}", System.DateTime.Now, cpf, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var client = await _clientService.GetByCpf(cpf);
+                return Ok(client);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("cnpj/{cnpj}")]
+        public async Task<IActionResult> GetByCnpj(string cnpj)
+        {
+            try
+            {
+                _logger.LogInformation("GetBycnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var client = await _clientService.GetByCnpj(cnpj);
                 return Ok(client);
             }
             catch (HttpRequestException ex)
