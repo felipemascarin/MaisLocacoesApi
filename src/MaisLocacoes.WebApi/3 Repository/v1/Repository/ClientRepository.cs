@@ -23,7 +23,7 @@ namespace Repository.v1.Repository
             return clientEntity;
         }
 
-        public async Task<ClientEntity> GetByCpf(string cpf) => await _context.Clients.FirstOrDefaultAsync(c => c.Cpf == cpf && c.Deleted == false);
+        public async Task<ClientEntity> GetByCpf(string cpf) => await _context.Clients.FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
         
         public async Task<ClientEntity> GetByCnpj(string cnpj) => await _context.Clients.FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
 
