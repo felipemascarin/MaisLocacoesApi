@@ -39,7 +39,7 @@ namespace MaisLocacoes.WebApi.Context
 				  fk_exists boolean := false;
 				BEGIN
 				  
-				  atualschemaname_schema_name := {newSchemaName};
+				  atualschemaname_schema_name := '{newSchemaName}';
 
 				  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename != '__EFMigrationsHistory')
 					LOOP
