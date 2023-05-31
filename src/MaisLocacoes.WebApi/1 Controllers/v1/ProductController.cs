@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -90,6 +91,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var product = await _productService.GetByTypeCode(typeId, code);
                 return Ok(product);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("items/{items}/page/{page}")]
+        public async Task<IActionResult> GetProductsByPage(int items, int page, [FromQuery(Name = "query")] string query)
+        {
+            try
+            {
+                _logger.LogInformation("GetProductsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email}", System.DateTime.Now, items, page, query, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productsList = await _productService.GetProductsByPage(items, page, query);
+                return Ok(productsList);
             }
             catch (HttpRequestException ex)
             {

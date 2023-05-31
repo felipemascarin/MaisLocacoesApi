@@ -118,7 +118,6 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             }
         }
 
-
         [Authorize]
         [TokenValidationDataBase]
         [HttpGet("items/{items}/page/{page}")]

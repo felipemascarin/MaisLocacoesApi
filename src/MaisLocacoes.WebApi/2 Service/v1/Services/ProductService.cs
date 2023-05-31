@@ -30,11 +30,8 @@ namespace Service.v1.Services
 
         public async Task<ProductResponse> CreateProduct(ProductRequest productRequest)
         {
-            var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
-            if (!existsProductType)
-            {
+            var existsProductType = await _productTypeRepository.GetById(productRequest.ProductTypeId) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
-            }
 
             var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId, productRequest.Code);
             if (existsProduct != null)
@@ -42,11 +39,17 @@ namespace Service.v1.Services
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
+            productEntity.ProductTypeEntity = existsProductType;
+
             productEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
+            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productEntity.ProductTypeEntity);
+
             var productResponse = _mapper.Map<ProductResponse>(productEntity);
+
+            productResponse.ProductType = productTypeResponse;
 
             return productResponse;
         }
@@ -56,7 +59,11 @@ namespace Service.v1.Services
             var productEntity = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
+            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productEntity.ProductTypeEntity);
+
             var productResponse = _mapper.Map<ProductResponse>(productEntity);
+
+            productResponse.ProductType = productTypeResponse;
 
             return productResponse;
         }
@@ -66,9 +73,32 @@ namespace Service.v1.Services
             var productEntity = await _productRepository.GetByTypeCode(typeId, code) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
+            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productEntity.ProductTypeEntity);
+
             var productResponse = _mapper.Map<ProductResponse>(productEntity);
 
+            productResponse.ProductType = productTypeResponse;
+
             return productResponse;
+        }
+
+        public async Task<IEnumerable<ProductResponse>> GetProductsByPage(int items, int page, string query)
+        {
+            if (items <= 0 || page <= 0)
+                throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
+
+            var productsEntityList = await _productRepository.GetProductsByPage(items, page, query);
+
+            var productsEntityListLenght = productsEntityList.ToList().Count;
+
+            var productsResponseList = _mapper.Map<IEnumerable<ProductResponse>>(productsEntityList);
+
+            for (int i = 0; i < productsEntityListLenght; i++)
+            {
+                productsResponseList.ElementAt(i).ProductType = _mapper.Map<ProductTypeResponse>(productsEntityList.ElementAt(i).ProductTypeEntity);
+            }
+
+            return productsResponseList;
         }
 
         public async Task<bool> UpdateProduct(ProductRequest productRequest, int id)

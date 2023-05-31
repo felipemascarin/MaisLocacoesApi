@@ -4,7 +4,6 @@
     {
         public int Id { get; set; }
         public string Code { get; set; }
-        public string ProductType { get; set; }
         public int? SupplierId { get; set; }
         public string Description { get; set; }
         public DateTime? DateBought { get; set; }
@@ -17,5 +16,6 @@
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public ProductTypeResponse ProductType { get; set; }
     }
 }

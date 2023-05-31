@@ -24,7 +24,7 @@ namespace MaisLocacoes.WebApi.Utils.Annotations
             {
                 if (!context.HttpContext.Request.Headers.ContainsKey("Authorization"))
                 {
-                    context.Result = new ForbidResult();
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
 
@@ -36,7 +36,7 @@ namespace MaisLocacoes.WebApi.Utils.Annotations
 
                 if (!tokenExists)
                 {
-                    context.Result = new ForbidResult();
+                    context.Result = new UnauthorizedResult();
                     return;
                 }
             }
