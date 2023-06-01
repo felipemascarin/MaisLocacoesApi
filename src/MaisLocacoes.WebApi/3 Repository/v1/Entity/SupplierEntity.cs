@@ -21,7 +21,7 @@ namespace Repository.v1.Entity
 
 
         [StringLength(14)]
-        [Column(TypeName = "char")]
+        [Column(TypeName = "character varying(14)")]
         public string? Cnpj { get; set; }
 
         [StringLength(255)]
