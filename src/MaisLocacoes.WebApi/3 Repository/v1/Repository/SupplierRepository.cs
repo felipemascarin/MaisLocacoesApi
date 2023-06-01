@@ -23,6 +23,8 @@ namespace Repository.v1.Repository
 
         public async Task<SupplierEntity> GetById(int id) => await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
 
+        public async Task<IEnumerable<SupplierEntity>> GetAll() => await _context.Suppliers.Where(s => s.Deleted == false).ToListAsync();
+
         public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
         {
             _context.Suppliers.Update(supplierForUpdate);

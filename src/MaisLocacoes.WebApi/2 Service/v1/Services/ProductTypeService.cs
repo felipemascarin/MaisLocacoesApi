@@ -52,6 +52,15 @@ namespace Service.v1.Services
             return productTypeResponse;
         }
 
+        public async Task<IEnumerable<ProductTypeResponse>> GetAll()
+        {
+            var productsTypeEntityList = await _productTypeRepository.GetAll();
+
+            var productsTypeResponseList = _mapper.Map<IEnumerable<ProductTypeResponse>>(productsTypeEntityList);
+
+            return productsTypeResponseList;
+        }
+
         public async Task<bool> UpdateProductType(ProductTypeRequest productTypeRequest, int id)
         {
             var productTypeForUpdate = await _productTypeRepository.GetById(id) ??

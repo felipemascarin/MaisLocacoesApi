@@ -79,6 +79,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet()]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productTypes = await _productTypeService.GetAll();
+                return Ok(productTypes);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProductType([FromBody] ProductTypeRequest productTypeRequest, int id)
         {

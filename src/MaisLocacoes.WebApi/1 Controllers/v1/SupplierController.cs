@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -70,6 +71,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var supplier = await _supplierService.GetById(id);
                 return Ok(supplier);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet()]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var suppliers = await _supplierService.GetAll();
+                return Ok(suppliers);
             }
             catch (HttpRequestException ex)
             {

@@ -27,6 +27,8 @@ namespace Repository.v1.Repository
 
         public async Task<bool> ProductTypeExists(int id) => await _context.ProductTypes.AnyAsync(p => p.Id == id && p.Deleted == false);
 
+        public async Task<IEnumerable<ProductTypeEntity>> GetAll() => await _context.ProductTypes.Where(p => p.Deleted == false).ToListAsync();
+
         public async Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate)
         {
             _context.ProductTypes.Update(productTypeForUpdate);

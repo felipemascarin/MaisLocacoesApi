@@ -6,6 +6,7 @@ namespace Repository.v1.IRepository
     {
         Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity);
         Task<SupplierEntity> GetById(int id);
+        Task<IEnumerable<SupplierEntity>> GetAll();
         Task<int> UpdateSupplier(SupplierEntity supplierForUpdate);
     }
 }

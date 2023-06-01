@@ -51,6 +51,15 @@ namespace Service.v1.Services
             return supplierResponse;
         }
 
+        public async Task<IEnumerable<SupplierResponse>> GetAll()
+        {
+            var suppliersEntityList = await _supplierRepository.GetAll();
+
+            var suppliersResponseList = _mapper.Map<IEnumerable<SupplierResponse>>(suppliersEntityList);
+
+            return suppliersResponseList;
+        }
+
         public async Task<bool> UpdateSupplier(SupplierRequest supplierRequest, int id)
         {
             var supplierForUpdate = await _supplierRepository.GetById(id) ??

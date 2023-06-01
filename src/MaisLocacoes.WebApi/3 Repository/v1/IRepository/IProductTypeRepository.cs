@@ -8,6 +8,7 @@ namespace Repository.v1.IRepository
         Task<ProductTypeEntity> GetById(int id);
         Task<bool> ProductTypeExists(string type);
         Task<bool> ProductTypeExists(int id);
+        Task<IEnumerable<ProductTypeEntity>> GetAll();
         Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate);
     }
 }
