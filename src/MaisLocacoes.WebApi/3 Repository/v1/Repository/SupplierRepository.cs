@@ -21,9 +21,9 @@ namespace Repository.v1.Repository
             return supplierEntity;
         }
 
-        public async Task<SupplierEntity> GetById(int id) => await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
+        public async Task<SupplierEntity> GetById(int id) => await _context.Suppliers.Include(c => c.AddressEntity).FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
 
-        public async Task<IEnumerable<SupplierEntity>> GetAll() => await _context.Suppliers.Where(s => s.Deleted == false).ToListAsync();
+        public async Task<IEnumerable<SupplierEntity>> GetAll() => await _context.Suppliers.Include(c => c.AddressEntity).Where(s => s.Deleted == false).ToListAsync();
 
         public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
         {

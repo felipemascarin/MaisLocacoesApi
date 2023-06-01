@@ -30,13 +30,17 @@ namespace Service.v1.Services
 
         public async Task<SupplierResponse> CreateSupplier(SupplierRequest supplierRequest)
         {
+            var addressResponse = await _addressService.CreateAddress(supplierRequest.Address);
+
             var supplierEntity = _mapper.Map<SupplierEntity>(supplierRequest);
 
+            supplierEntity.AddressId = addressResponse.Id;
             supplierEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 
             var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
+            supplierResponse.Address = addressResponse;
 
             return supplierResponse;
         }
@@ -46,7 +50,11 @@ namespace Service.v1.Services
             var supplierEntity = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
+            var supplierAddressResponse = _mapper.Map<AddressResponse>(supplierEntity.AddressEntity);
+
             var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
+
+            supplierResponse.Address = supplierAddressResponse;
 
             return supplierResponse;
         }
@@ -55,7 +63,14 @@ namespace Service.v1.Services
         {
             var suppliersEntityList = await _supplierRepository.GetAll();
 
+            var suppliersEntityListLenght = suppliersEntityList.ToList().Count;
+
             var suppliersResponseList = _mapper.Map<IEnumerable<SupplierResponse>>(suppliersEntityList);
+
+            for (int i = 0; i < suppliersEntityListLenght; i++)
+            {
+                suppliersResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(suppliersEntityList.ElementAt(i).AddressEntity);
+            }
 
             return suppliersResponseList;
         }

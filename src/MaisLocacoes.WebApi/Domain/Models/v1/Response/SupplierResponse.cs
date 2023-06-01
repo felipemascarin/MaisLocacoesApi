@@ -3,7 +3,6 @@
     public class SupplierResponse
     {
         public int Id { get; set; }
-        public int AddressId { get; set; }
         public string Name { get; set; }
         public string? Cnpj { get; set; }
         public string? Email { get; set; }
@@ -13,5 +12,6 @@
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public AddressResponse Address { get; set; }
     }
 }
