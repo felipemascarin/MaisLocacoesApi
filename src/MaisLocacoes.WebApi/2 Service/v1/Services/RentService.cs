@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -65,6 +66,25 @@ namespace Service.v1.Services
             RentResponse.Address = RentAddressResponse;
 
             return RentResponse;
+        }
+
+        public async Task<IEnumerable<RentResponse>> GetRentsByPage(int items, int page, string query)
+        {
+            if (items <= 0 || page <= 0)
+                throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
+
+            var rentsEntityList = await _rentRepository.GetRentsByPage(items, page, query);
+
+            var rentsEntityListLenght = rentsEntityList.ToList().Count;
+
+            var rentsResponseList = _mapper.Map<IEnumerable<RentResponse>>(rentsEntityList);
+
+            for (int i = 0; i < rentsEntityListLenght; i++)
+            {
+                rentsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).AddressEntity);
+            }
+
+            return rentsResponseList;
         }
 
         public async Task<bool> UpdateRent(RentRequest rentRequest, int id)

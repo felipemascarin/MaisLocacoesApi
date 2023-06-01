@@ -6,8 +6,9 @@ namespace Repository.v1.IRepository
     public interface IRentRepository
     {
         Task<RentEntity> CreateRent(RentEntity rentEntity);
-        Task<bool> RentExists(int id);
         Task<RentEntity> GetById(int id);
+        Task<bool> RentExists(int id);
+        Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query);
         Task<int> UpdateRent(RentEntity rentForUpdate);
     }
 }
