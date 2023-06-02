@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Exceptions.Middleware;
 using MaisLocacoes.WebApi.IoC;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using MaisLocacoes.WebApi.Utils.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Npgsql;
 using System.Text;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,7 +42,11 @@ builder.Services.AddCors(options =>
 });
 
 //Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    //Deserialização dos requests com conversão de datas em utc
+    options.JsonSerializerOptions.Converters.Add(new DateTimeConverterUsingUtc());
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
@@ -86,20 +92,20 @@ builder.Services.AddLogging(logging =>
 //Adicionando swagger
 builder.Services.AddSwaggerGen(c =>
 {
-c.SwaggerDoc("v1", new OpenApiInfo { Title = "MaisLocacoes.WebApi", Version = "v1" });
-c.EnableAnnotations();
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "MaisLocacoes.WebApi", Version = "v1" });
+    c.EnableAnnotations();
     // Configuração de autenticação Bearer
-c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-{
-Description = "JWT Authorization header using the Bearer scheme",
-Name = "Authorization",
-In = ParameterLocation.Header,
-Type = SecuritySchemeType.ApiKey,
-Scheme = "Bearer",
-BearerFormat = "JWT"
-});
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header using the Bearer scheme",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT"
+    });
 
-c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
 {
         {
             new OpenApiSecurityScheme
