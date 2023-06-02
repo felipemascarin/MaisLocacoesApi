@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -68,8 +69,46 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var companyWaste = await _productWasteService.GetById(id);
-                return Ok(companyWaste);
+                var productWaste = await _productWasteService.GetById(id);
+                return Ok(productWaste);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("allproducts/{id}")]
+        public async Task<IActionResult> GetAllById(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productWaste = await _productWasteService.GetAllById(id);
+                return Ok(productWaste);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("items/{items}/page/{page}")]
+        public async Task<IActionResult> GetProductWastesByPage(int items, int page, [FromQuery(Name = "query")] string query)
+        {
+            try
+            {
+                _logger.LogInformation("GetProductWastesByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email}", System.DateTime.Now, items, page, query, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productWastesList = await _productWasteService.GetProductWastesByPage(items, page, query);
+                return Ok(productWastesList);
             }
             catch (HttpRequestException ex)
             {

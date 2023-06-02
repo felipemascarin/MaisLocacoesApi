@@ -275,6 +275,12 @@ namespace MaisLocacoes.WebApi.Context
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.Rents));
 
+            modelBuilder.Entity<ProductEntity>()
+            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
+            .WithMany(one => one.Products)
+            .HasForeignKey(many => new { many.ProductTypeId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
+
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
             .WithMany(one => one.ProductTuitions)
@@ -287,11 +293,11 @@ namespace MaisLocacoes.WebApi.Context
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Rents));
 
-            modelBuilder.Entity<ProductEntity>()
-            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
-            .WithMany(one => one.Products)
-            .HasForeignKey(many => new { many.ProductTypeId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
+            modelBuilder.Entity<ProductWasteEntity>()
+            .HasOne<ProductEntity>(many => many.ProductEntity)
+            .WithMany(one => one.ProductWastes)
+            .HasForeignKey(many => new { many.ProductId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductWastes, TableNameEnum.Products));
 
             modelBuilder.Entity<QgEntity>()
             .HasOne<AddressEntity>(many => many.AddressEntity)

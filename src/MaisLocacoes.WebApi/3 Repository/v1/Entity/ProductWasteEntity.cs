@@ -11,15 +11,8 @@ namespace Repository.v1.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(255)]
-        [Column(TypeName = "character varying(255)")]
-        public string ProductCode { get; set; }
-
-        [Required]
-        [StringLength(255)]
-        [Column(TypeName = "character varying(255)")]
-        public string ProductType { get; set; }
+        public int ProductId { get; set; }
+        public ProductEntity ProductEntity { get; set; }
 
         [Required]
         [StringLength(1000)]

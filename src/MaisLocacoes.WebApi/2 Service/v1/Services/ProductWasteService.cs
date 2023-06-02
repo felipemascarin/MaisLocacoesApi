@@ -13,20 +13,29 @@ namespace Service.v1.Services
     public class ProductWasteService : IProductWasteService
     {
         private readonly IProductWasteRepository _productWasteRepository;
+        private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public ProductWasteService(IProductWasteRepository productWasteRepository,
+            IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _productWasteRepository = productWasteRepository;
+            _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
 
         public async Task<ProductWasteResponse> CreateProductWaste(ProductWasteRequest productWasteRequest)
         {
+            var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId);
+            if (!existsproduct)
+            {
+                throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
+            }
+
             var productWasteEntity = _mapper.Map<ProductWasteEntity>(productWasteRequest);
 
             productWasteEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
@@ -48,13 +57,44 @@ namespace Service.v1.Services
             return productWasteResponse;
         }
 
+        public async Task<IEnumerable<ProductWasteResponse>> GetAllById(int id)
+        {
+            var productWastesEntityList = await _productWasteRepository.GetAllById(id);
+
+            var productWastesResponse = _mapper.Map <IEnumerable< ProductWasteResponse>>(productWastesEntityList);
+
+            return productWastesResponse;
+        }
+
+        public async Task<IEnumerable<ProductWasteResponse>> GetProductWastesByPage(int items, int page, string query)
+        {
+            if (items <= 0 || page <= 0)
+                throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
+
+            var productWastesEntityList = await _productWasteRepository.GetProductWastesByPage(items, page, query);
+
+            var productWastesEntityListLenght = productWastesEntityList.ToList().Count;
+
+            var productWastesResponseList = _mapper.Map<IEnumerable<ProductWasteResponse>>(productWastesEntityList);
+
+            return productWastesResponseList;
+        }
+
         public async Task<bool> UpdateProductWaste(ProductWasteRequest productWasteRequest, int id)
         {
             var productWasteForUpdate = await _productWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
 
-            productWasteForUpdate.ProductCode = productWasteRequest.ProductCode;
-            productWasteForUpdate.ProductType = productWasteRequest.ProductType;
+            if (productWasteRequest.ProductId != productWasteForUpdate.ProductId)
+            {
+                var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId);
+                if (!existsproduct)
+                {
+                    throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
+                }
+            }
+
+            productWasteForUpdate.ProductId = productWasteRequest.ProductId;
             productWasteForUpdate.Description = productWasteRequest.Description;
             productWasteForUpdate.Value = productWasteRequest.Value;
             productWasteForUpdate.Date = productWasteRequest.Date;
