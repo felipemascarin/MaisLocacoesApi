@@ -72,6 +72,15 @@ namespace Service.v1.Services
             return productTuitionResponse;
         }
 
+        public async Task<IEnumerable<ProductTuitionResponse>> GetAllByRentId(int rentId)
+        {
+            var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
+
+            var productTuitionResponse = _mapper.Map<IEnumerable<ProductTuitionResponse>>(productTuitionEntityList);
+
+            return productTuitionResponse;
+        }
+
         public async Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??

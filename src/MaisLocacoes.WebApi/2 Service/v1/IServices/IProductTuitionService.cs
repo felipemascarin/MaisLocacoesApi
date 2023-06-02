@@ -7,6 +7,7 @@ namespace Service.v1.IServices
     {
         Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest);
         Task<ProductTuitionResponse> GetById(int id);
+        Task<IEnumerable<ProductTuitionResponse>> GetAllByRentId(int rentId);
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
         Task<bool> DeleteById(int id);
     }

@@ -81,14 +81,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("allproducts/{id}")]
-        public async Task<IActionResult> GetAllById(int id)
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetAllByProductId(int productId)
         {
             try
             {
-                _logger.LogInformation("GetAllById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email}", System.DateTime.Now, productId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productWaste = await _productWasteService.GetAllById(id);
+                var productWaste = await _productWasteService.GetAllByProductId(productId);
                 return Ok(productWaste);
             }
             catch (HttpRequestException ex)

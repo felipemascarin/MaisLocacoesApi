@@ -57,11 +57,11 @@ namespace Service.v1.Services
             return productWasteResponse;
         }
 
-        public async Task<IEnumerable<ProductWasteResponse>> GetAllById(int id)
+        public async Task<IEnumerable<ProductWasteResponse>> GetAllByProductId(int productId)
         {
-            var productWastesEntityList = await _productWasteRepository.GetAllById(id);
+            var productWastesEntityList = await _productWasteRepository.GetAllByProductId(productId);
 
-            var productWastesResponse = _mapper.Map <IEnumerable< ProductWasteResponse>>(productWastesEntityList);
+            var productWastesResponse = _mapper.Map<IEnumerable<ProductWasteResponse>>(productWastesEntityList);
 
             return productWastesResponse;
         }

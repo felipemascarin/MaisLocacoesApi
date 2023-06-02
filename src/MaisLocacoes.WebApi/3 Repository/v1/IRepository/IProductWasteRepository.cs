@@ -7,7 +7,7 @@ namespace Repository.v1.IRepository
     {
         Task<ProductWasteEntity> CreateProductWaste(ProductWasteEntity productWasteEntity);
         Task<ProductWasteEntity> GetById(int id);
-        Task<IEnumerable<ProductWasteEntity>> GetAllById(int id);
+        Task<IEnumerable<ProductWasteEntity>> GetAllByProductId(int productId);
         Task<IEnumerable<ProductWasteEntity>> GetProductWastesByPage(int items, int page, string query);
         Task<int> UpdateProductWaste(ProductWasteEntity productWasteForUpdate);
     }

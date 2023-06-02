@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -70,6 +71,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var _productTuition = await _productTuitionService.GetById(id);
                 return Ok(_productTuition);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("rent/{rentId}")]
+        public async Task<IActionResult> GetAllByRentId(int rentId)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllByRentId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, rentId, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productTuition = await _productTuitionService.GetAllByRentId(rentId);
+                return Ok(productTuition);
             }
             catch (HttpRequestException ex)
             {

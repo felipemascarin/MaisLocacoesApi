@@ -25,7 +25,7 @@ namespace Repository.v1.Repository
 
         public async Task<ProductWasteEntity> GetById(int id) => await _context.ProductWastes.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
 
-        public async Task<IEnumerable<ProductWasteEntity>> GetAllById(int id) => await _context.ProductWastes.Where(p => p.ProductId == id && p.Deleted == false).OrderByDescending(p => p.Date).ToListAsync();
+        public async Task<IEnumerable<ProductWasteEntity>> GetAllByProductId(int productId) => await _context.ProductWastes.Where(p => p.ProductId == productId && p.Deleted == false).OrderByDescending(p => p.Date).ToListAsync();
 
         public async Task<IEnumerable<ProductWasteEntity>> GetProductWastesByPage(int items, int page, string query)
         {
