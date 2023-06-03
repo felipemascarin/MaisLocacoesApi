@@ -101,7 +101,6 @@ namespace Service.v1.Services
 
             rentForUpdate.ClientId = rentRequest.ClientId;
             rentForUpdate.Carriage = rentRequest.Carriage;
-            rentForUpdate.Status = rentRequest.Status;
             rentForUpdate.UpdatedAt = System.DateTime.UtcNow;
             rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 

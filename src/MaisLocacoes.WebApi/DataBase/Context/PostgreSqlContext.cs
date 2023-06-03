@@ -243,7 +243,10 @@ namespace MaisLocacoes.WebApi.Context
                .Property(x => x.Status)
                .HasDefaultValue(ClientStatus.ClientStatusEnum.ElementAt(0));
 
-           
+            modelBuilder.Entity<RentEntity>()
+              .Property(x => x.Status)
+              .HasDefaultValue(RentStatus.RentStatusEnum.ElementAt(1));
+
             //Definindo ForeignKey para as entidades:
             modelBuilder.Entity<CompanyEntity>()
             .HasOne<CompanyAddressEntity>(many => many.CompanyAddressEntity)

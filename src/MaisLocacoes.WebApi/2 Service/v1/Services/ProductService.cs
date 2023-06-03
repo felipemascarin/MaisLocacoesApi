@@ -102,7 +102,7 @@ namespace Service.v1.Services
         }
 
         public async Task<bool> UpdateProduct(ProductRequest productRequest, int id)
-        {
+        { 
             var productForUpdate = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.BadRequest);
 

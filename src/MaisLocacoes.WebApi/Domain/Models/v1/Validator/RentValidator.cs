@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Utils.Enum;
 using MaisLocacoes.WebApi.Utils.Enums;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
@@ -16,13 +17,8 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             RuleFor(rent => rent.Carriage)
                 .Must(carriage => decimal.TryParse(carriage.ToString(), out var result) &&
                  result >= 0)
-                .WithMessage("Valor de frete se inserido deve ser válido e maior que 0")
+                .WithMessage("Valor de frete se inserido deve ser válido")
                 .When(rent => rent.Carriage != null);
-
-            RuleFor(rent => rent.Status)
-                .Must(status => RentStatus.RentStatusEnum.Contains(status.ToLower()))
-                .WithMessage("Valor do status se inserido deve ser válido")
-                .When(rent => !string.IsNullOrEmpty(rent.Status));
 
             RuleFor(rent => rent.FirstDueDate)
                .Must(firstDueDate => DateTime.TryParse(firstDueDate.ToString(), out var result))
