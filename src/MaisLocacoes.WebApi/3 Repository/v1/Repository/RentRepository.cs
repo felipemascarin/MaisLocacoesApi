@@ -25,6 +25,8 @@ namespace Repository.v1.Repository
 
         public async Task<bool> RentExists(int id) => await _context.Rents.AnyAsync(r => r.Id == id && r.Deleted == false);
 
+        public async Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId) => await _context.Rents.Include(r => r.AddressEntity).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
+
         public async Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query)
         {
             if (query == null)

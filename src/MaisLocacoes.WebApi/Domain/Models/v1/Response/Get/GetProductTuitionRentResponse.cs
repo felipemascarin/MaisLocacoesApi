@@ -1,9 +1,9 @@
-﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response
+﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Get
 {
-    public class ProductTuitionResponse
+    public class GetProductTuitionRentResponse
     {
         public int Id { get; set; }
-        public int RentId { get; set; }
+        public RentResponse Rent { get; set; }
         public int ProductTypeId { get; set; }
         public string ProductCode { get; set; }
         public decimal Value { get; set; }

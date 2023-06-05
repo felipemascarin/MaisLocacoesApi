@@ -35,7 +35,7 @@ namespace Repository.v1.Repository
                 return await _context.Products.Include(p => p.ProductTypeEntity).Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
                 return await _context.Products.Include(p => p.ProductTypeEntity).Where(p => p.Deleted == false && (
-                     p.Code.Contains(query) ||
+                     p.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower()) ||
                      p.ProductTypeEntity.Type.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();

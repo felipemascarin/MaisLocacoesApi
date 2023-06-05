@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -71,6 +72,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 var rent = await _rentService.GetById(id);
                 return Ok(rent);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("client/{clientId}")]
+        public async Task<IActionResult> GetAllByClientId(int clientId)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllByClientId {@dateTime} clientId:{@clientId} User:{@email}", System.DateTime.Now, clientId, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var rents = await _rentService.GetAllByClientId(clientId);
+                return Ok(rents);
             }
             catch (HttpRequestException ex)
             {

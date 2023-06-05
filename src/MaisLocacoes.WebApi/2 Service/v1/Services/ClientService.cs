@@ -30,42 +30,42 @@ namespace Service.v1.Services
 
         public async Task<ClientResponse> CreateClient(ClientRequest clientRequest)
         {
-                ClientEntity existsClient;
-                if (string.IsNullOrEmpty(clientRequest.Cnpj))
-                    existsClient = await _clientRepository.GetByCpf(clientRequest.Cpf);
-                else
-                    existsClient = await _clientRepository.GetByCnpj(clientRequest.Cnpj);
+            ClientEntity existsClient;
+            if (string.IsNullOrEmpty(clientRequest.Cnpj))
+                existsClient = await _clientRepository.GetByCpf(clientRequest.Cpf);
+            else
+                existsClient = await _clientRepository.GetByCnpj(clientRequest.Cnpj);
 
-                if (existsClient != null)
-                    throw new HttpRequestException("Cliente já cadastrado", null, HttpStatusCode.BadRequest);
+            if (existsClient != null)
+                throw new HttpRequestException("Cliente já cadastrado", null, HttpStatusCode.BadRequest);
 
-                var addressResponse = await _addressService.CreateAddress(clientRequest.Address);
+            var addressResponse = await _addressService.CreateAddress(clientRequest.Address);
 
-                var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
+            var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
 
-                clientEntity.AddressId = addressResponse.Id;
-                clientEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientEntity.AddressId = addressResponse.Id;
+            clientEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-                clientEntity = await _clientRepository.CreateClient(clientEntity);
+            clientEntity = await _clientRepository.CreateClient(clientEntity);
 
-                var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-                clientResponse.Address = addressResponse;
+            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            clientResponse.Address = addressResponse;
 
-                return clientResponse;
+            return clientResponse;
         }
 
         public async Task<ClientResponse> GetById(int id)
         {
-                var clientEntity = await _clientRepository.GetById(id) ??
-                    throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
+            var clientEntity = await _clientRepository.GetById(id) ??
+                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-                var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
+            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
 
-                var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
 
-                clientResponse.Address = clientAddressResponse;
+            clientResponse.Address = clientAddressResponse;
 
-                return clientResponse;
+            return clientResponse;
         }
 
         public async Task<ClientResponse> GetByCpf(string cpf)
@@ -98,49 +98,49 @@ namespace Service.v1.Services
 
         public async Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query)
         {
-                if (items <= 0 || page <= 0)
-                    throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
+            if (items <= 0 || page <= 0)
+                throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
 
-                var clientsEntityList = await _clientRepository.GetClientsByPage(items, page, query);
+            var clientsEntityList = await _clientRepository.GetClientsByPage(items, page, query);
 
-                var clientsEntityListLenght = clientsEntityList.ToList().Count;
+            var clientsEntityListLenght = clientsEntityList.ToList().Count;
 
-                var clientsResponseList = _mapper.Map<IEnumerable<ClientResponse>>(clientsEntityList);
+            var clientsResponseList = _mapper.Map<IEnumerable<ClientResponse>>(clientsEntityList);
 
-                for (int i = 0; i < clientsEntityListLenght; i++)
-                {
-                    clientsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(clientsEntityList.ElementAt(i).AddressEntity);
-                }
+            for (int i = 0; i < clientsEntityListLenght; i++)
+            {
+                clientsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(clientsEntityList.ElementAt(i).AddressEntity);
+            }
 
-                return clientsResponseList;
+            return clientsResponseList;
         }
 
         public async Task<IEnumerable<GetClientForRentResponse>> GetClientsForRent()
         {
-                var clientForRentDtoResponse = await _clientRepository.GetClientsForRent();
+            var clientForRentDtoResponse = await _clientRepository.GetClientsForRent();
 
-                var clientForRentResponse = new List<GetClientForRentResponse>();
+            var clientForRentResponse = new List<GetClientForRentResponse>();
 
-                foreach (var item in clientForRentDtoResponse)
-                {
-                    if (!string.IsNullOrEmpty(item.Cpf) && string.IsNullOrEmpty(item.Cnpj))
-                        clientForRentResponse.Add(new GetClientForRentResponse
-                        {
-                            Id = item.Id,
-                            Name = item.ClientName,
-                            DocumentNumber = item.Cpf
-                        });
+            foreach (var item in clientForRentDtoResponse)
+            {
+                if (!string.IsNullOrEmpty(item.Cpf) && string.IsNullOrEmpty(item.Cnpj))
+                    clientForRentResponse.Add(new GetClientForRentResponse
+                    {
+                        Id = item.Id,
+                        Name = item.ClientName,
+                        DocumentNumber = item.Cpf
+                    });
 
-                    if (!string.IsNullOrEmpty(item.Cnpj) && string.IsNullOrEmpty(item.Cpf))
-                        clientForRentResponse.Add(new GetClientForRentResponse
-                        {
-                            Id = item.Id,
-                            Name = item.FantasyName,
-                            DocumentNumber = item.Cnpj
-                        });
-                }
+                if (!string.IsNullOrEmpty(item.Cnpj) && string.IsNullOrEmpty(item.Cpf))
+                    clientForRentResponse.Add(new GetClientForRentResponse
+                    {
+                        Id = item.Id,
+                        Name = item.FantasyName,
+                        DocumentNumber = item.Cnpj
+                    });
+            }
 
-                return clientForRentResponse.OrderBy(c => c.Name);
+            return clientForRentResponse.OrderBy(c => c.Name);
         }
 
         public async Task<bool> UpdateClient(ClientRequest clientRequest, int id)
@@ -168,46 +168,46 @@ namespace Service.v1.Services
                 }
             }
 
-                clientForUpdate.Type = clientRequest.Type;
-                clientForUpdate.Cpf = clientRequest.Cpf;
-                clientForUpdate.Rg = clientRequest.Rg;
-                clientForUpdate.Cnpj = clientRequest.Cnpj;
-                clientForUpdate.CompanyName = clientRequest.CompanyName;
-                clientForUpdate.ClientName = clientRequest.ClientName;
-                clientForUpdate.StateRegister = clientRequest.StateRegister;
-                clientForUpdate.FantasyName = clientRequest.FantasyName;
-                clientForUpdate.Cel = clientRequest.Cel;
-                clientForUpdate.Tel = clientRequest.Tel;
-                clientForUpdate.Email = clientRequest.Email;
-                clientForUpdate.BornDate = clientRequest.BornDate;
-                clientForUpdate.Career = clientRequest.Career;
-                clientForUpdate.CivilStatus = clientRequest.CivilStatus;
-                clientForUpdate.Segment = clientRequest.Segment;
-                clientForUpdate.CpfDocumentUrl = clientRequest.CpfDocumentUrl;
-                clientForUpdate.CnpjDocumentUrl = clientRequest.CnpjDocumentUrl;
-                clientForUpdate.AddressDocumentUrl = clientRequest.AddressDocumentUrl;
-                clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
-                clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
-                clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientForUpdate.Type = clientRequest.Type;
+            clientForUpdate.Cpf = clientRequest.Cpf;
+            clientForUpdate.Rg = clientRequest.Rg;
+            clientForUpdate.Cnpj = clientRequest.Cnpj;
+            clientForUpdate.CompanyName = clientRequest.CompanyName;
+            clientForUpdate.ClientName = clientRequest.ClientName;
+            clientForUpdate.StateRegister = clientRequest.StateRegister;
+            clientForUpdate.FantasyName = clientRequest.FantasyName;
+            clientForUpdate.Cel = clientRequest.Cel;
+            clientForUpdate.Tel = clientRequest.Tel;
+            clientForUpdate.Email = clientRequest.Email;
+            clientForUpdate.BornDate = clientRequest.BornDate;
+            clientForUpdate.Career = clientRequest.Career;
+            clientForUpdate.CivilStatus = clientRequest.CivilStatus;
+            clientForUpdate.Segment = clientRequest.Segment;
+            clientForUpdate.CpfDocumentUrl = clientRequest.CpfDocumentUrl;
+            clientForUpdate.CnpjDocumentUrl = clientRequest.CnpjDocumentUrl;
+            clientForUpdate.AddressDocumentUrl = clientRequest.AddressDocumentUrl;
+            clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
+            clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
-                    throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);
+                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);
 
-                if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
-                else return false;
+            if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
+            else return false;
         }
 
         public async Task<bool> UpdateStatus(string status, int id)
         {
-                var clientForUpdate = await _clientRepository.GetById(id) ??
-                    throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
+            var clientForUpdate = await _clientRepository.GetById(id) ??
+                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-                clientForUpdate.Status = status;
-                clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
-                clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientForUpdate.Status = status;
+            clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
-                else return false;
+            else return false;
         }
 
         public async Task<bool> DeleteById(int id)

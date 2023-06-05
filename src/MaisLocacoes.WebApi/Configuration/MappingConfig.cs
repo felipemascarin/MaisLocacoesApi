@@ -3,6 +3,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
@@ -48,6 +49,7 @@ namespace Configuration
 
                 config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
                 config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
+                config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>();
 
                 config.CreateMap<ProductTypeRequest, ProductTypeEntity>();
                 config.CreateMap<ProductTypeEntity, ProductTypeResponse>();

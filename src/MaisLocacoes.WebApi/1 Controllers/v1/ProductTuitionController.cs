@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -100,6 +101,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("product/{productId}")]
+        public async Task<IActionResult> GetAllByProductId(int productId)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email}", System.DateTime.Now, productId, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productTuitions = await _productTuitionService.GetAllByProductId(productId);
+                return Ok(productTuitions);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProductTuition([FromBody] ProductTuitionRequest productTuitionRequest, int id)
         {
@@ -117,6 +137,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 }
 
                 if (await _productTuitionService.UpdateProductTuition(productTuitionRequest, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPut("id/{id}/productcode/{productcode}")]
+        public async Task<IActionResult> UpdateProductCode(string productCode, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateCode {@dateTime} productcode:{@productcode} id:{@id} User:{@email}", System.DateTime.Now, productCode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _productTuitionService.UpdateProductCode(productCode, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)

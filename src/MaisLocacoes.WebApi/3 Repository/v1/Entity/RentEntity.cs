@@ -25,7 +25,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Carriage { get; set; }
 
-        public DateTime FirstDueDate { get; set; }
+        public DateTime? FirstDueDate { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

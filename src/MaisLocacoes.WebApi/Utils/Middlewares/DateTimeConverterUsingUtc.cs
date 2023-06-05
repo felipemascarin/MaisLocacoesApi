@@ -7,12 +7,19 @@ namespace MaisLocacoes.WebApi.Utils.Middlewares
     {
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.String && reader.TryGetDateTime(out DateTime date))
+            if (reader.TokenType == JsonTokenType.String && reader.GetString() is string dateString && !string.IsNullOrWhiteSpace(dateString))
             {
-                return DateTime.SpecifyKind(date, DateTimeKind.Utc);
+                if (DateTime.TryParse(dateString, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime date))
+                {
+                    return DateTime.SpecifyKind(date, DateTimeKind.Utc);
+                }
+                else
+                {
+                    throw new JsonException("Formato de data inválido");
+                }
             }
 
-            return reader.GetDateTime();
+            throw new JsonException("Formato de data inválido");
         }
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)

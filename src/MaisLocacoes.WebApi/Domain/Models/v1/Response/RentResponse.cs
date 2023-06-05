@@ -1,6 +1,4 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-
-namespace MaisLocacoes.WebApi.Domain.Models.v1.Response
+﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response
 {
     public class RentResponse
     {

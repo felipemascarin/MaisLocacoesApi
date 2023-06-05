@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -25,10 +24,10 @@ namespace Service.v1.Services
             IHttpContextAccessor httpContextAccessor)
         {
             _rentRepository = rentRepository;
-            _httpContextAccessor = httpContextAccessor;
-            _mapper = mapper;
             _clientRepository = clientRepository;
             _addressService = addressService;
+            _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;
         }
 
         public async Task<RentResponse> CreateRent(RentRequest rentRequest)
@@ -66,6 +65,22 @@ namespace Service.v1.Services
             RentResponse.Address = RentAddressResponse;
 
             return RentResponse;
+        }
+
+        public async Task<IEnumerable<RentResponse>> GetAllByClientId(int clientId)
+        {
+            var rentsEntityList = await _rentRepository.GetAllByClientId(clientId);
+
+            var rentsEntityListLenght = rentsEntityList.ToList().Count;
+
+            var rentsResponseList = _mapper.Map<IEnumerable<RentResponse>>(rentsEntityList);
+
+            for (int i = 0; i < rentsEntityListLenght; i++)
+            {
+                rentsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).AddressEntity);
+            }
+
+            return rentsResponseList;
         }
 
         public async Task<IEnumerable<RentResponse>> GetRentsByPage(int items, int page, string query)

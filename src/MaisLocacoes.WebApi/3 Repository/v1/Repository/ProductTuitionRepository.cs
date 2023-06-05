@@ -21,9 +21,11 @@ namespace Repository.v1.Repository
             return productTuitionEntity;
         }
 
-        public async Task<ProductTuitionEntity> GetById(int id) => await _context.ProductTuitions.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+        public async Task<ProductTuitionEntity> GetById(int id) => await _context.ProductTuitions.Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
 
-        public async Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId) => await _context.ProductTuitions.Where(p => p.RentId == rentId && p.Deleted == false).OrderBy(p => p.FinalDateTime).ToListAsync();
+        public async Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId) => await _context.ProductTuitions.Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Where(p => p.RentId == rentId && p.Deleted == false).OrderBy(p => p.FinalDateTime).ToListAsync();
+
+        public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode) => await _context.ProductTuitions.Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
 
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode) => await _context.ProductTuitions.AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId && p.ProductCode.ToLower() == productCode.ToLower() && p.Deleted == false);
 
