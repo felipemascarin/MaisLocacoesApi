@@ -102,13 +102,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpGet("items/{items}/page/{page}")]
-        public async Task<IActionResult> GetRentsByPage(int items, int page, [FromQuery(Name = "query")] string query)
+        public async Task<IActionResult> GetRentsByPage(int items, int page, [FromQuery(Name = "query")] string query, [FromQuery(Name = "status")] string status)
         {
             try
             {
                 _logger.LogInformation("GetRentsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email}", System.DateTime.Now, items, page, query, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var rentsList = await _rentService.GetRentsByPage(items, page, query);
+                var rentsList = await _rentService.GetRentsByPage(items, page, query, status);
                 return Ok(rentsList);
             }
             catch (HttpRequestException ex)

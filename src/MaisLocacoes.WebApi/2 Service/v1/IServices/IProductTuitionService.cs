@@ -8,7 +8,7 @@ namespace Service.v1.IServices
     {
         Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest);
         Task<GetProductTuitionRentResponse> GetById(int id);
-        Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByRentId(int rentId);
+        Task<IEnumerable<ProductTuitionResponse>> GetAllByRentId(int rentId);
         Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
         Task<bool> UpdateProductCode(string productCode, int id);

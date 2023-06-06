@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -83,20 +84,22 @@ namespace Service.v1.Services
             return rentsResponseList;
         }
 
-        public async Task<IEnumerable<RentResponse>> GetRentsByPage(int items, int page, string query)
+        public async Task<IEnumerable<GetRentClientResponse>> GetRentsByPage(int items, int page, string query, string status)
         {
             if (items <= 0 || page <= 0)
                 throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
 
-            var rentsEntityList = await _rentRepository.GetRentsByPage(items, page, query);
+            var rentsEntityList = await _rentRepository.GetRentsByPage(items, page, query, status);
 
             var rentsEntityListLenght = rentsEntityList.ToList().Count;
 
-            var rentsResponseList = _mapper.Map<IEnumerable<RentResponse>>(rentsEntityList);
+            var rentsResponseList = _mapper.Map<IEnumerable<GetRentClientResponse>>(rentsEntityList);
 
             for (int i = 0; i < rentsEntityListLenght; i++)
             {
                 rentsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).AddressEntity);
+                rentsResponseList.ElementAt(i).Client = _mapper.Map<ClientResponse>(rentsEntityList.ElementAt(i).ClientEntity);
+                rentsResponseList.ElementAt(i).Client.Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).ClientEntity.AddressEntity);
             }
 
             return rentsResponseList;

@@ -65,6 +65,7 @@ namespace Configuration
 
                 config.CreateMap<RentRequest, RentEntity>();
                 config.CreateMap<RentEntity, RentResponse>();
+                config.CreateMap<RentEntity, GetRentClientResponse>();
 
                 config.CreateMap<SupplierRequest, SupplierEntity>();
                 config.CreateMap<SupplierEntity, SupplierResponse>();
