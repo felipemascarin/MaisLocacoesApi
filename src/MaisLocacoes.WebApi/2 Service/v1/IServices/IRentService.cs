@@ -7,7 +7,7 @@ namespace Service.v1.IServices
     public interface IRentService
     {
         Task<RentResponse> CreateRent(RentRequest rentRequest);
-        Task<RentResponse> GetById(int id);
+        Task<GetRentClientResponse> GetById(int id);
         Task<IEnumerable<RentResponse>> GetAllByClientId(int clientId);
         Task<IEnumerable<GetRentClientResponse>> GetRentsByPage(int items, int page, string query, string status);
         Task<bool> UpdateRent(RentRequest rentRequest, int id);

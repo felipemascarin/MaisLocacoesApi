@@ -21,7 +21,7 @@ namespace Repository.v1.Repository
             return rentEntity;
         }
 
-        public async Task<RentEntity> GetById(int id) => await _context.Rents.Include(r => r.AddressEntity).FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
+        public async Task<RentEntity> GetById(int id) => await _context.Rents.Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity).FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
 
         public async Task<bool> RentExists(int id) => await _context.Rents.AnyAsync(r => r.Id == id && r.Deleted == false);
 

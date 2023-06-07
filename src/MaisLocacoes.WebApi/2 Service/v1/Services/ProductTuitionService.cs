@@ -161,11 +161,12 @@ namespace Service.v1.Services
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var existsproductType = await _productRepository.ProductExists(productTuitionForUpdate.ProductTypeId, productCode);
-            if (!existsproductType)
-            {
-                throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
-            }
+            var product = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
+                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
+            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+                throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
 
             productTuitionForUpdate.ProductCode = productCode;
             productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;

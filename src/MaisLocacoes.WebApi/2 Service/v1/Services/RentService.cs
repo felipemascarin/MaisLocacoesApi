@@ -55,18 +55,21 @@ namespace Service.v1.Services
             return rentResponse;
         }
 
-        public async Task<RentResponse> GetById(int id)
+        public async Task<GetRentClientResponse> GetById(int id)
         {
             var rentEntity = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            var RentAddressResponse = _mapper.Map<AddressResponse>(rentEntity.AddressEntity);
+            var rentAddressResponse = _mapper.Map<AddressResponse>(rentEntity.AddressEntity);
+            var rentClientResponse = _mapper.Map<ClientResponse>(rentEntity.ClientEntity);
+            var rentClientAddressResponse = _mapper.Map<AddressResponse>(rentEntity.ClientEntity.AddressEntity);
+            var rentResponse = _mapper.Map<GetRentClientResponse>(rentEntity);
 
-            var RentResponse = _mapper.Map<RentResponse>(rentEntity);
+            rentResponse.Address = rentAddressResponse;
+            rentResponse.Client = rentClientResponse;
+            rentResponse.Client.Address = rentClientAddressResponse;
 
-            RentResponse.Address = RentAddressResponse;
-
-            return RentResponse;
+            return rentResponse;
         }
 
         public async Task<IEnumerable<RentResponse>> GetAllByClientId(int clientId)
