@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -33,11 +34,11 @@ namespace Service.v1.Services
 
         public async Task<RentResponse> CreateRent(RentRequest rentRequest)
         {
-            var existsClient = await _clientRepository.ClientExists(rentRequest.ClientId);
-            if (!existsClient)
-            {
+            var client = await _clientRepository.GetById(rentRequest.ClientId) ??
                 throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
-            }
+
+            if (client.Status != ClientStatus.ClientStatusEnum.ElementAt(0))
+                throw new HttpRequestException("Esse cliente não pode realizar locação", null, HttpStatusCode.BadRequest);
 
             var addressResponse = await _addressService.CreateAddress(rentRequest.Address);
 
@@ -112,9 +113,11 @@ namespace Service.v1.Services
 
             if (rentRequest.ClientId != rentForUpdate.ClientId)
             {
-                var existsClient = await _clientRepository.ClientExists(rentRequest.ClientId);
-                if (!existsClient)
-                    throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
+                var client = await _clientRepository.GetById(rentRequest.ClientId) ??
+                throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
+
+                if (client.Status != ClientStatus.ClientStatusEnum.ElementAt(0))
+                    throw new HttpRequestException("Esse cliente não pode realizar locação", null, HttpStatusCode.BadRequest);
             }
 
             rentForUpdate.ClientId = rentRequest.ClientId;
