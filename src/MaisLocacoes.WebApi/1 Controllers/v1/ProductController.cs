@@ -120,6 +120,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("rent/producttype/{producttypeid}")]
+        public async Task<IActionResult> GetProductsForRent(int productTypeId)
+        {
+            try
+            {
+                _logger.LogInformation("GetProductsForRent {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productsList = await _productService.GetProductsForRent(productTypeId);
+                return Ok(productsList);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest, int id)
         {

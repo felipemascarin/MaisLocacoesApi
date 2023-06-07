@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetClientForRentResponse;
 
 namespace Repository.v1.Repository
 {
@@ -52,13 +53,13 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<GetClientForRentDtoResponse>> GetClientsForRent() 
             => await _context.Clients
                 .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0) && c.Deleted == false)
-                .Select(c => new GetClientForRentDtoResponse 
+                .Select(c => new GetClientForRentDtoResponse
                 { 
                     Id = c.Id,
                     Cpf = c.Cpf,
                     ClientName = c.ClientName,
                     Cnpj = c.Cnpj,
-                    FantasyName = c.FantasyName 
+                    FantasyName = c.FantasyName
                 }).ToListAsync();
 
         public async Task<int> UpdateClient(ClientEntity clientForUpdate)

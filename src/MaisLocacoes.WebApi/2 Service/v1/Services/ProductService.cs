@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -99,6 +100,24 @@ namespace Service.v1.Services
             }
 
             return productsResponseList;
+        }
+
+        public async Task<IEnumerable<GetProductForRentResponse>> GetProductsForRent(int productTypeId)
+        {
+            var productForRentDtoResponse = await _productRepository.GetProductsForRent(productTypeId);
+
+            var productForRentResponse = new List<GetProductForRentResponse>();
+
+            foreach (var item in productForRentDtoResponse)
+            {
+                productForRentResponse.Add(new GetProductForRentResponse
+                {
+                    Code = item.Code,
+                    FreeParts = item.Parts - item.RentedParts
+                });
+            }
+
+            return productForRentResponse.OrderBy(p => p.Code);
         }
 
         public async Task<bool> UpdateProduct(ProductRequest productRequest, int id)

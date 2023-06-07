@@ -1,7 +1,10 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductForRentResponse;
 
 namespace Repository.v1.Repository
 {
@@ -40,6 +43,16 @@ namespace Repository.v1.Repository
                      p.ProductTypeEntity.Type.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
         }
+
+        public async Task<IEnumerable<GetProductForRentDtoResponse>> GetProductsForRent(int productTypeId)
+            => await _context.Products
+                .Include(p => p.ProductTypeEntity).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) && p.ProductTypeEntity.Id == productTypeId && p.Deleted == false)
+                .Select(p => new GetProductForRentDtoResponse
+                {
+                    Code = p.Code,
+                    Parts = p.Parts,
+                    RentedParts = p.RentedParts
+                }).ToListAsync();
 
         public async Task<int> UpdateProduct(ProductEntity productForUpdate)
         {
