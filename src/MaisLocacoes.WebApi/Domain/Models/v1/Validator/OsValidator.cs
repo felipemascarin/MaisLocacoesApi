@@ -15,10 +15,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("O CPF do intregador inserido é inválido")
                 .When(os => !string.IsNullOrEmpty(os.DeliveryCpf));
 
-            RuleFor(os => os.RentId)
-                .Must(rentId => int.TryParse(rentId.ToString(), out var result) &&
+            RuleFor(os => os.ProductTuitionId)
+                .Must(productTuitionId => int.TryParse(productTuitionId.ToString(), out var result) &&
                  result > 0)
-                .WithMessage("Id da locação deve ser um número inteiro maior que 0");
+                .WithMessage("Id do ProductTuition deve ser um número inteiro maior que 0");
 
             RuleFor(os => os.InitialDateTime)
                  .Must(inicialDateTime => DateTime.TryParse(inicialDateTime.ToString(), out var result))
@@ -34,11 +34,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .Null()
                 .WithMessage("A data final se inserida deve ser maior que a Data de início")
                 .When(os => os.FinalDateTime < os.InitialDateTime);
-
-            RuleFor(os => os.Description)
-                .MaximumLength(1000)
-                .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
-                .When(os => !string.IsNullOrEmpty(os.Description));
 
             RuleFor(os => os.DeliveryObservation)
                .MaximumLength(1000)

@@ -34,6 +34,19 @@ namespace Repository.v1.Entity
         [DefaultValue(1)]
         public int Parts { get; set; }
 
+        [Required]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string? Status { get; set; }
+
+        public DateTime? FirstDueDate { get; set; }
+
+        public int QuantityPeriod { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string TimePeriod { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
@@ -47,5 +60,8 @@ namespace Repository.v1.Entity
         public string? UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
+
+        public ICollection<BillEntity> Bills { get; set; }
+        public ICollection<OsEntity> Oss { get; set; }
     }
 }

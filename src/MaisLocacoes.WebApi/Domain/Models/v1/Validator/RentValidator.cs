@@ -20,9 +20,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Valor de frete se inserido deve ser válido")
                 .When(rent => rent.Carriage != null);
 
-            RuleFor(rent => rent.FirstDueDate)
-               .Must(firstDueDate => DateTime.TryParse(firstDueDate.ToString(), out var result))
-               .WithMessage("A Data do primeiro vencimento deve ser uma data válida");
+            RuleFor(rent => rent.Description)
+                .MaximumLength(1000)
+                .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
+                .When(os => !string.IsNullOrEmpty(os.Description));
 
             RuleFor(rent => rent.Address).SetValidator(new AddressValidator());
         }

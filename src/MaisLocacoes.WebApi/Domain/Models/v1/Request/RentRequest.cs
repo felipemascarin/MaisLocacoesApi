@@ -4,7 +4,7 @@
     {
         public int ClientId { get; set; }
         public decimal? Carriage { get; set; }
-        public DateTime FirstDueDate { get; set; }
+        public string? Description { get; set; }
         public virtual AddressRequest Address { get; set; }
     }
 }

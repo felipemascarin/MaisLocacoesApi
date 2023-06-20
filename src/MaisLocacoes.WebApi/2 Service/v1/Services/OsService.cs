@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -13,27 +12,27 @@ namespace Service.v1.Services
     public class OsService : IOsService
     {
         private readonly IOsRepository _osRepository;
-        private readonly IRentRepository _rentRepository;
+        private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public OsService(IOsRepository osRepository,
-            IRentRepository rentRepository,
+            IProductTuitionRepository productTuitionRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _osRepository = osRepository;
-            _rentRepository = rentRepository;
+            _productTuitionRepository = productTuitionRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
 
         public async Task<OsResponse> CreateOs(OsRequest osRequest)
         {
-            var existsRent = await _rentRepository.RentExists(osRequest.RentId);
+            var existsRent = await _productTuitionRepository.ProductTuitionExists(osRequest.ProductTuitionId);
             if (!existsRent)
             {
-                throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
             }
 
             var osEntity = _mapper.Map<OsEntity>(osRequest);
@@ -62,21 +61,19 @@ namespace Service.v1.Services
             var osForUpdate = await _osRepository.GetById(id) ??
                throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (osRequest.RentId != osForUpdate.RentId)
+            if (osRequest.ProductTuitionId != osForUpdate.ProductTuitionId)
             {
-                var existsRent = await _rentRepository.RentExists(osRequest.RentId);
+                var existsRent = await _productTuitionRepository.ProductTuitionExists(osRequest.ProductTuitionId);
                 if (!existsRent)
                 {
-                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+                    throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
                 }
             }
 
-            osForUpdate.RentId = osRequest.RentId;
+            osForUpdate.ProductTuitionId = osRequest.ProductTuitionId;
             osForUpdate.DeliveryCpf = osRequest.DeliveryCpf;
-            osForUpdate.RentId = osRequest.RentId;
             osForUpdate.InitialDateTime = osRequest.InitialDateTime;
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;
-            osForUpdate.Description = osRequest.Description;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
             osForUpdate.UpdatedAt = System.DateTime.UtcNow;
             osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);

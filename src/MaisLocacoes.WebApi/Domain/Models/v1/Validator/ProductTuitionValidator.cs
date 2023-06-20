@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Utils.Enum;
+using MaisLocacoes.WebApi.Utils.Enums;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
 {
@@ -44,6 +46,26 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .Must(parts => int.TryParse(parts.ToString(), out var result) &&
                  result > 0)
                 .WithMessage("A Quantidade de partes do produto deve ser inserida");
+
+            RuleFor(product => product.Status)
+                .Must(status => ProductTuitionStatus.ProductTuitionStatusEnum.Contains(status.ToLower()))
+                .WithMessage("Esse status não existe");
+
+            RuleFor(product => product.FirstDueDate)
+                .Must(firstDueDate => DateTime.TryParse(firstDueDate.ToString(), out var result))
+                .WithMessage("A Data de primeiro vencimento se inserida deve ser uma data válida")
+                .When(client => client.FirstDueDate != null);
+
+            RuleFor(product => product.QuantityPeriod)
+                .Must(parts => int.TryParse(parts.ToString(), out var result) &&
+                 result > 0)
+                .WithMessage("A quantidade de períodos deve ser inserida");
+
+            RuleFor(product => product.TimePeriod)
+                .Must(timePeriod => ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.Contains(timePeriod.ToLower()))
+                .WithMessage("O tipo de período deve ser informado corretamente")
+                .MaximumLength(255)
+                .WithMessage("O tipo de período ultrapassou o limite máximo de caracteres");
         }
     }
 }

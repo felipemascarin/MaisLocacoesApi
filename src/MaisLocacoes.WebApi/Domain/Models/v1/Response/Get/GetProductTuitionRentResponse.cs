@@ -9,6 +9,10 @@
         public decimal Value { get; set; }
         public DateTime InitialDateTime { get; set; }
         public DateTime FinalDateTime { get; set; }
+        public string? Status { get; set; }
+        public DateTime? FirstDueDate { get; set; }
+        public int QuantityPeriod { get; set; }
+        public string TimePeriod { get; set; }
         public int Parts { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

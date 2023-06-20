@@ -11,8 +11,8 @@ namespace Repository.v1.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int RentId { get; set; }
-        public virtual RentEntity RentEntity { get; set; }
+        public int ProductTuitionId { get; set; }
+        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]

@@ -6,7 +6,6 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -16,21 +15,18 @@ namespace Service.v1.Services
     {
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IRentRepository _rentRepository;
-        private readonly IProductTypeRepository _productTypeRepository;
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
             IRentRepository rentRepository,
-            IProductTypeRepository productTypeRepositor,
             IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _productTuitionRepository = productTuitionRepository;
             _rentRepository = rentRepository;
-            _productTypeRepository = productTypeRepositor;
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -149,6 +145,10 @@ namespace Service.v1.Services
             productTuitionForUpdate.InitialDateTime = productTuitionRequest.InitialDateTime;
             productTuitionForUpdate.FinalDateTime = productTuitionRequest.FinalDateTime;
             productTuitionForUpdate.Parts = productTuitionRequest.Parts;
+            productTuitionForUpdate.Status = productTuitionRequest.Status;
+            productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;
+            productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
+            productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
             productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
             productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
@@ -169,6 +169,19 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
 
             productTuitionForUpdate.ProductCode = productCode;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> UpdateStatus(string status, int id)
+        {
+            var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            productTuitionForUpdate.Status = status;
             productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
             productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 

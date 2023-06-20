@@ -167,6 +167,28 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpPut("id/{id}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email}", System.DateTime.Now, status, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (!ProductTuitionStatus.ProductTuitionStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
+
+                if (await _productTuitionService.UpdateStatus(status, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteById(int id)
         {

@@ -15,9 +15,8 @@ namespace Repository.v1.Entity
         [Column(TypeName = "char")]
         public string? DeliveryCpf { get; set; }
 
-        public int RentId { get; set; }
-
-        public virtual RentEntity RentEntity { get; set; }
+        public int ProductTuitionId { get; set; }
+        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -27,10 +26,6 @@ namespace Repository.v1.Entity
         public DateTime? InitialDateTime { get; set; }
 
         public DateTime? FinalDateTime { get; set; }
-
-        [StringLength(1000)]
-        [Column(TypeName = "character varying(1000)")]
-        public string? Description { get; set; }
 
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]

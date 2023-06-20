@@ -247,6 +247,10 @@ namespace MaisLocacoes.WebApi.Context
               .Property(x => x.Status)
               .HasDefaultValue(RentStatus.RentStatusEnum.ElementAt(1));
 
+            modelBuilder.Entity<ProductTuitionEntity>()
+              .Property(x => x.Status)
+              .HasDefaultValue(ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(1));
+
             //Definindo ForeignKey para as entidades:
             modelBuilder.Entity<CompanyEntity>()
             .HasOne<CompanyAddressEntity>(many => many.CompanyAddressEntity)
@@ -261,10 +265,10 @@ namespace MaisLocacoes.WebApi.Context
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));
 
             modelBuilder.Entity<BillEntity>()
-            .HasOne<RentEntity>(many => many.RentEntity)
+            .HasOne<ProductTuitionEntity>(many => many.ProductTuitionEntity)
             .WithMany(one => one.Bills)
-            .HasForeignKey(many => new { many.RentId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.Rents));
+            .HasForeignKey(many => new { many.ProductTuitionId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ClientEntity>()
             .HasOne<AddressEntity>(many => many.AddressEntity)
@@ -273,10 +277,10 @@ namespace MaisLocacoes.WebApi.Context
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Clients, TableNameEnum.Addresses));
 
             modelBuilder.Entity<OsEntity>()
-            .HasOne<RentEntity>(many => many.RentEntity)
+            .HasOne<ProductTuitionEntity>(many => many.ProductTuitionEntity)
             .WithMany(one => one.Oss)
-            .HasForeignKey(many => new { many.RentId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.Rents));
+            .HasForeignKey(many => new { many.ProductTuitionId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ProductEntity>()
             .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)

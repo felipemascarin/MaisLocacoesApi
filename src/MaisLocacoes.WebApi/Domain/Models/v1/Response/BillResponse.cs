@@ -3,7 +3,7 @@
     public class BillResponse
     {
         public int Id { get; set; }
-        public int RentId { get; set; }
+        public int ProductTuitionId { get; set; }
         public decimal Value { get; set; }
         public DateTime? PayDate { get; set; }
         public DateTime DueDate { get; set; }

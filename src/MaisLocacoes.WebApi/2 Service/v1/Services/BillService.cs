@@ -12,27 +12,27 @@ namespace Service.v1.Services
     public class BillService : IBillService
     {
         private readonly IBillRepository _billRepository;
-        private readonly IRentRepository _rentRepository;
+        private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public BillService(IBillRepository billRepository,
-            IRentRepository rentRepository,
+            IProductTuitionRepository productTuitionRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _billRepository = billRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _rentRepository = rentRepository;
+            _productTuitionRepository = productTuitionRepository;
         }
 
         public async Task<BillResponse> CreateBill(BillRequest billRequest)
         {
-            var existsRent = await _rentRepository.RentExists(billRequest.RentId);
+            var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
             if (!existsRent)
             {
-                throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
             }
 
             var billEntity = _mapper.Map<BillEntity>(billRequest);
@@ -61,16 +61,16 @@ namespace Service.v1.Services
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (billRequest.RentId != billForUpdate.RentId)
+            if (billRequest.ProductTuitionId != billForUpdate.ProductTuitionId)
             {
-                var existsRent = await _rentRepository.RentExists(billRequest.RentId);
+                var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
                 if (!existsRent)
                 {
-                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+                    throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
                 }
             }
 
-            billForUpdate.RentId = billRequest.RentId;
+            billForUpdate.ProductTuitionId = billRequest.ProductTuitionId;
             billForUpdate.Value = billRequest.Value;
             billForUpdate.PayDate = billRequest.PayDate;
             billForUpdate.DueDate = billRequest.DueDate;

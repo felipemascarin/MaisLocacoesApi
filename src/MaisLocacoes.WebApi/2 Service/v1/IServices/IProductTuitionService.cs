@@ -12,6 +12,7 @@ namespace Service.v1.IServices
         Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
         Task<bool> UpdateProductCode(string productCode, int id);
+        Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
     }
 }
