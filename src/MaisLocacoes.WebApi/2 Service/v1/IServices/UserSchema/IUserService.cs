@@ -6,9 +6,9 @@ namespace Service.v1.IServices.UserSchema
     public interface IUserService
     {
         Task<UserResponse> CreateUser(UserRequest userRequest);
-        Task<UserResponse> GetByEmail(string email);
-        Task<UserResponse> GetByCpf(string cpf);
-        Task<bool> UpdateUser(UserRequest userRequest, string email);
-        Task<bool> UpdateStatus(string status, string email);
+        Task<UserResponse> GetByEmail(string email, string cnpj);
+        Task<UserResponse> GetByCpf(string cpf, string cnpj);
+        Task<bool> UpdateUser(UserRequest userRequest, string email, string cnpj);
+        Task<bool> UpdateStatus(string status, string email, string cnpj);
     }
 }

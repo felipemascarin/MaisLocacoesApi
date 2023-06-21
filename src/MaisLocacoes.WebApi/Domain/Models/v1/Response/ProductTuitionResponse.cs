@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public int RentId { get; set; }
         public int ProductTypeId { get; set; }
-        public string ProductCode { get; set; }
+        public string? ProductCode { get; set; }
         public decimal Value { get; set; }
         public DateTime InitialDateTime { get; set; }
         public DateTime FinalDateTime { get; set; }

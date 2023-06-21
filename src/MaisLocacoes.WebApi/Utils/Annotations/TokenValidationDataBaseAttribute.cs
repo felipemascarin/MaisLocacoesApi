@@ -32,7 +32,9 @@ namespace MaisLocacoes.WebApi.Utils.Annotations
 
                 var email = JwtManager.ExtractEmailByToken(token);
 
-                var tokenExists = await _userRepository.UserHasToken(token, email);
+                var cnpj = JwtManager.ExtractCnpjByToken(token);
+
+                var tokenExists = await _userRepository.UserHasToken(token, email, cnpj);
 
                 if (!tokenExists)
                 {

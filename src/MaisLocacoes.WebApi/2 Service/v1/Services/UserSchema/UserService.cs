@@ -29,9 +29,9 @@ namespace Service.v1.Services.UserSchema
 
         public async Task<UserResponse> CreateUser(UserRequest userRequest)
         {
-            var existsUser = await _userRepository.UserExists(userRequest.Email, userRequest.Cpf);
+            var existsUser = await _userRepository.UserExists(userRequest.Email, userRequest.Cpf, userRequest.Cnpj);
             if (existsUser)
-                throw new HttpRequestException("Cpf ou e-mail de usuário já cadastrado", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("Cpf ou e-mail de usuário já cadastrado para essa empresa", null, HttpStatusCode.BadRequest);
 
             var existsCompany = await _companyRepository.CompanyExists(userRequest.Cnpj);
             if (!existsCompany)
@@ -46,9 +46,9 @@ namespace Service.v1.Services.UserSchema
             return _mapper.Map<UserResponse>(userEntity);
         }
 
-        public async Task<UserResponse> GetByEmail(string email)
+        public async Task<UserResponse> GetByEmail(string email, string cnpj)
         {
-            var userEntity = await _userRepository.GetByEmail(email) ??
+            var userEntity = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             var userResponse = _mapper.Map<UserResponse>(userEntity);
@@ -56,9 +56,9 @@ namespace Service.v1.Services.UserSchema
             return userResponse;
         }
 
-        public async Task<UserResponse> GetByCpf(string cpf)
+        public async Task<UserResponse> GetByCpf(string cpf, string cnpj)
         {
-            var userEntity = await _userRepository.GetByCpf(cpf) ??
+            var userEntity = await _userRepository.GetByCpf(cpf, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             var userResponse = _mapper.Map<UserResponse>(userEntity);
@@ -66,30 +66,30 @@ namespace Service.v1.Services.UserSchema
             return userResponse;
         }
 
-        public async Task<bool> UpdateUser(UserRequest userRequest, string email)
+        public async Task<bool> UpdateUser(UserRequest userRequest, string email, string cnpj)
         {
-            var userForUpdate = await _userRepository.GetByEmail(email) ??
+            var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
-
-            if (userRequest.Cpf != userForUpdate.Cpf)
-            {
-                var existsCpf = await _userRepository.GetByCpf(userRequest.Cpf);
-                if (existsCpf != null)
-                    throw new HttpRequestException("O Cnpj novo já está cadastrado em outro usuário", null, HttpStatusCode.BadRequest);
-            }
-
-            if (userRequest.Email != email)
-            {
-                var existsEmail = await _userRepository.GetByEmail(userRequest.Email);
-                if (existsEmail != null)
-                    throw new HttpRequestException("O Email novo já está cadastrado em outro usuário", null, HttpStatusCode.BadRequest);
-            }
 
             if (userRequest.Cnpj != userForUpdate.Cnpj)
             {
                 var existsCompany = await _companyRepository.CompanyExists(userRequest.Cnpj);
                 if (!existsCompany)
                     throw new HttpRequestException("Não existe nenhuma empresa cadastrada com esse CNPJ", null, HttpStatusCode.BadRequest);
+            }
+
+            if (userRequest.Cpf != userForUpdate.Cpf)
+            {
+                var existsCpf = await _userRepository.GetByCpf(userRequest.Cpf, userRequest.Cnpj);
+                if (existsCpf != null)
+                    throw new HttpRequestException("O CPF novo já está cadastrado em outro usuário", null, HttpStatusCode.BadRequest);
+            }
+
+            if (userRequest.Email != email)
+            {
+                var existsEmail = await _userRepository.GetByEmail(userRequest.Email, userRequest.Cnpj);
+                if (existsEmail != null)
+                    throw new HttpRequestException("O Email novo já está cadastrado em outro usuário", null, HttpStatusCode.BadRequest);
             }
 
             userForUpdate.Cpf = userRequest.Cpf;
@@ -110,9 +110,9 @@ namespace Service.v1.Services.UserSchema
             else return false;
         }
 
-        public async Task<bool> UpdateStatus(string status, string email)
+        public async Task<bool> UpdateStatus(string status, string email, string cnpj)
         {
-            var userForUpdate = await _userRepository.GetByEmail(email) ??
+            var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             userForUpdate.Status = status;

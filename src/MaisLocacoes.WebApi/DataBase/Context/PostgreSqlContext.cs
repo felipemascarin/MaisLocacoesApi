@@ -78,10 +78,6 @@ namespace MaisLocacoes.WebApi.Context
                 .HasIndex(e => e.Email)
                 .IsUnique();
 
-            modelBuilder.Entity<UserEntity>()
-                .HasIndex(e => e.Email)
-                .IsUnique();
-
             //Definindo valor Default NotifyDaysBefore de CompanyEntity:
             modelBuilder.Entity<CompanyEntity>()
                 .Property(p => p.NotifyDaysBefore)

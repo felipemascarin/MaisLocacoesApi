@@ -89,10 +89,18 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             return payload["schema"].ToString();
         }
 
-        //Verifica se é o ultimo token criado para o usuário acessando
-        public async Task<bool> UserHasToken(string token, string email)
+        public static string ExtractCnpjByToken(string token)
         {
-            if (await _userRepository.UserHasToken(token, email))
+            var handler = new JwtSecurityTokenHandler();
+            var decodedToken = handler.ReadJwtToken(token);
+            var payload = decodedToken.Payload;
+            return payload["cnpj"].ToString();
+        }
+
+        //Verifica se é o ultimo token criado para o usuário acessando
+        public async Task<bool> UserHasToken(string token, string email, string cnpj)
+        {
+            if (await _userRepository.UserHasToken(token, email, cnpj))
                 return true;
             else
                 return false;

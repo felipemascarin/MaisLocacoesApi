@@ -22,46 +22,55 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
 
         public async Task<CreateTokenResponse> Login(LoginRequest loginRequest)
         {
-                //Log entrou no método
-                var email = JwtManager.ExtractEmailByToken(loginRequest.GoogleToken);
+            //Log entrou no método
+            var email = JwtManager.ExtractEmailByToken(loginRequest.GoogleToken);
 
-                var userEntity = await _userRepository.GetByEmail(email) ??
-                    throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
+            var cnpj = JwtManager.ExtractCnpjByToken(loginRequest.GoogleToken);
 
-                //var companyEntity = await _companyRepository.GetByCnpj(userEntity.Cnpj);
+            var userEntity = await _userRepository.GetByEmail(email, cnpj) ??
+                throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-                //if (companyEntity.Status != CompanyStatus.CompanyStatusEnum.ElementAt(0))
-                //    throw new HttpRequestException("Empresa sem acesso - Entrar em contato com suporte", null, HttpStatusCode.BadRequest);
+            if (userEntity.Status == UserStatus.UserStatusEnum.ElementAt(1))
+            {
+                throw new HttpRequestException("Usuário bloqueado", null, HttpStatusCode.Forbidden);
+            }
 
-                var user = new User()
-                {
-                    Name = userEntity.Name,
-                    Email = userEntity.Email,
-                    Role = userEntity.Role,
-                    Schema = userEntity.Cnpj
-                };
+            //var companyEntity = await _companyRepository.GetByCnpj(userEntity.Cnpj);
 
-                var tokenResponse = JwtManager.CreateToken(user);
+            //if (companyEntity.Status != CompanyStatus.CompanyStatusEnum.ElementAt(0))
+            //    throw new HttpRequestException("Empresa sem acesso - Entrar em contato com suporte", null, HttpStatusCode.BadRequest);
 
-                userEntity.LastToken = tokenResponse.Token;
-                await _userRepository.UpdateUser(userEntity);
+            var user = new User()
+            {
+                Name = userEntity.Name,
+                Email = userEntity.Email,
+                Role = userEntity.Role,
+                Schema = userEntity.Cnpj
+            };
 
-                return tokenResponse;
+            var tokenResponse = JwtManager.CreateToken(user);
+
+            userEntity.LastToken = tokenResponse.Token;
+            await _userRepository.UpdateUser(userEntity);
+
+            return tokenResponse;
         }
 
         //Adicionar validações para entrar no end, se n estiver logado nem faz logout
         public async Task<bool> Logout(TokenRequest tokenRequest)
         {
-                //Log entrou no método
-                var email = JwtManager.ExtractEmailByToken(tokenRequest.Token);
+            //Log entrou no método
+            var email = JwtManager.ExtractEmailByToken(tokenRequest.Token);
 
-                var userForUpdate = await _userRepository.GetByEmail(email) ??
-                    throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
+            var cnpj = JwtManager.ExtractCnpjByToken(tokenRequest.Token);
 
-                userForUpdate.LastToken = string.Empty;
+            var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
+                throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-                if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
-                else return false;
+            userForUpdate.LastToken = string.Empty;
+
+            if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
+            else return false;
         }
     }
 }

@@ -60,14 +60,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpGet("email/{email}")]
-        public async Task<IActionResult> GetByEmailOdCpf(string email)
+        [HttpGet("email/{email}/cnpj/{cnpj}")]
+        public async Task<IActionResult> GetByEmail(string email, string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} User:{@email}", System.DateTime.Now, email, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, email, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var user = await _userService.GetByEmail(email);
+                var user = await _userService.GetByEmail(email, cnpj);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
                 return Ok(user);
             }
@@ -80,14 +80,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpGet("cpf/{cpf}")]
-        public async Task<IActionResult> GetByCpf(string cpf)
+        [HttpGet("cpf/{cpf}/cnpj/{cnpj}")]
+        public async Task<IActionResult> GetByCpf(string cpf, string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} User:{@email}", System.DateTime.Now, cpf, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cpf, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var user = await _userService.GetByCpf(cpf);
+                var user = await _userService.GetByCpf(cpf, cnpj);
                 return Ok(user);
             }
             catch (HttpRequestException ex)
@@ -99,8 +99,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpPut("{email}")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserRequest userRequest, string email)
+        [HttpPut("email/{email}/cnpj/{cnpj}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserRequest userRequest, string email, string cnpj)
         {
             try
             {
@@ -115,7 +115,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                     return BadRequest(userValidationErros);
                 }
 
-                if (await _userService.UpdateUser(userRequest, email)) return Ok();
+                if (await _userService.UpdateUser(userRequest, email, cnpj)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
             }
             catch (HttpRequestException ex)
@@ -127,17 +127,17 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
         //[Authorize]
         //[TokenValidationDataBase]
-        [HttpPut("email/{email}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, string email)
+        [HttpPut("email/{email}/cnpj/{cnpj}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, string email, string cnpj)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} User:{@email}", System.DateTime.Now, status, email, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, status, email, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _userService.UpdateStatus(status, email)) return Ok();
+                if (await _userService.UpdateStatus(status, email, cnpj)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
             }
             catch (HttpRequestException ex)

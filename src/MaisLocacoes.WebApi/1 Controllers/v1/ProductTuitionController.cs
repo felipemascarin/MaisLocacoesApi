@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
 using Service.v1.Services;
+using System.Net;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -154,6 +155,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             try
             {
                 _logger.LogInformation("UpdateCode {@dateTime} productcode:{@productcode} id:{@id} User:{@email}", System.DateTime.Now, productCode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (productCode == null)
+                    throw new HttpRequestException("Código do produto é obrigatório", null, HttpStatusCode.BadRequest);
 
                 if (await _productTuitionService.UpdateProductCode(productCode, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));

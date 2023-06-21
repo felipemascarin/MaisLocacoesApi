@@ -40,18 +40,20 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
             }
 
-            var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
-            if (existsproductTuition)
+            if (productTuitionRequest.ProductCode != null)
             {
-                throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
-            }
-
-            var product = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
+                var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
+                if (existsproductTuition)
+                {
+                    throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
+                }
+                var product = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
                 throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                throw new HttpRequestException("Produto já alugado", null, HttpStatusCode.BadRequest);
-            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                throw new HttpRequestException("Produto em manutenção", null, HttpStatusCode.BadRequest);
+                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+                    throw new HttpRequestException("Produto já alugado", null, HttpStatusCode.BadRequest);
+                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+                    throw new HttpRequestException("Produto em manutenção", null, HttpStatusCode.BadRequest);
+            }
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
@@ -124,18 +126,21 @@ namespace Service.v1.Services
                     }
                 }
 
-                var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
-                if (existsproductTuition)
+                if (productTuitionRequest.ProductCode != null)
                 {
-                    throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
-                }
+                    var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
+                    if (existsproductTuition)
+                    {
+                        throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
+                    }
 
-                var product = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
-                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                    throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                    throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+                    var product = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
+                    throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                    if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+                        throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
+                    if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+                        throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+                }
             }
 
             productTuitionForUpdate.RentId = productTuitionRequest.RentId;
