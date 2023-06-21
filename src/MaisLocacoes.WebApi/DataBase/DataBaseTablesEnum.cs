@@ -13,6 +13,7 @@
         public const string Oss = "Oss";
         public const string Products = "Products";
         public const string ProductTuitions = "ProductTuitions";
+        public const string ProductTuitionValues = "ProductTuitionValues";
         public const string ProductTypes = "ProductTypes";
         public const string ProductWastes = "ProductWastes";
         public const string Qgs = "Qgs";

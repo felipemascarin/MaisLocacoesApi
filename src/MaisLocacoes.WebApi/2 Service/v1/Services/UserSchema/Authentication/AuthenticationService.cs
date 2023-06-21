@@ -25,9 +25,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             //Log entrou no método
             var email = JwtManager.ExtractEmailByToken(loginRequest.GoogleToken);
 
-            var cnpj = JwtManager.ExtractCnpjByToken(loginRequest.GoogleToken);
-
-            var userEntity = await _userRepository.GetByEmail(email, cnpj) ??
+            var userEntity = await _userRepository.GetByEmail(email, loginRequest.Cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             if (userEntity.Status == UserStatus.UserStatusEnum.ElementAt(1))
@@ -62,7 +60,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             //Log entrou no método
             var email = JwtManager.ExtractEmailByToken(tokenRequest.Token);
 
-            var cnpj = JwtManager.ExtractCnpjByToken(tokenRequest.Token);
+            var cnpj = JwtManager.ExtractSchemaByToken(tokenRequest.Token);
 
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);

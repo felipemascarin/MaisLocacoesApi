@@ -50,6 +50,9 @@ namespace Configuration
                 config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
                 config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>();
+                
+                config.CreateMap<ProductTuitionValueRequest, ProductTuitionValueEntity>();
+                config.CreateMap<ProductTuitionValueEntity, ProductTuitionValueResponse>();
 
                 config.CreateMap<ProductTypeRequest, ProductTypeEntity>();
                 config.CreateMap<ProductTypeEntity, ProductTypeResponse>();

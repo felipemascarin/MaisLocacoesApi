@@ -4,18 +4,27 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Repository.v1.Entity
 {
-    [Table(TableNameEnum.ProductTypes)]
-    public class ProductTypeEntity
+    [Table(TableNameEnum.ProductTuitionValues)]
+    public class ProductTuitionValueEntity
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public int ProductTypeId { get; set; }
+        public virtual ProductTypeEntity ProductTypeEntity { get; set; }
+
+        public int QuantityPeriod { get; set; }
+
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string Type { get; set; }
+        public string TimePeriod { get; set; }
 
-        public bool IsManyParts { get; set; }
+        public bool IsDefault { get; set; }
+
+
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Value { get; set; }
 
         public DateTime CreatedAt { get; set; }
 
@@ -28,11 +37,5 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? UpdatedBy { get; set; }
-
-        public bool? Deleted { get; set; }
-
-        public ICollection<ProductEntity> Products { get; set; }
-        public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }
-        public ICollection<ProductTuitionValueEntity> ProductTuitionValues { get; set; }
     }
 }

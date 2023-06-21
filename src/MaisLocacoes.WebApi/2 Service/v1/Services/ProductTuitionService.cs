@@ -15,18 +15,21 @@ namespace Service.v1.Services
     {
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IRentRepository _rentRepository;
+        private readonly IBillRepository _billRepository;
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
             IRentRepository rentRepository,
+            IBillRepository billRepository,
             IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _productTuitionRepository = productTuitionRepository;
             _rentRepository = rentRepository;
+            _billRepository = billRepository;
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -40,7 +43,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
             }
 
-            if (productTuitionRequest.ProductCode != null)
+            if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
             {
                 var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
                 if (existsproductTuition)
@@ -115,7 +118,7 @@ namespace Service.v1.Services
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (productTuitionRequest.RentId != productTuitionForUpdate.RentId || productTuitionRequest.ProductTypeId != productTuitionForUpdate.ProductTypeId || productTuitionRequest.ProductCode.ToLower() != productTuitionForUpdate.ProductCode.ToLower())
+            if (productTuitionRequest.RentId != productTuitionForUpdate.RentId || productTuitionRequest.ProductTypeId != productTuitionForUpdate.ProductTypeId || productTuitionRequest.ProductCode != productTuitionForUpdate.ProductCode)
             {
                 if (productTuitionRequest.RentId != productTuitionForUpdate.RentId)
                 {
@@ -126,7 +129,7 @@ namespace Service.v1.Services
                     }
                 }
 
-                if (productTuitionRequest.ProductCode != null)
+                if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
                 {
                     var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
                     if (existsproductTuition)
@@ -205,6 +208,26 @@ namespace Service.v1.Services
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;
             else return false;
+        }
+
+        public async Task CreateBills(ProductTuitionEntity productTuition)
+        {
+            var billsQuantity = 0;
+            if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
+                billsQuantity = 1;
+            else if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2))
+                billsQuantity = productTuition.QuantityPeriod;
+
+            for (int i = 0; i < billsQuantity; i++)
+            {
+                var bill = new BillEntity()
+                {
+
+                };
+
+                await _billRepository.CreateBill(bill);
+            }
+            
         }
     }
 }

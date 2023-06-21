@@ -22,6 +22,7 @@ namespace Repository.v1.Repository
         }
 
         public async Task<ProductTuitionEntity> GetById(int id) => await _context.ProductTuitions.Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+        
         public async Task<bool> ProductTuitionExists(int id) => await _context.ProductTuitions.AnyAsync(p => p.Id == id && p.Deleted == false);
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId) => await _context.ProductTuitions.Where(p => p.RentId == rentId && p.Deleted == false).OrderBy(p => p.FinalDateTime).ToListAsync();

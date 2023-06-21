@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
+using MaisLocacoes.WebApi._2_Service.v1.Services;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
+using MaisLocacoes.WebApi._3_Repository.v1.Repository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -40,6 +42,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IOsService, OsService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductTuitionService, ProductTuitionService>();
+            services.AddScoped<IProductTuitionValueService, ProductTuitionValueService>();
             services.AddScoped<IProductTypeService, ProductTypeService>();
             services.AddScoped<IProductWasteService, ProductWasteService>();
             services.AddScoped<IQgService, QgService>();
@@ -58,6 +61,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IOsRepository, OsRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductTuitionRepository, ProductTuitionRepository>();
+            services.AddScoped<IProductTuitionValueRepository, ProductTuitionValueRepository>();
             services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
             services.AddScoped<IProductWasteRepository, ProductWasteRepository>();
             services.AddScoped<IQgRepository, QgRepository>();
@@ -77,6 +81,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<CompanyWasteRequest>, CompanyWasteValidator>();
             services.AddScoped<IValidator<OsRequest>, OsValidator>();
             services.AddScoped<IValidator<ProductTuitionRequest>, ProductTuitionValidator>();
+            services.AddScoped<IValidator<ProductTuitionValueRequest>, ProductTuitionValueValidator>();
             services.AddScoped<IValidator<ProductTypeRequest>, ProductTypeValidator>();
             services.AddScoped<IValidator<ProductRequest>, ProductValidator>();
             services.AddScoped<IValidator<ProductWasteRequest>, ProductWasteValidator>();

@@ -57,7 +57,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .When(client => client.FirstDueDate != null);
 
             RuleFor(product => product.QuantityPeriod)
-                .Must(parts => int.TryParse(parts.ToString(), out var result) &&
+                .Must(quantityPeriod => int.TryParse(quantityPeriod.ToString(), out var result) &&
                  result > 0)
                 .WithMessage("A quantidade de períodos deve ser inserida");
 

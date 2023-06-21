@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 using System.Net;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
@@ -23,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductTuitionController(IProductTuitionService productTuitionService,
-            IValidator<ProductTuitionRequest> productTuitionValidator,
+        IValidator<ProductTuitionRequest> productTuitionValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {

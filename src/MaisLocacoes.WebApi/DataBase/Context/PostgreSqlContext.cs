@@ -33,6 +33,7 @@ namespace MaisLocacoes.WebApi.Context
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
         public DbSet<ProductTuitionEntity> ProductTuitions { get; set; }
+        public DbSet<ProductTuitionValueEntity> ProductTuitionValues { get; set; }
         public DbSet<ProductTypeEntity> ProductTypes { get; set; }
         public DbSet<ProductWasteEntity> ProductWastes { get; set; }
         public DbSet<QgEntity> Qgs { get; set; }
@@ -82,6 +83,11 @@ namespace MaisLocacoes.WebApi.Context
             modelBuilder.Entity<CompanyEntity>()
                 .Property(p => p.NotifyDaysBefore)
                 .HasDefaultValue(0);
+
+            //Definindo valor Default IsDefault de ProductTuitionValueEntity:
+            modelBuilder.Entity<ProductTuitionValueEntity>()
+                .Property(p => p.IsDefault)
+                .HasDefaultValue(false);
 
             //Definindo valor Default para Parts no Product:
             modelBuilder.Entity<ProductEntity>()
@@ -295,6 +301,12 @@ namespace MaisLocacoes.WebApi.Context
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Rents));
+
+            modelBuilder.Entity<ProductTuitionValueEntity>()
+            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
+            .WithMany(one => one.ProductTuitionValues)
+            .HasForeignKey(many => new { many.ProductTypeId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitionValues, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductWasteEntity>()
             .HasOne<ProductEntity>(many => many.ProductEntity)
