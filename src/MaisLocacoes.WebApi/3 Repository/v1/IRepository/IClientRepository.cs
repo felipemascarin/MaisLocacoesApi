@@ -7,6 +7,7 @@ namespace Repository.v1.IRepository
     {
         Task<ClientEntity> CreateClient(ClientEntity clientEntity);
         Task<ClientEntity> GetById(int id);
+        Task<ClientEntity> GetByIdDetails(int id);
         Task<ClientEntity> GetByCpf(string cpf);
         Task<ClientEntity> GetByCnpj(string cnpj);
         Task<bool> ClientExists(int id);

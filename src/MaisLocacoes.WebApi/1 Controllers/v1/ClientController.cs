@@ -82,6 +82,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("client/details/id/{id}")]
+        public async Task<IActionResult> GetByIdDetails(int id)
+        {
+            try
+            {
+                _logger.LogInformation("GetByIdDetails {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var client = await _clientService.GetByIdDetails(id);
+                return Ok(client);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpGet("cpf/{cpf}")]
         public async Task<IActionResult> GetByCpf(string cpf)
         {

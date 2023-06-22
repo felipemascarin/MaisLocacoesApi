@@ -3,6 +3,7 @@ using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._2_Service.v1.Services;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
 using MaisLocacoes.WebApi._3_Repository.v1.Repository;
+using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -28,6 +29,14 @@ namespace MaisLocacoes.WebApi.IoC
 {
     public class Bootstrapper
     {
+
+        private readonly IServiceCollection Services;
+
+        public Bootstrapper(IServiceCollection services)
+        {
+            Services = services;
+        }
+
         public static void Configure(IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
@@ -89,6 +98,8 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<RentedPlaceRequest>, RentedPlaceValidator>();
             services.AddScoped<IValidator<RentRequest>, RentValidator>();
             services.AddScoped<IValidator<SupplierRequest>, SupplierValidator>();
+
+            services.AddScoped<PostgreSqlContext>();
         }
     }
 }

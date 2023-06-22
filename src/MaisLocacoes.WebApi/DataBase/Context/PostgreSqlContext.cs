@@ -13,6 +13,7 @@ namespace MaisLocacoes.WebApi.Context
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration Configuration;
+
         public PostgreSqlContext() { }
 
         public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)

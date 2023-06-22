@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using System.Net;
+﻿using System.Net;
 
 namespace MaisLocacoes.WebApi.Exceptions.Middleware
 {

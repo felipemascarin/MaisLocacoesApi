@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -61,6 +62,9 @@ namespace Service.v1.Services
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
+            if (billForUpdate.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
+
             if (billRequest.ProductTuitionId != billForUpdate.ProductTuitionId)
             {
                 var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
@@ -87,6 +91,9 @@ namespace Service.v1.Services
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrado", null, HttpStatusCode.NotFound);
+
+            if (billForUpdate.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
 
             billForUpdate.Status = status;
             billForUpdate.UpdatedAt = System.DateTime.UtcNow;

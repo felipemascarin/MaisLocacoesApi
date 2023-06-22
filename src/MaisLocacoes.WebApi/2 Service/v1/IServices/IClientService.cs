@@ -8,6 +8,7 @@ namespace Service.v1.IServices
     {
         Task<ClientResponse> CreateClient(ClientRequest clientRequest);
         Task<ClientResponse> GetById(int id);
+        Task<ClientResponse> GetByIdDetails(int id);
         Task<ClientResponse> GetByCpf(string cpf);
         Task<ClientResponse> GetByCnpj(string cnpj);
         Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query);

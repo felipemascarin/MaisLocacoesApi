@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.VisualBasic;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -63,6 +64,8 @@ namespace Service.v1.Services
             productTuitionEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
+
+            CreateBills(productTuitionEntity);
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
 
@@ -210,7 +213,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task CreateBills(ProductTuitionEntity productTuition)
+        public async void CreateBills(ProductTuitionEntity productTuition)
         {
             var billsQuantity = 0;
             if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
@@ -220,14 +223,21 @@ namespace Service.v1.Services
 
             for (int i = 0; i < billsQuantity; i++)
             {
-                var bill = new BillEntity()
-                {
+                var bill = new BillEntity();
 
-                };
+                bill.ProductTuitionId = productTuition.Id;
+                bill.Value = productTuition.Value;
+                bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);
+                bill.Status = BillStatus.BillStatusEnum.ElementAt(0);
+                bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
                 await _billRepository.CreateBill(bill);
             }
-            
         }
+
+        //public async Task CreateOss(ProductTuitionEntity productTuition)
+        //{
+
+        //}
     }
 }

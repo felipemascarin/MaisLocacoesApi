@@ -24,11 +24,13 @@ namespace Repository.v1.Repository
             return clientEntity;
         }
 
+        public async Task<ClientEntity> GetById(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+        
+        public async Task<ClientEntity> GetByIdDetails(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
+
         public async Task<ClientEntity> GetByCpf(string cpf) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
         
         public async Task<ClientEntity> GetByCnpj(string cnpj) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
-
-        public async Task<ClientEntity> GetById(int id) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
 
         public async Task<bool> ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id && c.Deleted == false);
 
