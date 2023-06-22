@@ -17,7 +17,7 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         public async Task<ProductTuitionValueEntity> CreateProductTuitionValue(ProductTuitionValueEntity productTuitionValueEntity)
         {
             await _context.ProductTuitionValues.AddAsync(productTuitionValueEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return productTuitionValueEntity;
         }
 

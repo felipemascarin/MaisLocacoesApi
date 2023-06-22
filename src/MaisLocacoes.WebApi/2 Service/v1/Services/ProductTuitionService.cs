@@ -16,6 +16,7 @@ namespace Service.v1.Services
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IRentRepository _rentRepository;
         private readonly IBillRepository _billRepository;
+        private readonly IOsRepository _osRepository;
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
@@ -23,6 +24,7 @@ namespace Service.v1.Services
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
             IRentRepository rentRepository,
             IBillRepository billRepository,
+            IOsRepository osRepository,
             IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
@@ -30,6 +32,7 @@ namespace Service.v1.Services
             _productTuitionRepository = productTuitionRepository;
             _rentRepository = rentRepository;
             _billRepository = billRepository;
+            _osRepository = osRepository;
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -65,6 +68,7 @@ namespace Service.v1.Services
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
             CreateBills(productTuitionEntity);
+            CreateOs(productTuitionEntity);
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
 
@@ -212,7 +216,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async void CreateBills(ProductTuitionEntity productTuition)
+        public void CreateBills(ProductTuitionEntity productTuition)
         {
             var billsQuantity = 0;
             if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
@@ -230,13 +234,19 @@ namespace Service.v1.Services
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(0);
                 bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-                await _billRepository.CreateBill(bill);
+                _billRepository.CreateBill(bill);
             }
         }
 
-        //public async Task CreateOss(ProductTuitionEntity productTuition)
-        //{
+        public void CreateOs(ProductTuitionEntity productTuition)
+        {
+            var os = new OsEntity();
 
-        //}
+            os.ProductTuitionId = productTuition.Id;
+            os.Status = OsStatus.OsStatusEnum.ElementAt(0);
+            os.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            _osRepository.CreateOs(os);
+        }
     }
 }

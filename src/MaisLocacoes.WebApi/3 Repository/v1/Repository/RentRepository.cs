@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<RentEntity> CreateRent(RentEntity rentEntity)
         {
             await _context.Rents.AddAsync(rentEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return rentEntity;
         }
 

@@ -17,7 +17,7 @@ namespace Repository.v1.Repository.UserSchema
         public async Task<UserEntity> CreateUser(UserEntity userEntity)
         {
             await _context.Users.AddAsync(userEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return userEntity;
         }
 

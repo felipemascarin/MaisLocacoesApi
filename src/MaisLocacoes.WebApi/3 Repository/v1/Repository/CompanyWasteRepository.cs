@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<CompanyWasteEntity> CreateCompanyWaste(CompanyWasteEntity companyWasteEntity)
         {
             await _context.CompanyWastes.AddAsync(companyWasteEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return companyWasteEntity;
         }
 

@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<AddressEntity> CreateAddress(AddressEntity addressEntity)
         {
                 await _context.Addresses.AddAsync(addressEntity);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return addressEntity;
         }
 

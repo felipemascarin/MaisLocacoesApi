@@ -18,7 +18,7 @@ namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
         public async Task<CompanyAddressEntity> CreateCompanyAddress(CompanyAddressEntity companyAddressEntity)
         {
             await _context.CompaniesAddresses.AddAsync(companyAddressEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return companyAddressEntity;
         }
 

@@ -18,7 +18,7 @@ namespace Repository.v1.Repository.UserSchema
         {
             _context.CreateSchema(companyEntity.Cnpj);
             await _context.Companies.AddAsync(companyEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return companyEntity;
         }
 

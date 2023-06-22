@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<OsEntity> CreateOs(OsEntity osEntity)
         {
             await _context.Oss.AddAsync(osEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return osEntity;
         }
 

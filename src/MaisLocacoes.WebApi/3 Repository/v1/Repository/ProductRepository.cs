@@ -20,7 +20,7 @@ namespace Repository.v1.Repository
         public async Task<ProductEntity> CreateProduct(ProductEntity productEntity)
         {
             await _context.Products.AddAsync(productEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return productEntity;
         }
 

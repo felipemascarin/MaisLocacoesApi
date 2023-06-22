@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<ProductTuitionEntity> CreateProductTuition(ProductTuitionEntity productTuitionEntity)
         {
             await _context.ProductTuitions.AddAsync(productTuitionEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return productTuitionEntity;
         }
 

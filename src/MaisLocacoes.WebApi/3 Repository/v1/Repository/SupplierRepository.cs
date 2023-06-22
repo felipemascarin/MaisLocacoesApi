@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity)
         {
             await _context.Suppliers.AddAsync(supplierEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return supplierEntity;
         }
 

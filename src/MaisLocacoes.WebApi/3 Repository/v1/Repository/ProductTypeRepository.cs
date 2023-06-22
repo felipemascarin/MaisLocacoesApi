@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity)
         {
             await _context.ProductTypes.AddAsync(productTypeEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return productTypeEntity;
         }
 

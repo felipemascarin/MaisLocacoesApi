@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<QgEntity> CreateQg(QgEntity qgEntity)
         {
             await _context.Qgs.AddAsync(qgEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return qgEntity;
         }
 

@@ -19,7 +19,7 @@ namespace Repository.v1.Repository
         public async Task<ProductWasteEntity> CreateProductWaste(ProductWasteEntity productWasteEntity)
         {
             await _context.ProductWastes.AddAsync(productWasteEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return productWasteEntity;
         }
 

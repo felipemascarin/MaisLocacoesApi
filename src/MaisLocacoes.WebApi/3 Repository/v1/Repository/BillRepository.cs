@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<BillEntity> CreateBill(BillEntity billEntity)
         {
             await _context.Bills.AddAsync(billEntity);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             return billEntity;
         }
 
