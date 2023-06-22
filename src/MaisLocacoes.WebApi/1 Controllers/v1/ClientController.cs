@@ -82,7 +82,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("client/details/id/{id}")]
+        [HttpGet("details/id/{id}")]
         public async Task<IActionResult> GetByIdDetails(int id)
         {
             try

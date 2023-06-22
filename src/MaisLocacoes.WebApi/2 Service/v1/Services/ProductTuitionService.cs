@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.VisualBasic;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -65,7 +64,7 @@ namespace Service.v1.Services
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
-            //CreateBills(productTuitionEntity);
+            CreateBills(productTuitionEntity);
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
 

@@ -10,7 +10,6 @@ namespace MaisLocacoes.WebApi.Context
 {
     public class PostgreSqlContext : DbContext
     {
-
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration Configuration;
 
