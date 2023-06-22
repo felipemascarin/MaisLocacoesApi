@@ -245,6 +245,7 @@ namespace Service.v1.Services
             {
                 var bill = new BillEntity();
 
+                bill.RentId = productTuition.RentId;
                 bill.ProductTuitionId = productTuition.Id;
                 bill.Value = productTuition.Value;
                 bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);

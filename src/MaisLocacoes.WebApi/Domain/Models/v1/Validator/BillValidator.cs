@@ -8,10 +8,16 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
     {
         public BillValidator()
         {
+            RuleFor(bill => bill.RentId)
+                .Must(rentId => int.TryParse(rentId.ToString(), out var result) &&
+                 result > 0)
+                .WithMessage("Id da locação deve ser um número inteiro maior que 0");
+
             RuleFor(bill => bill.ProductTuitionId)
                 .Must(productTuitionId => int.TryParse(productTuitionId.ToString(), out var result) &&
                  result > 0)
-                .WithMessage("Id do ProductTuition deve ser um número inteiro maior que 0");
+                .WithMessage("Id do ProductTuition se inserido deve ser um número inteiro maior que 0")
+                .When(bill => bill.ProductTuitionId != null);
 
             RuleFor(bill => bill.Value)
                 .Must(value => decimal.TryParse(value.ToString(), out var result) &&

@@ -120,16 +120,15 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "MaisLocacoes.WebApi v1");
         c.OAuthClientId("Swagger");
         c.OAuthAppName("Swagger UI");
     });
+    app.UseSwagger();
 }
 
 app.UseExceptionHandler("/error");

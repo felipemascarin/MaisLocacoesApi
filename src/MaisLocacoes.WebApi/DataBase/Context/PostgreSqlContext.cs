@@ -267,10 +267,10 @@ namespace MaisLocacoes.WebApi.Context
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));
 
             modelBuilder.Entity<BillEntity>()
-            .HasOne<ProductTuitionEntity>(many => many.ProductTuitionEntity)
+            .HasOne<RentEntity>(many => many.RentEntity)
             .WithMany(one => one.Bills)
-            .HasForeignKey(many => new { many.ProductTuitionId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
+            .HasForeignKey(many => new { many.RentId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.Rents));
 
             modelBuilder.Entity<ClientEntity>()
             .HasOne<AddressEntity>(many => many.AddressEntity)

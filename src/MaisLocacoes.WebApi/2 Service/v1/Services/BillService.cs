@@ -14,26 +14,34 @@ namespace Service.v1.Services
     {
         private readonly IBillRepository _billRepository;
         private readonly IProductTuitionRepository _productTuitionRepository;
+        private readonly IRentRepository _rentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public BillService(IBillRepository billRepository,
             IProductTuitionRepository productTuitionRepository,
+            IRentRepository rentRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _billRepository = billRepository;
-            _httpContextAccessor = httpContextAccessor;
-            _mapper = mapper;
             _productTuitionRepository = productTuitionRepository;
+            _rentRepository = rentRepository;
+            _httpContextAccessor = httpContextAccessor;
+            _mapper = mapper;            
         }
 
         public async Task<BillResponse> CreateBill(BillRequest billRequest)
         {
-            var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
-            if (!existsRent)
+            var rentExists = await _rentRepository.RentExists(billRequest.RentId);
+            if (!rentExists)
+                throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
+
+            if (billRequest.ProductTuitionId != null)
             {
-                throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
+                var existsProductTuition = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
+                if (!existsProductTuition)
+                    throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
             }
 
             var billEntity = _mapper.Map<BillEntity>(billRequest);
@@ -60,12 +68,19 @@ namespace Service.v1.Services
         public async Task<bool> UpdateBill(BillRequest billRequest, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
-                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+               throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             if (billForUpdate.Status == BillStatus.BillStatusEnum.ElementAt(1))
                 throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
 
-            if (billRequest.ProductTuitionId != billForUpdate.ProductTuitionId)
+            if (billRequest.RentId != billForUpdate.RentId)
+            {
+                var rentExists = await _rentRepository.RentExists(billRequest.RentId);
+                if (!rentExists)
+                    throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
+            }
+
+            if (billRequest.ProductTuitionId != billForUpdate.ProductTuitionId && billRequest.ProductTuitionId != null)
             {
                 var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
                 if (!existsRent)
