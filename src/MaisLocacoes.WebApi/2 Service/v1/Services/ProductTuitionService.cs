@@ -65,7 +65,7 @@ namespace Service.v1.Services
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
-            CreateBills(productTuitionEntity);
+            //CreateBills(productTuitionEntity);
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
 
