@@ -40,6 +40,8 @@ RUN dotnet publish "MaisLocacoes.WebApi.csproj" -c Release -o /app/publish /p:Us
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+RUN rm -f appsettings.json
+RUN rm -f appsettingsDocker.json
 
 ENV PATH="$PATH:/root/.dotnet/tools"
 
