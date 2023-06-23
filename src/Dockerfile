@@ -6,7 +6,6 @@ EXPOSE 443
 COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
 COPY MaisLocacoes.WebApi/. ./MaisLocacoes.WebApi/
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN rm -f ./MaisLocacoes.WebApi/appsettings.json
 COPY MaisLocacoes.WebApi/appsettingsDocker.json ./MaisLocacoes.WebApi/appsettings.json
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
