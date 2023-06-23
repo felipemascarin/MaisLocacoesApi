@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -80,6 +81,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         }
 
         [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("rentid/{rentId}")]
+        public async Task<IActionResult> GetByRentId(int rentId)
+        {
+            try
+            {
+                _logger.LogInformation("GetByRentTuitionId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, rentId, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var billsList = await _billService.GetByRentId(rentId);
+                return Ok(billsList);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+            [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBill([FromBody] BillRequest billRequest, int id)

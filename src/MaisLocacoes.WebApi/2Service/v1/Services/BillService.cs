@@ -3,8 +3,10 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.Extensions.Logging;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -63,6 +65,15 @@ namespace Service.v1.Services
             var billResponse = _mapper.Map<BillResponse>(billEntity);
 
             return billResponse;
+        }
+
+        public async Task<IEnumerable<BillResponse>> GetByRentId(int rentId)
+        {
+            var billsEntityList = await _billRepository.GetByRentId(rentId);
+
+            var BillsResponseList = _mapper.Map<IEnumerable<BillResponse>>(billsEntityList);
+
+            return BillsResponseList;
         }
 
         public async Task<bool> UpdateBill(BillRequest billRequest, int id)

@@ -23,6 +23,8 @@ namespace Repository.v1.Repository
 
         public async Task<BillEntity> GetById(int id) => await _context.Bills.FirstOrDefaultAsync(b => b.Id == id && b.Deleted == false);
 
+        public async Task<IEnumerable<BillEntity>> GetByRentId(int rentId) => await _context.Bills.Where(b => b.RentId == rentId && b.Deleted == false).OrderBy(b => b.DueDate).ToListAsync();
+        
         public async Task<int> UpdateBill(BillEntity billForUpdate)
         {
             _context.Bills.Update(billForUpdate);
