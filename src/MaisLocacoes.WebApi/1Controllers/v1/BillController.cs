@@ -158,7 +158,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("UpdatePaymentMode {@dateTime} paymentMode:{@paymentMode} id:{@id} User:{@email}", System.DateTime.Now, paymentMode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                if (!PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()) && paymentMode != null)
+                if (!PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
                     return BadRequest("Insira um modo de pagamento válido");
 
                 if (await _billService.UpdatePaymentMode(paymentMode, id)) return Ok();
