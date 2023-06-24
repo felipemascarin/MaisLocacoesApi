@@ -43,7 +43,7 @@ namespace Repository.v1.Repository
                      p.ProductTypeEntity.Type.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
         }
-
+         
         public async Task<IEnumerable<GetProductForRentDtoResponse>> GetProductsForRent(int productTypeId)
             => await _context.Products
                 .Include(p => p.ProductTypeEntity).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) && p.ProductTypeEntity.Id == productTypeId && p.Deleted == false)

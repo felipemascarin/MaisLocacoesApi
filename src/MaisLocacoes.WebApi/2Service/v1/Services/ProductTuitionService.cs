@@ -100,11 +100,20 @@ namespace Service.v1.Services
             return productTuitionResponse;
         }
 
-        public async Task<IEnumerable<ProductTuitionResponse>> GetAllByRentId(int rentId)
+        public async Task<IEnumerable<GetProductTuitionRentProductTypeReponse>> GetAllByRentId(int rentId)
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
-            var productTuitionsResponseList = _mapper.Map<IEnumerable<ProductTuitionResponse>>(productTuitionEntityList);
+            var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
+
+            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentProductTypeReponse>>(productTuitionEntityList);
+
+            for (int i = 0; i < productTuitionEntityListLenght; i++)
+            {
+                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<RentResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
+                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
+            }
 
             return productTuitionsResponseList;
         }
