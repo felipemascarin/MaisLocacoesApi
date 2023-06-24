@@ -40,9 +40,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .When(bill => bill.NfIdFireBase != null);
 
             RuleFor(bill => bill.PaymentMode)
+                .Must(paymentMode => PaymentModes.PaymentModesEnum.Contains(paymentMode))
+                .WithMessage("Modo de pagamento não existente")
                 .MaximumLength(255)
                 .WithMessage("Modo de pagamento ultrapassou o limite máximo de caracteres")
-                .When(bill => !string.IsNullOrEmpty(bill.PaymentMode));
+                .When(bill => bill.PaymentMode != null);
         }
     }
 }

@@ -151,6 +151,28 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpPut("id/{id}/paymentmode/{paymentMode}")]
+        public async Task<IActionResult> UpdatePaymentMode(string paymentMode, int id)
+        {
+            try
+            {
+                _logger.LogInformation("UpdatePaymentMode {@dateTime} paymentMode:{@paymentMode} id:{@id} User:{@email}", System.DateTime.Now, paymentMode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (!PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
+                    return BadRequest("Insira um modo de pagamento válido");
+
+                if (await _billService.UpdatePaymentMode(paymentMode, id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteById(int id)
         {

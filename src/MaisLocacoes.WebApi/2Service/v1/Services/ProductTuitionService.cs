@@ -259,6 +259,7 @@ namespace Service.v1.Services
                 bill.Value = productTuition.Value;
                 bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(0);
+                bill.PaymentMode = null;
                 bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
                 _billRepository.CreateBill(bill);

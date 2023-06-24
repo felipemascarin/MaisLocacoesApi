@@ -129,7 +129,23 @@ namespace Service.v1.Services
             else return false;
         }
 
-       public async Task<bool> DeleteById(int id)
+        public async Task<bool> UpdatePaymentMode(string paymentMode, int id)
+        {
+            var billForUpdate = await _billRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura não encontrado", null, HttpStatusCode.NotFound);
+
+            if (billForUpdate.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
+
+            billForUpdate.PaymentMode = paymentMode;
+            billForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> DeleteById(int id)
         {
             var billForDelete = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
