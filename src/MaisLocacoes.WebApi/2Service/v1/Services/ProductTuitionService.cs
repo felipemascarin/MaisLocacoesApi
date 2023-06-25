@@ -100,19 +100,21 @@ namespace Service.v1.Services
             return productTuitionResponse;
         }
 
-        public async Task<IEnumerable<GetProductTuitionRentProductTypeReponse>> GetAllByRentId(int rentId)
+        public async Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId)
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
             var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
 
-            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentProductTypeReponse>>(productTuitionEntityList);
+            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentProductTypeClientReponse>>(productTuitionEntityList);
 
             for (int i = 0; i < productTuitionEntityListLenght; i++)
             {
-                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<RentResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
+                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<GetRentClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
                 productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
                 productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<ClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
             }
 
             return productTuitionsResponseList;
