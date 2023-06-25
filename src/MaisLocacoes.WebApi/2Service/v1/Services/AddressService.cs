@@ -54,7 +54,7 @@ namespace Service.v1.Services
             addressForUpdate.City = addressRequest.City;
             addressForUpdate.State = addressRequest.State;
             addressForUpdate.Country = addressRequest.Country;
-            addressForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            addressForUpdate.UpdatedAt = System.DateTime.Now;
             addressForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _addressRepository.UpdateAddress(addressForUpdate) > 0) return true;

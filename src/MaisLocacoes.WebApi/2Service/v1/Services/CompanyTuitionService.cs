@@ -58,7 +58,7 @@ namespace Service.v1.Services
             companyTuitionForUpdate.Value = companyTuitionRequest.Value;
             companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
             companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate;
-            companyTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyTuitionForUpdate.UpdatedAt = System.DateTime.Now;
             companyTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate) > 0) return true;
@@ -71,7 +71,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
             companyTuitionForDelete.Deleted = true;
-            companyTuitionForDelete.UpdatedAt = System.DateTime.UtcNow;
+            companyTuitionForDelete.UpdatedAt = System.DateTime.Now;
             companyTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;

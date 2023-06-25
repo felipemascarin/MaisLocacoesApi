@@ -201,7 +201,7 @@ namespace Service.v1.Services
             clientForUpdate.CnpjDocumentUrl = clientRequest.CnpjDocumentUrl;
             clientForUpdate.AddressDocumentUrl = clientRequest.AddressDocumentUrl;
             clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
-            clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            clientForUpdate.UpdatedAt = System.DateTime.Now;
             clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
@@ -217,7 +217,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             clientForUpdate.Status = status;
-            clientForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            clientForUpdate.UpdatedAt = System.DateTime.Now;
             clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
@@ -230,7 +230,7 @@ namespace Service.v1.Services
                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             clientForDelete.Deleted = true;
-            clientForDelete.UpdatedAt = System.DateTime.UtcNow;
+            clientForDelete.UpdatedAt = System.DateTime.Now;
             clientForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _clientRepository.UpdateClient(clientForDelete) > 0) return true;

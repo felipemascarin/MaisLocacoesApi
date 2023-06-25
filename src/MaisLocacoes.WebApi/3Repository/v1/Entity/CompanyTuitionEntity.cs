@@ -19,14 +19,17 @@ namespace Repository.v1.Entity
         [Column(TypeName = "decimal(18,2)")]
         public decimal Value { get; set; }
 
-
+        [Column(TypeName = "timestamp")]
         public DateTime? PayDate { get; set; }
 
         [Required]
+        [Column(TypeName = "timestamp")]
         public DateTime DueDate { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

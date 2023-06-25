@@ -77,7 +77,7 @@ namespace Service.v1.Services
 
             productTypeForUpdate.Type = productTypeRequest.Type;
             productTypeForUpdate.IsManyParts = productTypeRequest.IsManyParts;
-            productTypeForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTypeForUpdate.UpdatedAt = System.DateTime.Now;
             productTypeForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTypeRepository.UpdateProductType(productTypeForUpdate) > 0) return true;
@@ -90,7 +90,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
             productTypeForDelete.Deleted = true;
-            productTypeForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productTypeForDelete.UpdatedAt = System.DateTime.Now;
             productTypeForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;

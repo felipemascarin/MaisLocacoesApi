@@ -104,76 +104,84 @@ namespace MaisLocacoes.WebApi.Context
                 .HasDefaultValue(1);
 
             //Definindo valores Default para campos CreatedAt como horario de inserção em UTC:
-            var currenteTimestampUtc = "CURRENT_TIMESTAMP AT TIME ZONE 'UTC'";
+            var currenteTimestamp = "CURRENT_TIMESTAMP";
+
+            modelBuilder.Entity<CompanyAddressEntity>()
+                .Property(x => x.CreatedAt)
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<CompanyEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<UserEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<AddressEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<BillEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<ClientEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<CompanyTuitionEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<CompanyWasteEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<OsEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<ProductEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<ProductTuitionEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
+
+            modelBuilder.Entity<ProductTuitionValueEntity>()
+                .Property(x => x.CreatedAt)
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<ProductTypeEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<ProductWasteEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<QgEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<RentedPlaceEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<RentEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<SupplierEntity>()
                 .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             //Definindo valores Default para o DueDate da Bill:
             modelBuilder.Entity<BillEntity>()
                 .Property(x => x.DueDate)
-                .HasDefaultValueSql(currenteTimestampUtc);
+                .HasDefaultValueSql(currenteTimestamp);
 
             //Definindo valores Default para os deleteds:
             modelBuilder.Entity<BillEntity>()

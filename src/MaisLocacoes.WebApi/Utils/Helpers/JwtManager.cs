@@ -40,7 +40,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim(ClaimTypes.Role, user.Role),
                     new Claim("schema", user.Schema)
                 }),
-                Expires = DateTime.UtcNow.AddHours(15),
+                Expires = DateTime.Now.AddHours(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 

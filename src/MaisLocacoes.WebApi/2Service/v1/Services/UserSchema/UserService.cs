@@ -103,7 +103,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.Cel = userRequest.Cel;
             userForUpdate.CivilStatus = userRequest.CivilStatus;
             userForUpdate.CpfDocumentUrl = userRequest.CpfDocumentUrl;
-            userForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            userForUpdate.UpdatedAt = System.DateTime.Now;
             userForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
@@ -116,7 +116,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             userForUpdate.Status = status;
-            userForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            userForUpdate.UpdatedAt = System.DateTime.Now;
             userForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;

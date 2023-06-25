@@ -78,7 +78,7 @@ namespace Service.v1.Services
             rentedPlaceForUpdate.RentId = rentedPlaceRequest.RentId;
             rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
-            rentedPlaceForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            rentedPlaceForUpdate.UpdatedAt = System.DateTime.Now;
             rentedPlaceForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(rentedPlaceRequest.Address, rentedPlaceForUpdate.AddressEntity.Id))

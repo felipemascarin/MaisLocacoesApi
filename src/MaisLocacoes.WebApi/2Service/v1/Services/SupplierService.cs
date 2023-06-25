@@ -85,7 +85,7 @@ namespace Service.v1.Services
             supplierForUpdate.Email = supplierRequest.Email;
             supplierForUpdate.Tel = supplierRequest.Tel;
             supplierForUpdate.Cel = supplierRequest.Cel;
-            supplierForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            supplierForUpdate.UpdatedAt = System.DateTime.Now;
             supplierForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id))
@@ -101,7 +101,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
             supplierForDelete.Deleted = true;
-            supplierForDelete.UpdatedAt = System.DateTime.UtcNow;
+            supplierForDelete.UpdatedAt = System.DateTime.Now;
             supplierForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _supplierRepository.UpdateSupplier(supplierForDelete) > 0) return true;

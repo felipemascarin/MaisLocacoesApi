@@ -45,8 +45,10 @@ namespace MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(255)")]
         public string Country { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

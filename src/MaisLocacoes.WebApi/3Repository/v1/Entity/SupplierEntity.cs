@@ -36,8 +36,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string? Cel { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

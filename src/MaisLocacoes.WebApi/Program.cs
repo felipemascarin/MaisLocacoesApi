@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Exceptions.Middleware;
 using MaisLocacoes.WebApi.IoC;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using MaisLocacoes.WebApi.Utils.Middlewares;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -41,8 +40,8 @@ builder.Services.AddCors(options =>
 //Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    //Deserialização dos requests com conversão de datas em utc
-    options.JsonSerializerOptions.Converters.Add(new DateTimeConverterUsingUtc());
+    //Deserialização das responses HTTP com conversão de datas em utc
+    //options.JsonSerializerOptions.Converters.Add(new DateTimeConverterUsingUtc());
 });
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();

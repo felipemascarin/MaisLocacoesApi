@@ -56,7 +56,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             companyAddressForUpdate.City = companyAddressRequest.City;
             companyAddressForUpdate.State = companyAddressRequest.State;
             companyAddressForUpdate.Country = companyAddressRequest.Country;
-            companyAddressForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyAddressForUpdate.UpdatedAt = System.DateTime.Now;
             companyAddressForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyAddressRepository.UpdateCompanyAddress(companyAddressForUpdate) > 0) return true;

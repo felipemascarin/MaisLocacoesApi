@@ -20,8 +20,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "decimal(18,2)")]
         public decimal Value { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? PayDate { get; set; }
 
+        [Column(TypeName = "timestamp")]
         [Required]
         public DateTime DueDate { get; set; }
 
@@ -40,8 +42,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? Description { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

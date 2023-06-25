@@ -75,7 +75,7 @@ namespace Service.v1.Services
             osForUpdate.InitialDateTime = osRequest.InitialDateTime;
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
-            osForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            osForUpdate.UpdatedAt = System.DateTime.Now;
             osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -88,7 +88,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForUpdate.Status = status;
-            osForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            osForUpdate.UpdatedAt = System.DateTime.Now;
             osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -101,7 +101,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForDelete.Deleted = true;
-            osForDelete.UpdatedAt = System.DateTime.UtcNow;
+            osForDelete.UpdatedAt = System.DateTime.Now;
             osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _osRepository.UpdateOs(osForDelete) > 0) return true;

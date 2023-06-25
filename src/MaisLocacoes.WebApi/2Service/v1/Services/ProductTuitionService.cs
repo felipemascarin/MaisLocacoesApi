@@ -191,7 +191,7 @@ namespace Service.v1.Services
             productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;
             productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
             productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
             productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -211,7 +211,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
 
             productTuitionForUpdate.ProductCode = productCode;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
             productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -224,7 +224,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionForUpdate.Status = status;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
             productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -237,7 +237,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionForDelete.Deleted = true;
-            productTuitionForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionForDelete.UpdatedAt = System.DateTime.Now;
             productTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;

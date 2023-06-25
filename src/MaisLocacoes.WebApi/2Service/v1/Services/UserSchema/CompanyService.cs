@@ -94,7 +94,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.AddressDocumentUrl = companyRequest.AddressDocumentUrl;
             companyForUpdate.LogoUrl = companyRequest.LogoUrl;
             companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore;
-            companyForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyForUpdate.UpdatedAt = System.DateTime.Now;
             companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id))
@@ -110,7 +110,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             companyForUpdate.Status = status;
-            companyForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyForUpdate.UpdatedAt = System.DateTime.Now;
             companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;

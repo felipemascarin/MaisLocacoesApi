@@ -24,10 +24,13 @@ namespace Repository.v1.Entity
         public decimal Value { get; set; }
 
         [Required]
+        [Column(TypeName = "timestamp")]
         public DateTime Date { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

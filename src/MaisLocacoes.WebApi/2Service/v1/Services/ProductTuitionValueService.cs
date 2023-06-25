@@ -93,7 +93,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             productTuitionValueForUpdate.TimePeriod = productTuitionValueRequest.TimePeriod;
             productTuitionValueForUpdate.IsDefault = productTuitionValueRequest.IsDefault;
             productTuitionValueForUpdate.Value = productTuitionValueRequest.Value;
-            productTuitionValueForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productTuitionValueForUpdate.UpdatedAt = System.DateTime.Now;
             productTuitionValueForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate) > 0) return true;

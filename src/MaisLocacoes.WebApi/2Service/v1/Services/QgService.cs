@@ -58,7 +58,7 @@ namespace Service.v1.Services
             qgForUpdate.Description = qgRequest.Description;
             qgForUpdate.Latitude = qgRequest.Latitude;
             qgForUpdate.Longitude = qgRequest.Longitude;
-            qgForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            qgForUpdate.UpdatedAt = System.DateTime.Now;
             qgForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id))
@@ -74,7 +74,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             qgForDelete.Deleted = true;
-            qgForDelete.UpdatedAt = System.DateTime.UtcNow;
+            qgForDelete.UpdatedAt = System.DateTime.Now;
             qgForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _qgRepository.UpdateQg(qgForDelete) > 0) return true;

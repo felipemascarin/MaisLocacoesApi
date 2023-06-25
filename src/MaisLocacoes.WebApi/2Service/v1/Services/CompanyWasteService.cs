@@ -56,7 +56,7 @@ namespace Service.v1.Services
             companyWasteForUpdate.Description = companyWasteRequest.Description;
             companyWasteForUpdate.Value = companyWasteRequest.Value;
             companyWasteForUpdate.Date = companyWasteRequest.Date;
-            companyWasteForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            companyWasteForUpdate.UpdatedAt = System.DateTime.Now;
             companyWasteForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
@@ -69,7 +69,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             companyWasteForDelete.Deleted = true;
-            companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow;
+            companyWasteForDelete.UpdatedAt = System.DateTime.Now;
             companyWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;

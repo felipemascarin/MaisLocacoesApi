@@ -107,7 +107,7 @@ namespace Service.v1.Services
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
-            billForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            billForUpdate.UpdatedAt = System.DateTime.Now;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -123,7 +123,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
 
             billForUpdate.Status = status;
-            billForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            billForUpdate.UpdatedAt = System.DateTime.Now;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -139,7 +139,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não é possível editar uma fatura paga", null, HttpStatusCode.NotFound);
 
             billForUpdate.PaymentMode = paymentMode;
-            billForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            billForUpdate.UpdatedAt = System.DateTime.Now;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -152,7 +152,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             billForDelete.Deleted = true;
-            billForDelete.UpdatedAt = System.DateTime.UtcNow;
+            billForDelete.UpdatedAt = System.DateTime.Now;
             billForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _billRepository.UpdateBill(billForDelete) > 0) return true;

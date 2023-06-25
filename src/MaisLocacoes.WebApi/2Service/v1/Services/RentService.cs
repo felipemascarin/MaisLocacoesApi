@@ -131,7 +131,7 @@ namespace Service.v1.Services
             rentForUpdate.ClientId = rentRequest.ClientId;
             rentForUpdate.Carriage = rentRequest.Carriage;
             rentForUpdate.Description = rentRequest.Description;
-            rentForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            rentForUpdate.UpdatedAt = System.DateTime.Now;
             rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (!await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id))
@@ -147,7 +147,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             rentForUpdate.Status = status;
-            rentForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            rentForUpdate.UpdatedAt = System.DateTime.Now;
             rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
@@ -160,7 +160,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             rentForDelete.Deleted = true;
-            rentForDelete.UpdatedAt = System.DateTime.UtcNow;
+            rentForDelete.UpdatedAt = System.DateTime.Now;
             rentForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
@@ -179,6 +179,7 @@ namespace Service.v1.Services
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(2);
                 bill.PaymentMode = null;
                 bill.Description = "Fatura de frete";
+                bill.DueDate = DateTime.Now;
                 bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
                 _billRepository.CreateBill(bill);

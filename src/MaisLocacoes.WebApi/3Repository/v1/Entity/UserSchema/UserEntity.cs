@@ -42,6 +42,7 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(2048)")]
         public string? ProfileImageUrl { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? BornDate { get; set; }
 
         [StringLength(255)]
@@ -64,8 +65,10 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(3000)")]
         public string? LastToken { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

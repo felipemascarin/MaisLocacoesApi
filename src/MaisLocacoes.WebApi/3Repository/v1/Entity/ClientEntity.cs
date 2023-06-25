@@ -61,6 +61,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string? Email { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? BornDate { get; set; }
 
         [StringLength(255)]
@@ -95,8 +96,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string Status { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
+        [Column(TypeName = "timestamp")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

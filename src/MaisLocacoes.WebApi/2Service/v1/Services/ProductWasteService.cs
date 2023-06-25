@@ -97,7 +97,7 @@ namespace Service.v1.Services
             productWasteForUpdate.Description = productWasteRequest.Description;
             productWasteForUpdate.Value = productWasteRequest.Value;
             productWasteForUpdate.Date = productWasteRequest.Date;
-            productWasteForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productWasteForUpdate.UpdatedAt = System.DateTime.Now;
             productWasteForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productWasteRepository.UpdateProductWaste(productWasteForUpdate) > 0) return true;
@@ -110,7 +110,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
 
             productWasteForDelete.Deleted = true;
-            productWasteForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productWasteForDelete.UpdatedAt = System.DateTime.Now;
             productWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productWasteRepository.UpdateProductWaste(productWasteForDelete) > 0) return true;

@@ -151,7 +151,7 @@ namespace Service.v1.Services
             productForUpdate.BoughtValue = productRequest.BoughtValue;
             productForUpdate.CurrentRentedPlaceId = productRequest.CurrentRentedPlaceId;
             productForUpdate.Parts = productRequest.Parts;
-            productForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productForUpdate.UpdatedAt = System.DateTime.Now;
             productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
@@ -164,7 +164,7 @@ namespace Service.v1.Services
                     throw new HttpRequestException("produto não encontrado", null, HttpStatusCode.NotFound);
 
             productForUpdate.Status = status;
-            productForUpdate.UpdatedAt = System.DateTime.UtcNow;
+            productForUpdate.UpdatedAt = System.DateTime.Now;
             productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
@@ -177,7 +177,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             productForDelete.Deleted = true;
-            productForDelete.UpdatedAt = System.DateTime.UtcNow;
+            productForDelete.UpdatedAt = System.DateTime.Now;
             productForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
