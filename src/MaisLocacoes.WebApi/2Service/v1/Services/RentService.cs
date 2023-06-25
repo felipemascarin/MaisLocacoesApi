@@ -14,18 +14,21 @@ namespace Service.v1.Services
     public class RentService : IRentService
     {
         private readonly IRentRepository _rentRepository;
+        private readonly IBillRepository _billRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RentService(IRentRepository rentRepository,
+            IBillRepository billRepository,
             IClientRepository clientRepository,
             IAddressService addressService,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
         {
             _rentRepository = rentRepository;
+            _billRepository = billRepository;
             _clientRepository = clientRepository;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
@@ -48,6 +51,8 @@ namespace Service.v1.Services
             rentEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
+
+            CreateCarriageBill(rentEntity);
 
             var rentResponse = _mapper.Map<RentResponse>(rentEntity);
             rentResponse.Address = addressResponse;
@@ -160,6 +165,24 @@ namespace Service.v1.Services
 
             if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
             else return false;
+        }
+
+        public void CreateCarriageBill(RentEntity rentEntity)
+        {
+            if (rentEntity.Carriage != null && rentEntity.Carriage > 0)
+            {
+                var bill = new BillEntity();
+
+                bill.RentId = rentEntity.Id;
+                bill.ProductTuitionId = null;
+                bill.Value = rentEntity.Carriage.Value;
+                bill.Status = BillStatus.BillStatusEnum.ElementAt(2);
+                bill.PaymentMode = null;
+                bill.Description = "Fatura de frete";
+                bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                _billRepository.CreateBill(bill);
+            }
         }
     }
 }

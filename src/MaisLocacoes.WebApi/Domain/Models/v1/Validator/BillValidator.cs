@@ -45,6 +45,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .MaximumLength(255)
                 .WithMessage("Modo de pagamento ultrapassou o limite máximo de caracteres")
                 .When(bill => bill.PaymentMode != null);
+
+            RuleFor(bill => bill.Description)
+                .MaximumLength(1000)
+                .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
+                .When(bill => !string.IsNullOrEmpty(bill.Description));
         }
     }
 }

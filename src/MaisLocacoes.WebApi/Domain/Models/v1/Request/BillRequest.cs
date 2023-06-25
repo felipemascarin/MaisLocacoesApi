@@ -9,5 +9,6 @@
         public DateTime DueDate { get; set; }
         public int? NfIdFireBase { get; set; }
         public string? PaymentMode { get; set; }
+        public string? Description { get; set; }
     }
 }

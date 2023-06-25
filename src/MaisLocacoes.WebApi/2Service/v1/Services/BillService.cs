@@ -106,6 +106,7 @@ namespace Service.v1.Services
             billForUpdate.DueDate = billRequest.DueDate;
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
+            billForUpdate.Description = billRequest.Description;
             billForUpdate.UpdatedAt = System.DateTime.UtcNow;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 

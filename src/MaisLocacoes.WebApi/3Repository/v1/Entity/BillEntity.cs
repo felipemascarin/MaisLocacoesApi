@@ -36,6 +36,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string? PaymentMode { get; set; }
 
+        [StringLength(1000)]
+        [Column(TypeName = "character varying(1000)")]
+        public string? Description { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }

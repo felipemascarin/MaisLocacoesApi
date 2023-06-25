@@ -170,6 +170,11 @@ namespace MaisLocacoes.WebApi.Context
                 .Property(x => x.CreatedAt)
                 .HasDefaultValueSql(currenteTimestampUtc);
 
+            //Definindo valores Default para o DueDate da Bill:
+            modelBuilder.Entity<BillEntity>()
+                .Property(x => x.DueDate)
+                .HasDefaultValueSql(currenteTimestampUtc);
+
             //Definindo valores Default para os deleteds:
             modelBuilder.Entity<BillEntity>()
                 .Property(x => x.Deleted)
