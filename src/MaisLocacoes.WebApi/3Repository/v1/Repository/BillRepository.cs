@@ -26,7 +26,7 @@ namespace Repository.v1.Repository
 
         public async Task<IEnumerable<BillEntity>> GetByRentId(int rentId) => await _context.Bills.Where(b => b.RentId == rentId && b.Deleted == false).OrderBy(b => b.DueDate).ToListAsync();
         
-        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore) => await _context.Bills.Include(b => b.RentEntity).Include(b => b.RentEntity.ClientEntity).Where(b => b.DueDate <= DateTime.Now.AddDays(notifyDaysBefore) && b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.Status != BillStatus.BillStatusEnum.ElementAt(3) && b.Deleted == false).OrderBy(b => b.DueDate).ToListAsync();
+        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore) => await _context.Bills.Include(b => b.RentEntity).Include(b => b.RentEntity.ClientEntity).Where(b => b.DueDate <= DateTime.Now.AddDays(notifyDaysBefore) && b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.Status != BillStatus.BillStatusEnum.ElementAt(3) && b.Deleted == false).OrderByDescending(b => b.DueDate).ToListAsync();
         
         public async Task<int> UpdateBill(BillEntity billForUpdate)
         {
