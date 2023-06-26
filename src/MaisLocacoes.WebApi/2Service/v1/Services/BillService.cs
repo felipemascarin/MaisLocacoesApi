@@ -4,12 +4,14 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualBasic;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Repository.v1.IRepository.UserSchema;
 using Repository.v1.Repository.UserSchema;
 using Service.v1.IServices;
+using System.IO;
 using System.Net;
 
 namespace Service.v1.Services
@@ -103,6 +105,24 @@ namespace Service.v1.Services
 
             foreach (var bill in billsEntityList)
             {
+                string productTypeName;
+                string productCode;
+                int? parts = 0;
+
+                if (bill.ProductTuitionId == null)
+                {
+                    productTypeName = null;
+                    productCode = null;
+                    parts = null;
+                }
+                else
+                {
+                    var productTuitionEntity = await _productTuitionRepository.GetById(bill.ProductTuitionId.Value);
+                    productTypeName = productTuitionEntity.ProductTypeEntity.Type;
+                    productCode = productTuitionEntity.ProductCode;
+                    parts = productTuitionEntity.Parts;
+                }
+
                 var billDto = new GetDuedsBillsResponse()
                 {
                     ClientName = bill.RentEntity.ClientEntity.ClientName,
@@ -111,7 +131,10 @@ namespace Service.v1.Services
                     ClientPhone = bill.RentEntity.ClientEntity.Cel,
                     RentId = bill.RentEntity.Id,
                     BillId = bill.Id,
-                    BillDescription = bill.Description
+                    BillDescription = bill.Description,
+                    ProductTypeName = productTypeName,
+                    ProductCode = productCode,
+                    Parts = parts
                 };
 
                 billDtoList.Add(billDto);

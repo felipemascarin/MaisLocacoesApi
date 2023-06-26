@@ -9,5 +9,8 @@
         public int RentId { get; set; }
         public int BillId { get; set; }
         public string? BillDescription { get; set;}
+        public string? ProductTypeName { get; set;}
+        public string? ProductCode { get; set;}
+        public int? Parts { get; set;}
     }
 }
