@@ -110,7 +110,8 @@ namespace Service.v1.Services
                     Value = bill.Value,
                     ClientPhone = bill.RentEntity.ClientEntity.Tel,
                     RentId = bill.RentEntity.Id,
-                    BillId = bill.Id
+                    BillId = bill.Id,
+                    BillDescription = bill.Description
                 };
 
                 billDtoList.Add(billDto);
