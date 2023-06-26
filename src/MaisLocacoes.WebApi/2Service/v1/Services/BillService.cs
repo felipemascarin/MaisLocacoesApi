@@ -132,6 +132,7 @@ namespace Service.v1.Services
                     RentId = bill.RentEntity.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description,
+                    NfIdFireBase = bill.NfIdFireBase,
                     ProductTypeName = productTypeName,
                     ProductCode = productCode,
                     Parts = parts

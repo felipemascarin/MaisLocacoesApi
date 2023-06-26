@@ -12,5 +12,6 @@
         public string? ProductTypeName { get; set;}
         public string? ProductCode { get; set;}
         public int? Parts { get; set;}
+        public int? NfIdFireBase { get; set;}
     }
 }
