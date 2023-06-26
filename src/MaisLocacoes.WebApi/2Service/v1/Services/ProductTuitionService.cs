@@ -6,7 +6,6 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -69,6 +68,8 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Produto já alugado", null, HttpStatusCode.BadRequest);
                 if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
                     throw new HttpRequestException("Produto em manutenção", null, HttpStatusCode.BadRequest);
+                if (product.Parts - product.RentedParts < productTuitionRequest.Parts)
+                    throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
             }
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
@@ -140,6 +141,23 @@ namespace Service.v1.Services
             return productTuitionsResponseList;
         }
 
+        public async Task<IEnumerable<GetProductTuitionRentResponse>> GetAllToRemove()
+        {
+            var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove();
+
+            var productsEntityListLenght = productTuitionEntityList.ToList().Count;
+
+            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentResponse>>(productTuitionEntityList);
+
+            for (int i = 0; i < productsEntityListLenght; i++)
+            {
+                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<RentResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
+            }
+
+            return productTuitionsResponseList;
+        }
+
         public async Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
@@ -177,6 +195,8 @@ namespace Service.v1.Services
                         throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
                     if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
                         throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+                    if (product.Parts - product.RentedParts < productTuitionRequest.Parts)
+                        throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
                 }
             }
 
@@ -204,11 +224,13 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             var product = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
-                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+            throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
             if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
                 throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
             if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
                 throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+            if (product.Parts - product.RentedParts < productTuitionForUpdate.Parts)
+                throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
 
             productTuitionForUpdate.ProductCode = productCode;
             productTuitionForUpdate.UpdatedAt = System.DateTime.Now;

@@ -99,7 +99,26 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             }
         }
 
-            [Authorize]
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("duedbills")]
+        public async Task<IActionResult> GetDuedBills()
+        {
+            try
+            {
+                _logger.LogInformation("GetDuedBills {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var billsList = await _billService.GetDuedBills();
+                return Ok(billsList);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBill([FromBody] BillRequest billRequest, int id)
@@ -130,38 +149,16 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("id/{id}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, int id)
+        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, int id)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email}", System.DateTime.Now, status, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} id:{@id} User:{@email}", System.DateTime.Now, status, paymentMode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (!BillStatus.BillStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _billService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
-                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
-            }
-        }
-
-        [Authorize]
-        [TokenValidationDataBase]
-        [HttpPut("id/{id}/paymentmode/{paymentMode}")]
-        public async Task<IActionResult> UpdatePaymentMode(string paymentMode, int id)
-        {
-            try
-            {
-                _logger.LogInformation("UpdatePaymentMode {@dateTime} paymentMode:{@paymentMode} id:{@id} User:{@email}", System.DateTime.Now, paymentMode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
-
-                if (!PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
-                    return BadRequest("Insira um modo de pagamento válido");
-
-                if (await _billService.UpdatePaymentMode(paymentMode, id)) return Ok();
+                if (await _billService.UpdateStatus(status, paymentMode, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)

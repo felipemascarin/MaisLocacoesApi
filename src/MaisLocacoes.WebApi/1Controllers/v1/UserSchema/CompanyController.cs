@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
+using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
@@ -68,6 +70,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                 _logger.LogInformation("GetByCnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 var company = await _companyService.GetByCnpj(cnpj);
+                return Ok(company);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("bytoken")]
+        public async Task<IActionResult> GetByToken()
+        {
+            try
+            {
+                _logger.LogInformation("GetByToken {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var company = await _companyService.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
                 return Ok(company);
             }
             catch (HttpRequestException ex)

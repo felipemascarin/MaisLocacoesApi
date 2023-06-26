@@ -10,6 +10,7 @@ namespace Service.v1.IServices
         Task<GetProductTuitionRentResponse> GetById(int id);
         Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId);
         Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);
+        Task<IEnumerable<GetProductTuitionRentResponse>> GetAllToRemove();
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
         Task<bool> UpdateProductCode(string productCode, int id);
         Task<bool> UpdateStatus(string status, int id);

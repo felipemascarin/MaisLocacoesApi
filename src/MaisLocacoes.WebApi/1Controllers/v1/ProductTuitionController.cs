@@ -120,6 +120,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("toremove")]
+        public async Task<IActionResult> GetAllToRemove()
+        {
+            try
+            {
+                _logger.LogInformation("GetAllToRemove {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var productTuitions = await _productTuitionService.GetAllToRemove();
+                return Ok(productTuitions);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProductTuition([FromBody] ProductTuitionRequest productTuitionRequest, int id)
         {

@@ -1,5 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Utils.Enums;
 
 namespace Service.v1.IServices
 {
@@ -7,10 +9,10 @@ namespace Service.v1.IServices
     {
         Task<BillResponse> CreateBill(BillRequest billRequest);
         Task<BillResponse> GetById(int id);
-        Task<IEnumerable<BillResponse>> GetByRentId(int rentId);
+        Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId);
+        Task<IEnumerable<BillResponse>> GetDuedBills();
         Task<bool> UpdateBill(BillRequest billRequest, int id);
-        Task<bool> UpdateStatus(string status, int id);
-        Task<bool> UpdatePaymentMode(string paymentMode, int id);
+        Task<bool> UpdateStatus(string status, string paymentMode, int id);
         Task<bool> DeleteById(int id);
     }
 }

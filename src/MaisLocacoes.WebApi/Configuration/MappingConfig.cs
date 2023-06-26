@@ -34,6 +34,8 @@ namespace Configuration
 
                 config.CreateMap<BillRequest, BillEntity>();
                 config.CreateMap<BillEntity, BillResponse>();
+                config.CreateMap<BillEntity, GetBillProductTypeForRentDTOResponse>();
+                config.CreateMap<GetBillProductTypeForRentDTOResponse, GetBillProductTypeForRentResponse>();
 
                 config.CreateMap<CompanyTuitionRequest, CompanyTuitionEntity>();
                 config.CreateMap<CompanyTuitionEntity, CompanyTuitionResponse>();
