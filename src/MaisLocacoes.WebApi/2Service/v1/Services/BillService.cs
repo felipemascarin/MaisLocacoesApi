@@ -108,7 +108,7 @@ namespace Service.v1.Services
                     ClientName = bill.RentEntity.ClientEntity.ClientName,
                     DueDate = bill.DueDate,
                     Value = bill.Value,
-                    ClientPhone = bill.RentEntity.ClientEntity.Tel,
+                    ClientPhone = bill.RentEntity.ClientEntity.Cel,
                     RentId = bill.RentEntity.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description
