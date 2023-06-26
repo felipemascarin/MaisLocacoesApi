@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.VisualBasic;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Repository.v1.IRepository.UserSchema;
@@ -92,15 +93,30 @@ namespace Service.v1.Services
             return billsResponseList;
         }
 
-        public async Task<IEnumerable<BillResponse>> GetDuedBills()
+        public async Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills()
         {
             var company = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
 
             var billsEntityList = await _billRepository.GetDuedBills(company.NotifyDaysBefore);
 
-            var billsResponseList = _mapper.Map<IEnumerable<BillResponse>>(billsEntityList);
+            var billDtoList = new List<GetDuedsBillsResponse>();
 
-            return billsResponseList;
+            foreach (var bill in billsEntityList)
+            {
+                var billDto = new GetDuedsBillsResponse()
+                {
+                    ClientName = bill.RentEntity.ClientEntity.ClientName,
+                    DueDate = bill.DueDate,
+                    Value = bill.Value,
+                    ClientPhone = bill.RentEntity.ClientEntity.Tel,
+                    RentId = bill.RentEntity.Id,
+                    BillId = bill.Id
+                };
+
+                billDtoList.Add(billDto);
+            }
+
+            return billDtoList;
         }
 
         public async Task<bool> UpdateBill(BillRequest billRequest, int id)
