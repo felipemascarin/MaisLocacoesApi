@@ -18,6 +18,7 @@ namespace Service.v1.Services
         private readonly IBillRepository _billRepository;
         private readonly IOsRepository _osRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IProductService _productService;
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
@@ -27,6 +28,7 @@ namespace Service.v1.Services
             IBillRepository billRepository,
             IOsRepository osRepository,
             IProductRepository productRepository,
+            IProductService productService,
             IProductTypeRepository productTypeRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
@@ -36,6 +38,7 @@ namespace Service.v1.Services
             _billRepository = billRepository;
             _osRepository = osRepository;
             _productRepository = productRepository;
+            _productService = productService;
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -70,6 +73,8 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Produto em manutenção", null, HttpStatusCode.BadRequest);
                 if (product.Parts - product.RentedParts < productTuitionRequest.Parts)
                     throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
+                if (!await _productService.UpdateStatus(ProductStatus.ProductStatusEnum.ElementAt(1), product.Id))
+                    throw new HttpRequestException("Não foi possível alterar o status do produto", null, HttpStatusCode.BadRequest);
             }
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
@@ -185,9 +190,7 @@ namespace Service.v1.Services
                 {
                     var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
                     if (existsproductTuition)
-                    {
                         throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
-                    }
 
                     var product = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
                     throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
@@ -197,6 +200,13 @@ namespace Service.v1.Services
                         throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
                     if (product.Parts - product.RentedParts < productTuitionRequest.Parts)
                         throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
+                    if (!await _productService.UpdateStatus(ProductStatus.ProductStatusEnum.ElementAt(1), product.Id))
+                        throw new HttpRequestException("Não foi possível alterar o status do produto", null, HttpStatusCode.BadRequest);
+
+                    var oldProduct = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
+                    throw new HttpRequestException("Não foi possível atualizar o produto antigo", null, HttpStatusCode.BadRequest);
+                    if (!await _productService.UpdateStatus(ProductStatus.ProductStatusEnum.ElementAt(0), oldProduct.Id))
+                        throw new HttpRequestException("Não foi possível alterar o status do produto antigo", null, HttpStatusCode.BadRequest);
                 }
             }
 
@@ -223,14 +233,24 @@ namespace Service.v1.Services
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var product = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
-            throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-            if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
-            if (product.Parts - product.RentedParts < productTuitionForUpdate.Parts)
-                throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
+            if (productCode != productTuitionForUpdate.ProductCode && productCode != null)
+            {
+                var product = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
+                    throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+                    throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
+                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+                    throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+                if (product.Parts - product.RentedParts < productTuitionForUpdate.Parts)
+                    throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
+                if (!await _productService.UpdateStatus(ProductStatus.ProductStatusEnum.ElementAt(1), product.Id))
+                    throw new HttpRequestException("Não foi possível alterar o status do produto", null, HttpStatusCode.BadRequest);
+
+                var oldProduct = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
+                        throw new HttpRequestException("Não foi possível atualizar o produto antigo", null, HttpStatusCode.BadRequest);
+                if (!await _productService.UpdateStatus(ProductStatus.ProductStatusEnum.ElementAt(0), oldProduct.Id))
+                    throw new HttpRequestException("Não foi possível alterar o status do produto antigo", null, HttpStatusCode.BadRequest);
+            }
 
             productTuitionForUpdate.ProductCode = productCode;
             productTuitionForUpdate.UpdatedAt = System.DateTime.Now;

@@ -77,9 +77,9 @@ namespace Service.v1.Services
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
-            var billsResponseDTOList = _mapper.Map<IEnumerable<GetBillProductTypeForRentDTOResponse>>(billsEntityList);
+            var billsResponseList = _mapper.Map<IEnumerable<GetBillProductTypeForRentResponse>>(billsEntityList);
 
-            foreach (var bill in billsResponseDTOList)
+            foreach (var bill in billsResponseList)
             {
                 if (bill.ProductTuitionId != null)
                 {
@@ -87,15 +87,6 @@ namespace Service.v1.Services
                     bill.ProductTuitionParts = productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).Parts;
                     bill.ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductTypeEntity);
                 }
-            }
-
-            var billsResponseList = _mapper.Map<IEnumerable<GetBillProductTypeForRentResponse>>(billsResponseDTOList);
-
-            var billsResponseDTOListLenght = billsResponseDTOList.ToList().Count();
-
-            for (int i = 0; i < billsResponseDTOListLenght; i++)
-            {
-                billsResponseList.ElementAt(i).ProductType = billsResponseDTOList.ElementAt(i).ProductType;
             }
 
             return billsResponseList;
