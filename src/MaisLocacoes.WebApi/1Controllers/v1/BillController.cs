@@ -149,7 +149,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("id/{id}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, int id)
+        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, [FromQuery(Name = "payDate")] DateTime? payDate, int id)
         {
             try
             {
@@ -158,7 +158,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (!BillStatus.BillStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _billService.UpdateStatus(status, paymentMode, id)) return Ok();
+                if (await _billService.UpdateStatus(status, paymentMode, payDate, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)

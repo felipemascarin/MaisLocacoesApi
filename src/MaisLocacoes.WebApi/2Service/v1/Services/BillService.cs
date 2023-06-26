@@ -124,6 +124,18 @@ namespace Service.v1.Services
                 }
             }
 
+            if (billForUpdate.Status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && billRequest.PaymentMode == null)
+                throw new HttpRequestException("Modo de pagamento deve ser inserido para fatura paga", null, HttpStatusCode.BadRequest);
+
+            if (billForUpdate.Status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
+            {
+                billRequest.PaymentMode = null;
+                billRequest.PayDate = null;
+            }
+
+            if (billRequest.PaymentMode != null && !PaymentModes.PaymentModesEnum.Contains(billRequest.PaymentMode.ToLower()))
+                throw new HttpRequestException("Não existe esse modo de pagamento", null, HttpStatusCode.BadRequest);
+
             billForUpdate.ProductTuitionId = billRequest.ProductTuitionId;
             billForUpdate.Value = billRequest.Value;
             billForUpdate.PayDate = billRequest.PayDate;
@@ -138,7 +150,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> UpdateStatus(string status, string paymentMode, int id)
+        public async Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -147,13 +159,17 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Modo de pagamento deve ser inserido para status de fatura paga", null, HttpStatusCode.BadRequest);
 
             if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
+            {
                 paymentMode = null;
+                payDate = null;
+            }
 
             if (paymentMode != null && !PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
                 throw new HttpRequestException("Não existe esse modo de pagamento", null, HttpStatusCode.BadRequest);
 
             billForUpdate.Status = status;
             billForUpdate.PaymentMode = paymentMode;
+            billForUpdate.PayDate = payDate;
             billForUpdate.UpdatedAt = System.DateTime.Now;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
