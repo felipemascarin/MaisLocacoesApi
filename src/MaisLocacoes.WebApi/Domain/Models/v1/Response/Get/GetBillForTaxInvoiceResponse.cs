@@ -1,0 +1,26 @@
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+
+namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Get
+{
+    public class GetBillForTaxInvoiceResponse
+    {
+        public int Id { get; set; }
+        public int? ProductTuitionId { get; set; }
+        public string? ProductCode { get; set; }
+        public int? ProductTuitionParts { get; set; }
+        public decimal Value { get; set; }
+        public DateTime? PayDate { get; set; }
+        public DateTime DueDate { get; set; }
+        public string Status { get; set; }
+        public int? NfIdFireBase { get; set; }
+        public string PaymentMode { get; set; }
+        public string? Description { get; set; }
+        public string CreatedBy { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public string UpdatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public GetRentClientResponse Rent { get; set; }
+        public ProductTypeResponse? ProductType { get; set; }
+        public CompanyResponse Company { get; set; }
+    }
+}

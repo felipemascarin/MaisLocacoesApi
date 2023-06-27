@@ -82,6 +82,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("taxinvoice/{billId}")]
+        public async Task<IActionResult> GetForTaxInvoice(int billId)
+        {
+            try
+            {
+                _logger.LogInformation("GetForTaxInvoice {@dateTime} billId:{@billId} User:{@email}", System.DateTime.Now, billId, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var billsList = await _billService.GetForTaxInvoice(billId);
+                return Ok(billsList);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpGet("rentid/{rentId}")]
         public async Task<IActionResult> GetByRentId(int rentId)
         {

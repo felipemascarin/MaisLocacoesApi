@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.Extensions.Logging;
@@ -72,6 +73,43 @@ namespace Service.v1.Services
             var billResponse = _mapper.Map<BillResponse>(billEntity);
 
             return billResponse;
+        }
+
+        public async Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId)
+        {
+            ProductTuitionEntity productTuitionEntity = null;
+            ProductTypeResponse productType = null;
+            string productCode = null;
+            int? productTuitionParts = null;
+
+            var billEntity = await _billRepository.GetById(billId) ??
+                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor)) ??
+                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
+            if (billEntity.ProductTuitionId != null)
+            {
+                productTuitionEntity = await _productTuitionRepository.GetById(billEntity.ProductTuitionId.Value) ??
+                    throw new HttpRequestException("Fatura de produto ProducTuition não encontrada", null, HttpStatusCode.NotFound);
+                productCode = productTuitionEntity.ProductCode;
+                productTuitionParts = productTuitionEntity.Parts;
+                productType = _mapper.Map<ProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
+            }
+
+            var billForTaxInvoiceResponse = _mapper.Map<GetBillForTaxInvoiceResponse>(billEntity);
+
+            billForTaxInvoiceResponse.Rent = _mapper.Map<GetRentClientResponse>(billEntity.RentEntity);
+            billForTaxInvoiceResponse.Rent.Address = _mapper.Map<AddressResponse>(billEntity.RentEntity.AddressEntity);
+            billForTaxInvoiceResponse.Rent.Client = _mapper.Map<ClientResponse>(billEntity.RentEntity.ClientEntity);
+            billForTaxInvoiceResponse.Rent.Client.Address = _mapper.Map<AddressResponse>(billEntity.RentEntity.ClientEntity.AddressEntity);
+            billForTaxInvoiceResponse.Company = _mapper.Map<CompanyResponse>(companyEntity);
+            billForTaxInvoiceResponse.Company.CompanyAddress = _mapper.Map<CompanyAddressResponse>(companyEntity.CompanyAddressEntity);
+            billForTaxInvoiceResponse.ProductType = productType;
+            billForTaxInvoiceResponse.ProductCode = productCode;
+            billForTaxInvoiceResponse.ProductTuitionParts = productTuitionParts;
+
+            return billForTaxInvoiceResponse;
         }
 
         public async Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId)

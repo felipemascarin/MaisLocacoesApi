@@ -8,6 +8,7 @@ namespace Service.v1.IServices
     {
         Task<BillResponse> CreateBill(BillRequest billRequest);
         Task<BillResponse> GetById(int id);
+        Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId);
         Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId);
         Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills();
         Task<bool> UpdateBill(BillRequest billRequest, int id);
