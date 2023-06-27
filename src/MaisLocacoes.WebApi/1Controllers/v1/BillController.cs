@@ -172,7 +172,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} id:{@id} User:{@email}", System.DateTime.Now, status, paymentMode, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} payDate:{@payDate} id:{@id} User:{@email}", System.DateTime.Now, status, paymentMode, payDate, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (!BillStatus.BillStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");

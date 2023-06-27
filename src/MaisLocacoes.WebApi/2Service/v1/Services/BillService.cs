@@ -82,7 +82,7 @@ namespace Service.v1.Services
             string productCode = null;
             int? productTuitionParts = null;
 
-            var billEntity = await _billRepository.GetById(billId) ??
+            var billEntity = await _billRepository.GetForTaxInvoice(billId) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor)) ??
