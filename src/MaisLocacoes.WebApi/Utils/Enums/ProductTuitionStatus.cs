@@ -6,7 +6,10 @@
         {
             "activated",
             "scheduled",
-            "delivered"
+            "delivered",
+            "deliver",
+            "withdraw",
+            "returned"
         };
     }
 }

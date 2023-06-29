@@ -3,6 +3,7 @@
     public class OsResponse
     {
         public int Id { get; set; }
+        public string Type { get; set; }
         public string DeliveryCpf { get; set; }
         public int ProductTuitionId { get; set; }
         public string Status { get; set; }

@@ -74,6 +74,7 @@ namespace Service.v1.Services
             osForUpdate.DeliveryCpf = osRequest.DeliveryCpf;
             osForUpdate.InitialDateTime = osRequest.InitialDateTime;
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;
+            osForUpdate.Type = osRequest.Type;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
             osForUpdate.UpdatedAt = System.DateTime.Now;
             osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);

@@ -7,6 +7,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Request
 {
     public class OsRequest
     {
+        public string Type { get; set; }
         public string? DeliveryCpf { get; set; }
         public int ProductTuitionId { get; set; }
         public DateTime? InitialDateTime { get; set; }

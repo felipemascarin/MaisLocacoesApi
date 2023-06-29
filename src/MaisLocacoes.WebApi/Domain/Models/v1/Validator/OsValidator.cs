@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Utils.Enum;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 
@@ -10,6 +9,17 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
     {
         public OsValidator()
         {
+            RuleFor(os => os.Type)
+                .Must(type => !string.IsNullOrEmpty(type))
+                .WithMessage("O Tipo de nota de serviço é obrigatório")
+                .MaximumLength(255)
+                .WithMessage("O Tipo de nota de serviço ultrapassou o limite máximo de caracteres");
+
+            RuleFor(os => os.Type)
+                .Must(type => OsTypes.OsTypesEnum.Contains(type.ToLower()))
+                .WithMessage("O Tipo de nota de serviço inserido não existe")
+                .When(os => !string.IsNullOrEmpty(os.Type));
+
             RuleFor(os => os.DeliveryCpf)
                 .Must(deliveryCpf => DocumentValidator.IsCpf(deliveryCpf))
                 .WithMessage("O CPF do intregador inserido é inválido")

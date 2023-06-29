@@ -11,12 +11,17 @@ namespace Repository.v1.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
+        public int ProductTuitionId { get; set; }
+        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Type { get; set; }
+
         [StringLength(11)]
         [Column(TypeName = "char")]
         public string? DeliveryCpf { get; set; }
-
-        public int ProductTuitionId { get; set; }
-        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
 
         [Required]
         [StringLength(255)]
