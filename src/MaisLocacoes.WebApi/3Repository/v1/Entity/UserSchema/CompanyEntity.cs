@@ -67,9 +67,15 @@ namespace Repository.v1.Entity.UserSchema
 
         public int NotifyDaysBefore { get; set; }
 
+        [Required]
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string Status { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Module { get; set; }
 
         [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }

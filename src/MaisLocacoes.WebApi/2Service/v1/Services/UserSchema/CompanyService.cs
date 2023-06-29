@@ -89,6 +89,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.AddressDocumentUrl = companyRequest.AddressDocumentUrl;
             companyForUpdate.LogoUrl = companyRequest.LogoUrl;
             companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore;
+            companyForUpdate.Module = companyRequest.Module;
             companyForUpdate.UpdatedAt = System.DateTime.Now;
             companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 

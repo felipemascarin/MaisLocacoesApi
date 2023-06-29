@@ -76,11 +76,41 @@ namespace Service.v1.Services
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
             CreateBills(productTuitionEntity);
-            CreateOs(productTuitionEntity);
+
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1))
+                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0));
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
 
             return productTuitionResponse;
+        }
+
+        public async Task<bool> WithdrawProduct(int id)
+        {
+            var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            if (productTuitionEntity.ProductCode == null)
+                throw new HttpRequestException("Não é possível cancelar uma fatura de produto sem produto", null, HttpStatusCode.BadRequest);
+
+            var productEntity = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
+                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1))
+            {
+                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1));
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                ReleaseProduct(productTuitionEntity, productEntity);
+            }
+
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(0))
+            {
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                ReleaseProduct(productTuitionEntity, productEntity);
+            }
+
+            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
+            else return false;
         }
 
         public async Task<GetProductTuitionRentResponse> GetById(int id)
@@ -171,14 +201,14 @@ namespace Service.v1.Services
                 if (productTuitionRequest.ProductCode != null)
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
-                                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                        throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
                     RetainProduct(productTuitionForUpdate, productEntity);
                 }
 
                 if (productTuitionForUpdate.ProductCode != null)
                 {
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
-                                throw new HttpRequestException("Não foi possível encontrar um produto", null, HttpStatusCode.InternalServerError);
+                        throw new HttpRequestException("Não foi possível encontrar um produto", null, HttpStatusCode.InternalServerError);
                     ReleaseProduct(productTuitionForUpdate, oldProductEntity);
                 }
             }
@@ -264,9 +294,6 @@ namespace Service.v1.Services
             else return false;
         }
 
-
-
-
         public void CreateBills(ProductTuitionEntity productTuition)
         {
             var billsQuantity = 0;
@@ -291,11 +318,12 @@ namespace Service.v1.Services
             }
         }
 
-        public void CreateOs(ProductTuitionEntity productTuition)
+        public void CreateOs(ProductTuitionEntity productTuition, string type)
         {
             var os = new OsEntity();
 
             os.ProductTuitionId = productTuition.Id;
+            os.Type = type;
             os.Status = OsStatus.OsStatusEnum.ElementAt(0);
             os.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 

@@ -28,22 +28,24 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             var userEntity = await _userRepository.GetByEmail(email, loginRequest.Cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
+            var companyEntity = await _companyRepository.GetByCnpj(loginRequest.Cnpj) ??
+               throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+
             if (userEntity.Status == UserStatus.UserStatusEnum.ElementAt(1))
             {
                 throw new HttpRequestException("Usuário bloqueado", null, HttpStatusCode.Forbidden);
             }
 
-            //var companyEntity = await _companyRepository.GetByCnpj(userEntity.Cnpj);
-
-            //if (companyEntity.Status != CompanyStatus.CompanyStatusEnum.ElementAt(0))
-            //    throw new HttpRequestException("Empresa sem acesso - Entrar em contato com suporte", null, HttpStatusCode.BadRequest);
+            if (companyEntity.Status != CompanyStatus.CompanyStatusEnum.ElementAt(0))
+                throw new HttpRequestException("Empresa sem acesso - Entrar em contato com suporte", null, HttpStatusCode.Forbidden);
 
             var user = new User()
             {
                 Name = userEntity.Name,
                 Email = userEntity.Email,
                 Role = userEntity.Role,
-                Schema = userEntity.Cnpj
+                Schema = userEntity.Cnpj,
+                Module = companyEntity.Module
             };
 
             var tokenResponse = JwtManager.CreateToken(user);

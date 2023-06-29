@@ -15,6 +15,7 @@
         public string AddressDocumentUrl { get; set; }
         public string LogoUrl { get; set; }
         public int NotifyDaysBefore { get; set; }
+        public string Module { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

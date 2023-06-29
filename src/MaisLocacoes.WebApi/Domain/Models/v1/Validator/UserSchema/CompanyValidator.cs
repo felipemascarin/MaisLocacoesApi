@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
@@ -83,6 +84,17 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .Must(notifyDaysBefore => int.TryParse(notifyDaysBefore.ToString(), out var result) &&
                  result >= 0 && result <= 500)
                 .WithMessage("Notificar dias antes deve ser um número de 0 à 500");
+
+            RuleFor(company => company.Module)
+                .Must(module => !string.IsNullOrEmpty(module))
+                .WithMessage("O tipo de módulo é obrigatório")
+                .MaximumLength(255)
+                .WithMessage("O tipo de módulo ultrapassou o limite máximo de caracteres");
+
+            RuleFor(company => company.Module)
+                .Must(module => ProjectModules.Modules.Contains(module.ToLower()))
+                .WithMessage("Esse tipo de módulo não existe")
+                .When(company => !string.IsNullOrEmpty(company.Module));
 
             RuleFor(company => company.CompanyAddress).SetValidator(new CompanyAddressValidator());
         }

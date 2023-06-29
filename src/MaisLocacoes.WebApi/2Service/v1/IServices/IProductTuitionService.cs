@@ -7,6 +7,7 @@ namespace Service.v1.IServices
     public interface IProductTuitionService
     {
         Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest);
+        Task<bool> WithdrawProduct(int id);
         Task<GetProductTuitionRentResponse> GetById(int id);
         Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId);
         Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);
