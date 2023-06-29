@@ -58,6 +58,8 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
             }
 
+            var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
+
             if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
             {
                 var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
@@ -65,23 +67,9 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
 
                 var productEntity = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
-                    throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-                if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                    throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-                if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                    throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
-                if (productEntity.Parts - productEntity.RentedParts < productTuitionRequest.Parts)
-                    throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
-
-                productEntity.RentedParts += productTuitionRequest.Parts;
-                productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1);
-
-                if (await _productRepository.UpdateProduct(productEntity) == 0)
-                    throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
+                                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                RetainProduct(productTuitionEntity, productEntity);
             }
-
-            var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
             productTuitionEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
@@ -101,11 +89,6 @@ namespace Service.v1.Services
                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             var productTuitionResponse = _mapper.Map<GetProductTuitionRentResponse>(productTuitionEntity);
-            var rentResponse = _mapper.Map<RentResponse>(productTuitionEntity.RentEntity);
-            var rentAddressResponse = _mapper.Map<AddressResponse>(productTuitionEntity.RentEntity.AddressEntity);
-
-            productTuitionResponse.Rent = rentResponse;
-            productTuitionResponse.Rent.Address = rentAddressResponse;
 
             return productTuitionResponse;
         }
@@ -137,15 +120,7 @@ namespace Service.v1.Services
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllByProductTypeCode(productEntity.ProductTypeId, productEntity.Code);
 
-            var productsEntityListLenght = productTuitionEntityList.ToList().Count;
-
             var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentResponse>>(productTuitionEntityList);
-
-            for (int i = 0; i < productsEntityListLenght; i++)
-            {
-                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<RentResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
-            }
 
             return productTuitionsResponseList;
         }
@@ -196,30 +171,15 @@ namespace Service.v1.Services
                 if (productTuitionRequest.ProductCode != null)
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
-                    throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                        throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                        throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Parts - productEntity.RentedParts < productTuitionForUpdate.Parts)
-                        throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
-
-                    productEntity.RentedParts += productTuitionForUpdate.Parts;
-                    productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                    if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1);
-
-                    if (await _productRepository.UpdateProduct(productEntity) == 0)
-                        throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
+                                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                    RetainProduct(productTuitionForUpdate, productEntity);
                 }
 
                 if (productTuitionForUpdate.ProductCode != null)
                 {
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
-                        throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
-                    oldProductEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                    oldProductEntity.RentedParts -= productTuitionForUpdate.Parts;
-                    if (await _productRepository.UpdateProduct(oldProductEntity) == 0)
-                        throw new HttpRequestException("Não foi possível atualizar o produto antigo", null, HttpStatusCode.InternalServerError);
+                                throw new HttpRequestException("Não foi possível encontrar um produto", null, HttpStatusCode.InternalServerError);
+                    ReleaseProduct(productTuitionForUpdate, oldProductEntity);
                 }
             }
 
@@ -251,30 +211,15 @@ namespace Service.v1.Services
                 if (productCode != null)
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
-                    throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
-                        throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
-                        throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
-                    if (productEntity.Parts - productEntity.RentedParts < productTuitionForUpdate.Parts)
-                        throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
-
-                    productEntity.RentedParts += productTuitionForUpdate.Parts;
-                    productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                    if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1);
-
-                    if (await _productRepository.UpdateProduct(productEntity) == 0)
-                        throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
+                                throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                    RetainProduct(productTuitionForUpdate, productEntity);
                 }
 
                 if (productTuitionForUpdate.ProductCode != null)
                 {
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
-                        throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
-                    oldProductEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                    oldProductEntity.RentedParts -= productTuitionForUpdate.Parts;
-                    if (await _productRepository.UpdateProduct(oldProductEntity) == 0)
-                        throw new HttpRequestException("Não foi possível atualizar o produto antigo", null, HttpStatusCode.InternalServerError);
+                                throw new HttpRequestException("Não foi possível encontrar um produto", null, HttpStatusCode.InternalServerError);
+                    ReleaseProduct(productTuitionForUpdate, oldProductEntity);
                 }
             }
 
@@ -308,10 +253,7 @@ namespace Service.v1.Services
             {
                 var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForDelete.ProductTypeId, productTuitionForDelete.ProductCode) ??
                     throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
-                oldProductEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-                oldProductEntity.RentedParts -= productTuitionForDelete.Parts;
-                if (await _productRepository.UpdateProduct(oldProductEntity) == 0)
-                    throw new HttpRequestException("Não foi possível atualizar o produto antigo", null, HttpStatusCode.InternalServerError);
+                ReleaseProduct(productTuitionForDelete, oldProductEntity);
             }
 
             productTuitionForDelete.Deleted = true;
@@ -355,6 +297,31 @@ namespace Service.v1.Services
             os.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             _osRepository.CreateOs(os);
+        }
+
+        public async void RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
+        {
+            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
+            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+                throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
+            if (productEntity.Parts - productEntity.RentedParts < productTuition.Parts)
+                throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
+
+            productEntity.RentedParts += productTuition.Parts;
+            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
+            if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1);
+
+            if (await _productRepository.UpdateProduct(productEntity) == 0)
+                throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
+        }
+
+        public async void ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
+        {
+            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
+            productEntity.RentedParts -= productTuition.Parts;
+            if (await _productRepository.UpdateProduct(productEntity) == 0)
+                throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);
         }
     }
 }

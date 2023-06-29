@@ -49,7 +49,6 @@ namespace Service.v1.Services
             clientEntity = await _clientRepository.CreateClient(clientEntity);
 
             var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-            clientResponse.Address = addressResponse;
 
             return clientResponse;
         }
@@ -59,11 +58,7 @@ namespace Service.v1.Services
             var clientEntity = await _clientRepository.GetById(id) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
-
             var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-
-            clientResponse.Address = clientAddressResponse;
 
             return clientResponse;
         }
@@ -73,11 +68,7 @@ namespace Service.v1.Services
             var clientEntity = await _clientRepository.GetByIdDetails(id) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
-
             var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-
-            clientResponse.Address = clientAddressResponse;
 
             return clientResponse;
         }
@@ -87,11 +78,7 @@ namespace Service.v1.Services
             var clientEntity = await _clientRepository.GetByCpf(cpf) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
-
             var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-
-            clientResponse.Address = clientAddressResponse;
 
             return clientResponse;
         }
@@ -101,11 +88,7 @@ namespace Service.v1.Services
             var clientEntity = await _clientRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientAddressResponse = _mapper.Map<AddressResponse>(clientEntity.AddressEntity);
-
             var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
-
-            clientResponse.Address = clientAddressResponse;
 
             return clientResponse;
         }
@@ -117,14 +100,7 @@ namespace Service.v1.Services
 
             var clientsEntityList = await _clientRepository.GetClientsByPage(items, page, query);
 
-            var clientsEntityListLenght = clientsEntityList.ToList().Count;
-
             var clientsResponseList = _mapper.Map<IEnumerable<ClientResponse>>(clientsEntityList);
-
-            for (int i = 0; i < clientsEntityListLenght; i++)
-            {
-                clientsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(clientsEntityList.ElementAt(i).AddressEntity);
-            }
 
             return clientsResponseList;
         }

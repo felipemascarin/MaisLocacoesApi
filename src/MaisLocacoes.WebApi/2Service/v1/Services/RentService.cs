@@ -55,7 +55,6 @@ namespace Service.v1.Services
             CreateCarriageBill(rentEntity);
 
             var rentResponse = _mapper.Map<RentResponse>(rentEntity);
-            rentResponse.Address = addressResponse;
 
             return rentResponse;
         }
@@ -65,14 +64,7 @@ namespace Service.v1.Services
             var rentEntity = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            var rentAddressResponse = _mapper.Map<AddressResponse>(rentEntity.AddressEntity);
-            var rentClientResponse = _mapper.Map<ClientResponse>(rentEntity.ClientEntity);
-            var rentClientAddressResponse = _mapper.Map<AddressResponse>(rentEntity.ClientEntity.AddressEntity);
             var rentResponse = _mapper.Map<GetRentClientResponse>(rentEntity);
-
-            rentResponse.Address = rentAddressResponse;
-            rentResponse.Client = rentClientResponse;
-            rentResponse.Client.Address = rentClientAddressResponse;
 
             return rentResponse;
         }
@@ -81,14 +73,7 @@ namespace Service.v1.Services
         {
             var rentsEntityList = await _rentRepository.GetAllByClientId(clientId);
 
-            var rentsEntityListLenght = rentsEntityList.ToList().Count;
-
             var rentsResponseList = _mapper.Map<IEnumerable<RentResponse>>(rentsEntityList);
-
-            for (int i = 0; i < rentsEntityListLenght; i++)
-            {
-                rentsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).AddressEntity);
-            }
 
             return rentsResponseList;
         }
@@ -100,16 +85,7 @@ namespace Service.v1.Services
 
             var rentsEntityList = await _rentRepository.GetRentsByPage(items, page, query, status);
 
-            var rentsEntityListLenght = rentsEntityList.ToList().Count;
-
             var rentsResponseList = _mapper.Map<IEnumerable<GetRentClientResponse>>(rentsEntityList);
-
-            for (int i = 0; i < rentsEntityListLenght; i++)
-            {
-                rentsResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).AddressEntity);
-                rentsResponseList.ElementAt(i).Client = _mapper.Map<ClientResponse>(rentsEntityList.ElementAt(i).ClientEntity);
-                rentsResponseList.ElementAt(i).Client.Address = _mapper.Map<AddressResponse>(rentsEntityList.ElementAt(i).ClientEntity.AddressEntity);
-            }
 
             return rentsResponseList;
         }

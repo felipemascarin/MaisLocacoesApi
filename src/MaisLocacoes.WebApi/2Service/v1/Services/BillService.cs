@@ -144,12 +144,14 @@ namespace Service.v1.Services
             foreach (var bill in billsEntityList)
             {
                 string productTypeName;
+                bool? isManyParts;
                 string productCode;
                 int? parts = 0;
 
                 if (bill.ProductTuitionId == null)
                 {
                     productTypeName = null;
+                    isManyParts = null;
                     productCode = null;
                     parts = null;
                 }
@@ -157,6 +159,7 @@ namespace Service.v1.Services
                 {
                     var productTuitionEntity = await _productTuitionRepository.GetById(bill.ProductTuitionId.Value);
                     productTypeName = productTuitionEntity.ProductTypeEntity.Type;
+                    isManyParts = productTuitionEntity.ProductTypeEntity.IsManyParts;
                     productCode = productTuitionEntity.ProductCode;
                     parts = productTuitionEntity.Parts;
                 }
@@ -173,7 +176,8 @@ namespace Service.v1.Services
                     NfIdFireBase = bill.NfIdFireBase,
                     ProductTypeName = productTypeName,
                     ProductCode = productCode,
-                    Parts = parts
+                    Parts = parts,
+                    IsManyParts = isManyParts
                 };
 
                 billDtoList.Add(billDto);

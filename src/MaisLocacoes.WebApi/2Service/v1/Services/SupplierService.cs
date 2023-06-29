@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -40,7 +39,6 @@ namespace Service.v1.Services
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 
             var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
-            supplierResponse.Address = addressResponse;
 
             return supplierResponse;
         }
@@ -50,11 +48,7 @@ namespace Service.v1.Services
             var supplierEntity = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
-            var supplierAddressResponse = _mapper.Map<AddressResponse>(supplierEntity.AddressEntity);
-
             var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
-
-            supplierResponse.Address = supplierAddressResponse;
 
             return supplierResponse;
         }
@@ -63,14 +57,7 @@ namespace Service.v1.Services
         {
             var suppliersEntityList = await _supplierRepository.GetAll();
 
-            var suppliersEntityListLenght = suppliersEntityList.ToList().Count;
-
             var suppliersResponseList = _mapper.Map<IEnumerable<SupplierResponse>>(suppliersEntityList);
-
-            for (int i = 0; i < suppliersEntityListLenght; i++)
-            {
-                suppliersResponseList.ElementAt(i).Address = _mapper.Map<AddressResponse>(suppliersEntityList.ElementAt(i).AddressEntity);
-            }
 
             return suppliersResponseList;
         }

@@ -17,20 +17,22 @@ namespace Configuration
         {
             var mappingConfig = new MapperConfiguration(config =>
             {
-                config.CreateMap<CompanyRequest, CompanyEntity>();
-                config.CreateMap<CompanyEntity, CompanyResponse>();
-
                 config.CreateMap<CompanyAddressRequest, CompanyAddressEntity>();
                 config.CreateMap<CompanyAddressEntity, CompanyAddressResponse>();
+
+                config.CreateMap<AddressRequest, AddressEntity>();
+                config.CreateMap<AddressEntity, AddressResponse>();
+
+                config.CreateMap<CompanyRequest, CompanyEntity>();
+                config.CreateMap<CompanyEntity, CompanyResponse>()
+                .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
 
                 config.CreateMap<UserRequest, UserEntity>();
                 config.CreateMap<UserEntity, UserResponse>();
 
                 config.CreateMap<ClientRequest, ClientEntity>();
-                config.CreateMap<ClientEntity, ClientResponse>();            
-
-                config.CreateMap<AddressRequest, AddressEntity>();
-                config.CreateMap<AddressEntity, AddressResponse>();
+                config.CreateMap<ClientEntity, ClientResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
 
                 config.CreateMap<BillRequest, BillEntity>();
                 config.CreateMap<BillEntity, BillResponse>();
@@ -51,9 +53,11 @@ namespace Configuration
 
                 config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
                 config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
-                config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>();
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionRentProductTypeClientReponse>();
-                
+                config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>()
+               .ForMember(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity))
+               .ForPath(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent.Address, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity.AddressEntity));
+
                 config.CreateMap<ProductTuitionValueRequest, ProductTuitionValueEntity>();
                 config.CreateMap<ProductTuitionValueEntity, ProductTuitionValueResponse>();
 
@@ -70,11 +74,16 @@ namespace Configuration
                 config.CreateMap<RentedPlaceEntity, RentedPlaceResponse>();
 
                 config.CreateMap<RentRequest, RentEntity>();
-                config.CreateMap<RentEntity, RentResponse>();
-                config.CreateMap<RentEntity, GetRentClientResponse>();
+                config.CreateMap<RentEntity, RentResponse>()
+                .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity));
+                config.CreateMap<RentEntity, GetRentClientResponse>()
+                .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity))
+                .ForMember(RentResponse => RentResponse.Client, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity))
+                .ForPath(RentResponse => RentResponse.Client.Address, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity.AddressEntity));
 
                 config.CreateMap<SupplierRequest, SupplierEntity>();
-                config.CreateMap<SupplierEntity, SupplierResponse>();
+                config.CreateMap<SupplierEntity, SupplierResponse>()
+                .ForMember(SupplierResponse => SupplierResponse.Address, opt => opt.MapFrom(SupplierEntity => SupplierEntity.AddressEntity));
             });
             return mappingConfig;
         }

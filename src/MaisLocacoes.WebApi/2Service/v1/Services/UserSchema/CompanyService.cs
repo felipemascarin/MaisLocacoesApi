@@ -49,7 +49,6 @@ namespace Service.v1.Services.UserSchema
             companyEntity = await _companyRepository.CreateCompany(companyEntity);
 
             var companyResponse = _mapper.Map<CompanyResponse>(companyEntity);
-            companyResponse.CompanyAddress = companyAddressResponse;
 
             return companyResponse;
         }
@@ -59,11 +58,7 @@ namespace Service.v1.Services.UserSchema
             var companyEntity = await _companyRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
-            var companyAddressResponse = _mapper.Map<CompanyAddressResponse>(companyEntity.CompanyAddressEntity);
-
             var companyResponse = _mapper.Map<CompanyResponse>(companyEntity);
-
-            companyResponse.CompanyAddress = companyAddressResponse;
 
             return companyResponse;
         }
