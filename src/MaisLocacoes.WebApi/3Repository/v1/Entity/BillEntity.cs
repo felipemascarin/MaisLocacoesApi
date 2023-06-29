@@ -26,6 +26,9 @@ namespace Repository.v1.Entity
         [Column(TypeName = "timestamp")]
         [Required]
         public DateTime DueDate { get; set; }
+        
+        [Column(TypeName = "timestamp")]
+        public DateTime? InvoiceEmittedDate { get; set; }
 
         [Required]
         [StringLength(255)]

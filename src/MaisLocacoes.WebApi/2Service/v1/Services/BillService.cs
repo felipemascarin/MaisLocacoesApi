@@ -223,6 +223,7 @@ namespace Service.v1.Services
             billForUpdate.Value = billRequest.Value;
             billForUpdate.PayDate = billRequest.PayDate;
             billForUpdate.DueDate = billRequest.DueDate;
+            billForUpdate.InvoiceEmittedDate = billRequest.InvoiceEmittedDate;
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
