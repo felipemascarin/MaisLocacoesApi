@@ -14,18 +14,24 @@ namespace Service.v1.Services
     {
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IRentRepository _rentRepository;
+        private readonly IQgRepository _qgRepository;
         private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public RentedPlaceService(IRentedPlaceRepository rentedPlaceRepository,
             IProductRepository productRepository,
+            IRentRepository rentRepository,
+            IQgRepository qgRepository,
             IAddressService addressService,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _rentedPlaceRepository = rentedPlaceRepository;
             _productRepository = productRepository;
+            _rentRepository = rentRepository;
+            _qgRepository = qgRepository;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -35,8 +41,20 @@ namespace Service.v1.Services
         {
             var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId);
             if (!existsproduct)
-            {
                 throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
+
+            if (rentedPlaceRequest.RentId != null)
+            {
+                var existsRent = await _rentRepository.RentExists(rentedPlaceRequest.RentId.Value);
+                if (!existsRent)
+                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+            }
+
+            if (rentedPlaceRequest.QgId != null)
+            {
+                var existsQg = await _qgRepository.QgExists(rentedPlaceRequest.QgId.Value);
+                if (!existsQg)
+                    throw new HttpRequestException("Não existe esse QG", null, HttpStatusCode.BadRequest);
             }
 
             var rentedPlaceEntity = _mapper.Map<RentedPlaceEntity>(rentedPlaceRequest);
@@ -74,15 +92,28 @@ namespace Service.v1.Services
                 }
             }
 
+            if (rentedPlaceRequest.RentId != null)
+            {
+                var existsRent = await _rentRepository.RentExists(rentedPlaceRequest.RentId.Value);
+                if (!existsRent)
+                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
+            }
+
+            if (rentedPlaceRequest.QgId != null)
+            {
+                var existsQg = await _qgRepository.QgExists(rentedPlaceRequest.QgId.Value);
+                if (!existsQg)
+                    throw new HttpRequestException("Não existe esse QG", null, HttpStatusCode.BadRequest);
+            }
+
             rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId;
             rentedPlaceForUpdate.RentId = rentedPlaceRequest.RentId;
+            rentedPlaceForUpdate.QgId = rentedPlaceRequest.QgId;
             rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
+            rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts;
             rentedPlaceForUpdate.UpdatedAt = System.DateTime.Now;
             rentedPlaceForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-
-            if (!await _addressService.UpdateAddress(rentedPlaceRequest.Address, rentedPlaceForUpdate.AddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o local", null, HttpStatusCode.InternalServerError);
 
             if (await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceForUpdate) > 0) return true;
             else return false;

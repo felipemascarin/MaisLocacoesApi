@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MaisLocacoes.WebApi.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20230629231148_20-06-2023-22-18as1asd1")]
-    partial class _200620232218as1asd1
+    [Migration("20230703233118_PrimeiraMigrationParaTeste53")]
+    partial class PrimeiraMigrationParaTeste53
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -854,9 +854,6 @@ namespace MaisLocacoes.WebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("ArrivalDate")
                         .HasColumnType("timestamp");
 
@@ -878,6 +875,12 @@ namespace MaisLocacoes.WebApi.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ProductParts")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("QgId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("RentId")
                         .HasColumnType("integer");
 
@@ -889,8 +892,6 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.HasIndex("ProductId");
 
@@ -1302,21 +1303,12 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.RentedPlaceEntity", b =>
                 {
-                    b.HasOne("Repository.v1.Entity.AddressEntity", "AddressEntity")
-                        .WithMany("RentedPlaces")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_RentedPlaces_Addresses");
-
                     b.HasOne("Repository.v1.Entity.ProductEntity", "ProductEntity")
                         .WithMany("RentedPlaces")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_RentedPlaces_Products");
-
-                    b.Navigation("AddressEntity");
 
                     b.Navigation("ProductEntity");
                 });
@@ -1386,8 +1378,6 @@ namespace MaisLocacoes.WebApi.Migrations
                     b.Navigation("Clients");
 
                     b.Navigation("Qgs");
-
-                    b.Navigation("RentedPlaces");
 
                     b.Navigation("Rents");
 

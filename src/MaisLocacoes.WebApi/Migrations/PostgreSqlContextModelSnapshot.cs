@@ -852,9 +852,6 @@ namespace MaisLocacoes.WebApi.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("AddressId")
-                        .HasColumnType("integer");
-
                     b.Property<DateTime?>("ArrivalDate")
                         .HasColumnType("timestamp");
 
@@ -876,6 +873,12 @@ namespace MaisLocacoes.WebApi.Migrations
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("ProductParts")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("QgId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("RentId")
                         .HasColumnType("integer");
 
@@ -887,8 +890,6 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.HasIndex("ProductId");
 
@@ -1300,21 +1301,12 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.RentedPlaceEntity", b =>
                 {
-                    b.HasOne("Repository.v1.Entity.AddressEntity", "AddressEntity")
-                        .WithMany("RentedPlaces")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_RentedPlaces_Addresses");
-
                     b.HasOne("Repository.v1.Entity.ProductEntity", "ProductEntity")
                         .WithMany("RentedPlaces")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_RentedPlaces_Products");
-
-                    b.Navigation("AddressEntity");
 
                     b.Navigation("ProductEntity");
                 });
@@ -1384,8 +1376,6 @@ namespace MaisLocacoes.WebApi.Migrations
                     b.Navigation("Clients");
 
                     b.Navigation("Qgs");
-
-                    b.Navigation("RentedPlaces");
 
                     b.Navigation("Rents");
 

@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MaisLocacoes.WebApi.Migrations
 {
-    public partial class _200620232218as1asd1 : Migration
+    public partial class PrimeiraMigrationParaTeste53 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -422,11 +422,12 @@ namespace MaisLocacoes.WebApi.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ProductId = table.Column<int>(type: "integer", nullable: false),
-                    AddressId = table.Column<int>(type: "integer", nullable: false),
+                    QgId = table.Column<int>(type: "integer", nullable: true),
                     RentId = table.Column<int>(type: "integer", nullable: true),
                     Latitude = table.Column<double>(type: "double precision", nullable: true),
                     Longitude = table.Column<double>(type: "double precision", nullable: true),
                     ArrivalDate = table.Column<DateTime>(type: "timestamp", nullable: true),
+                    ProductParts = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp", nullable: true),
                     CreatedBy = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
@@ -435,12 +436,6 @@ namespace MaisLocacoes.WebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RentedPlaces", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_RentedPlaces_Addresses",
-                        column: x => x.AddressId,
-                        principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_RentedPlaces_Products",
                         column: x => x.ProductId,
@@ -608,11 +603,6 @@ namespace MaisLocacoes.WebApi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Qgs_AddressId",
                 table: "Qgs",
-                column: "AddressId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RentedPlaces_AddressId",
-                table: "RentedPlaces",
                 column: "AddressId");
 
             migrationBuilder.CreateIndex(

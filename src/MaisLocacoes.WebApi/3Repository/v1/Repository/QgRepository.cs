@@ -22,6 +22,8 @@ namespace Repository.v1.Repository
         }
 
         public async Task<QgEntity> GetById(int id) => await _context.Qgs.FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+        
+        public async Task<bool> QgExists(int id) => await _context.Qgs.AnyAsync(q => q.Id == id && q.Deleted == false);
 
         public async Task<int> UpdateQg(QgEntity qgForUpdate)
         {

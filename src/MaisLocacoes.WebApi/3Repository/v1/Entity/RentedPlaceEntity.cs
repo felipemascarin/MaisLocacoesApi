@@ -14,8 +14,7 @@ namespace Repository.v1.Entity
         public int ProductId { get; set; }
         public virtual ProductEntity ProductEntity { get; set; }
 
-        public int AddressId { get; set; }
-        public virtual AddressEntity AddressEntity { get; set; }
+        public int? QgId { get; set; }
 
         public int? RentId { get; set; }
 
@@ -25,6 +24,8 @@ namespace Repository.v1.Entity
 
         [Column(TypeName = "timestamp")]
         public DateTime? ArrivalDate { get; set; }
+
+        public int ProductParts { get; set; }
 
         [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }

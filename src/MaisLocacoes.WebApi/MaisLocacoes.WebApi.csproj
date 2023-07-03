@@ -44,4 +44,8 @@
     </Content>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Domain\Models\v1\Request\Specifics\" />
+  </ItemGroup>
+
 </Project>

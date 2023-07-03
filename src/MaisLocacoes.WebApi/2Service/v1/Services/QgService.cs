@@ -4,6 +4,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -29,8 +30,11 @@ namespace Service.v1.Services
 
         public async Task<QgResponse> CreateQg(QgRequest qgRequest)
         {
+            var addressResponse = await _addressService.CreateAddress(qgRequest.Address);
+
             var qgEntity = _mapper.Map<QgEntity>(qgRequest);
 
+            qgEntity.AddressId = addressResponse.Id;
             qgEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             qgEntity = await _qgRepository.CreateQg(qgEntity);

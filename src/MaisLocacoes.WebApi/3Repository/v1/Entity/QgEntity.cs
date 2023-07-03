@@ -12,7 +12,6 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int AddressId { get; set; }
-
         public virtual AddressEntity AddressEntity { get; set; }
 
         [Required]

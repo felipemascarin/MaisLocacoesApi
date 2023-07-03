@@ -6,6 +6,7 @@ namespace Repository.v1.IRepository
     {
         Task<QgEntity> CreateQg(QgEntity qgEntity);
         Task<QgEntity> GetById(int id);
+        Task<bool> QgExists(int id);
         Task<int> UpdateQg(QgEntity qgForUpdate);
     }
 }

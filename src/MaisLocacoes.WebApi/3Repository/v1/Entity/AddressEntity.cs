@@ -59,7 +59,6 @@ namespace Repository.v1.Entity
 
         public ICollection<ClientEntity> Clients { get; set; }
         public ICollection<QgEntity> Qgs { get; set; }
-        public ICollection<RentedPlaceEntity> RentedPlaces { get; set; }
         public ICollection<RentEntity> Rents { get; set; }
         public ICollection<SupplierEntity> Suppliers { get; set; }
     }
