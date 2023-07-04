@@ -48,8 +48,14 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
 
                 RuleFor(product => product.Parts)
                 .Must(parts => int.TryParse(parts.ToString(), out var result) &&
+                 result > 0)
+                .WithMessage("A quantidade de peças do produto deve ser um número inteiro maior que 0")
+                .When(product => product.CurrentRentedPlaceId != null);
+
+            RuleFor(product => product.Parts)
+                .Must(parts => int.TryParse(parts.ToString(), out var result) &&
                  result >= 0)
-                .WithMessage("A quantidade de peças do produto se inserido deve ser um número positivo")
+                .WithMessage("A quantidade de peças alugadas do produto se inserido deve ser um número positivo")
                 .When(product => product.CurrentRentedPlaceId != null);
         }
     }

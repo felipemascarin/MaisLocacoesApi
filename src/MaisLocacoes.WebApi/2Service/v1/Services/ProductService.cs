@@ -38,6 +38,9 @@ namespace Service.v1.Services
             if (existsProduct != null)
                 throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
 
+            if (productRequest.RentedParts > productRequest.Parts)
+                throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
+
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
             productEntity.ProductTypeEntity = existsProductType;
@@ -121,7 +124,7 @@ namespace Service.v1.Services
         }
 
         public async Task<bool> UpdateProduct(ProductRequest productRequest, int id)
-        { 
+        {
             var productForUpdate = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.BadRequest);
 
@@ -131,17 +134,16 @@ namespace Service.v1.Services
                 {
                     var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
                     if (!existsProductType)
-                    {
                         throw new HttpRequestException("Esse tipo de produto não existe", null, HttpStatusCode.BadRequest);
-                    }
                 }
 
                 var existsTypeCode = await _productRepository.ProductExists(productRequest.ProductTypeId, productRequest.Code);
                 if (existsTypeCode)
-                {
                     throw new HttpRequestException("O código para esse tipo do produto já existe", null, HttpStatusCode.BadRequest);
-                }
             }
+
+            if (productRequest.RentedParts > productRequest.Parts)
+                throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
 
             productForUpdate.ProductTypeId = productRequest.ProductTypeId;
             productForUpdate.Code = productRequest.Code;
@@ -151,6 +153,7 @@ namespace Service.v1.Services
             productForUpdate.BoughtValue = productRequest.BoughtValue;
             productForUpdate.CurrentRentedPlaceId = productRequest.CurrentRentedPlaceId;
             productForUpdate.Parts = productRequest.Parts;
+            productForUpdate.RentedParts = productRequest.RentedParts;
             productForUpdate.UpdatedAt = System.DateTime.Now;
             productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
