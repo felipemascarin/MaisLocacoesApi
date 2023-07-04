@@ -202,7 +202,7 @@ namespace Service.v1.Services
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
                         throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
-                    await RetainProduct(productTuitionForUpdate, productEntity);
+                    await RetainProduct(_mapper.Map<ProductTuitionEntity>(productTuitionRequest), productEntity);
                 }
 
                 if (productTuitionForUpdate.ProductCode != null)
@@ -210,6 +210,17 @@ namespace Service.v1.Services
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
                         throw new HttpRequestException("Não foi possível encontrar um produto", null, HttpStatusCode.InternalServerError);
                     await ReleaseProduct(productTuitionForUpdate, oldProductEntity);
+                }
+            }
+
+            if (productTuitionRequest.ProductCode == productTuitionForUpdate.ProductCode && productTuitionRequest.Parts != productTuitionForUpdate.Parts)
+            {
+                if (productTuitionRequest.ProductCode != null)
+                {
+                    var productEntityForParts = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
+                        throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
+                    var productReleased = await ReleaseProduct(productTuitionForUpdate, productEntityForParts);
+                    await RetainProduct(_mapper.Map<ProductTuitionEntity>(productTuitionRequest), productReleased);
                 }
             }
 
@@ -330,7 +341,7 @@ namespace Service.v1.Services
             _osRepository.CreateOs(os);
         }
 
-        public async Task<bool> RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
+        public async Task<ProductEntity> RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
             if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
                 throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
@@ -346,17 +357,17 @@ namespace Service.v1.Services
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
 
-            return true;
+            return productEntity;
         }
 
-        public async Task<bool> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
+        public async Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
             productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
             productEntity.RentedParts -= productTuition.Parts;
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);
 
-           return true;
+           return productEntity;
         }
     }
 }
