@@ -230,7 +230,7 @@ namespace Service.v1.Services
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
             else return false;
         }
-RetainProduct
+
         public async Task<bool> UpdateProductCode(string productCode, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
@@ -354,7 +354,7 @@ RetainProduct
             productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
             productEntity.RentedParts -= productTuition.Parts;
             if (await _productRepository.UpdateProduct(productEntity) == 0)
-                throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError)
+                throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);
 
            return true;
         }
