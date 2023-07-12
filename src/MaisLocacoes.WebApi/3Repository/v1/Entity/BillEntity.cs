@@ -15,6 +15,7 @@ namespace Repository.v1.Entity
         public virtual RentEntity RentEntity { get; set; }
 
         public int? ProductTuitionId { get; set; }
+        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]

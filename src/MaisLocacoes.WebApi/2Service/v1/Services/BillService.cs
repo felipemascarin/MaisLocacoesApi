@@ -5,14 +5,10 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Repository.v1.IRepository.UserSchema;
-using Repository.v1.Repository.UserSchema;
 using Service.v1.IServices;
-using System.IO;
 using System.Net;
 
 namespace Service.v1.Services

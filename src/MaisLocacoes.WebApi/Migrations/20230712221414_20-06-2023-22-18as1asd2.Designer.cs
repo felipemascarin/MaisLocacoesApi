@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MaisLocacoes.WebApi.Migrations
 {
     [DbContext(typeof(PostgreSqlContext))]
-    [Migration("20230703233118_PrimeiraMigrationParaTeste53")]
-    partial class PrimeiraMigrationParaTeste53
+    [Migration("20230712221414_20-06-2023-22-18as1asd2")]
+    partial class _200620232218as1asd2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -216,6 +216,8 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductTuitionId");
 
                     b.HasIndex("RentId");
 
@@ -1198,12 +1200,19 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.BillEntity", b =>
                 {
+                    b.HasOne("Repository.v1.Entity.ProductTuitionEntity", "ProductTuitionEntity")
+                        .WithMany("Bills")
+                        .HasForeignKey("ProductTuitionId")
+                        .HasConstraintName("FK_Bills_ProductTuitions");
+
                     b.HasOne("Repository.v1.Entity.RentEntity", "RentEntity")
                         .WithMany("Bills")
                         .HasForeignKey("RentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Bills_Rents");
+
+                    b.Navigation("ProductTuitionEntity");
 
                     b.Navigation("RentEntity");
                 });
@@ -1398,6 +1407,8 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.ProductTuitionEntity", b =>
                 {
+                    b.Navigation("Bills");
+
                     b.Navigation("Oss");
                 });
 

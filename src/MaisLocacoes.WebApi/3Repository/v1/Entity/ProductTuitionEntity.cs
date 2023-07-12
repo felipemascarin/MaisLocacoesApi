@@ -67,5 +67,6 @@ namespace Repository.v1.Entity
         public bool? Deleted { get; set; }
 
         public ICollection<OsEntity> Oss { get; set; }
+        public ICollection<BillEntity> Bills { get; set; }
     }
 }

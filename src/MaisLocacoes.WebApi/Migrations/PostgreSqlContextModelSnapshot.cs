@@ -215,6 +215,8 @@ namespace MaisLocacoes.WebApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProductTuitionId");
+
                     b.HasIndex("RentId");
 
                     b.ToTable("Bills");
@@ -1196,12 +1198,19 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.BillEntity", b =>
                 {
+                    b.HasOne("Repository.v1.Entity.ProductTuitionEntity", "ProductTuitionEntity")
+                        .WithMany("Bills")
+                        .HasForeignKey("ProductTuitionId")
+                        .HasConstraintName("FK_Bills_ProductTuitions");
+
                     b.HasOne("Repository.v1.Entity.RentEntity", "RentEntity")
                         .WithMany("Bills")
                         .HasForeignKey("RentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_Bills_Rents");
+
+                    b.Navigation("ProductTuitionEntity");
 
                     b.Navigation("RentEntity");
                 });
@@ -1396,6 +1405,8 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.ProductTuitionEntity", b =>
                 {
+                    b.Navigation("Bills");
+
                     b.Navigation("Oss");
                 });
 
