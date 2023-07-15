@@ -78,7 +78,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public static string GetModuleByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractSchemaByToken(Token);
+            return ExtractModuleByToken(Token);
         }
 
         public static string ExtractEmailByToken(string token)
