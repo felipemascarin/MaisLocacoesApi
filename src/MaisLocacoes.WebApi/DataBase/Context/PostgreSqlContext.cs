@@ -260,7 +260,7 @@ namespace MaisLocacoes.WebApi.Context
 
             modelBuilder.Entity<RentEntity>()
               .Property(x => x.Status)
-              .HasDefaultValue(RentStatus.RentStatusEnum.ElementAt(1));
+              .HasDefaultValue(RentStatus.RentStatusEnum.ElementAt(0));
 
             modelBuilder.Entity<ProductTuitionEntity>()
               .Property(x => x.Status)

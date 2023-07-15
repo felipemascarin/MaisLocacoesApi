@@ -217,6 +217,7 @@ namespace Service.v1.Services
 
             billForUpdate.ProductTuitionId = billRequest.ProductTuitionId;
             billForUpdate.Value = billRequest.Value;
+            billForUpdate.Order = billRequest.Order;
             billForUpdate.PayDate = billRequest.PayDate;
             billForUpdate.DueDate = billRequest.DueDate;
             billForUpdate.InvoiceEmittedDate = billRequest.InvoiceEmittedDate;

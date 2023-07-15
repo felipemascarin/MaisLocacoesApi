@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -16,6 +17,7 @@ namespace Service.v1.Services
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IRentRepository _rentRepository;
         private readonly IBillRepository _billRepository;
+        private readonly IBillService _billService;
         private readonly IOsRepository _osRepository;
         private readonly IProductRepository _productRepository;
         private readonly IProductService _productService;
@@ -26,6 +28,7 @@ namespace Service.v1.Services
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
             IRentRepository rentRepository,
             IBillRepository billRepository,
+            IBillService billService,
             IOsRepository osRepository,
             IProductRepository productRepository,
             IProductService productService,
@@ -36,6 +39,7 @@ namespace Service.v1.Services
             _productTuitionRepository = productTuitionRepository;
             _rentRepository = rentRepository;
             _billRepository = billRepository;
+            _billService = billService;
             _osRepository = osRepository;
             _productRepository = productRepository;
             _productService = productService;
@@ -48,15 +52,13 @@ namespace Service.v1.Services
         {
             var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
             if (!existsRent)
-            {
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
-            }
 
             var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionRequest.ProductTypeId);
             if (!existsProductType)
-            {
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
-            }
+
+            PeriodValidate(productTuitionRequest.QuantityPeriod, productTuitionRequest.TimePeriod, productTuitionRequest.InitialDateTime, productTuitionRequest.FinalDateTime);
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
@@ -108,6 +110,36 @@ namespace Service.v1.Services
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
                 await ReleaseProduct(productTuitionEntity, productEntity);
             }
+
+            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> RenewProduct(RenewProductTuitionRequest renewRequest)
+        {
+            var productTuitionEntity = await _productTuitionRepository.GetById(renewRequest.Id) ??
+                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4))
+                throw new HttpRequestException("Não é possível renovar um produto em retirada", null, HttpStatusCode.BadRequest);
+
+            if (renewRequest.InitialDateTime < productTuitionEntity.FinalDateTime)
+                throw new HttpRequestException("A data inicial da renovação não pode ser menor que a data final da locação do produto", null, HttpStatusCode.BadRequest);
+
+            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, renewRequest.InitialDateTime, renewRequest.FinalDateTime);
+
+            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
+            productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod;
+            productTuitionEntity.TimePeriod = renewRequest.TimePeriod;
+            productTuitionEntity.Value = renewRequest.Value;
+            productTuitionEntity.FirstDueDate = renewRequest.FirstDueDate;
+            productTuitionEntity.InitialDateTime = renewRequest.InitialDateTime;
+            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+            productTuitionEntity.UpdatedAt = System.DateTime.Now;
+            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            CreateBills(productTuitionEntity);
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
             else return false;
@@ -180,6 +212,11 @@ namespace Service.v1.Services
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
+            if (productTuitionRequest.TimePeriod != productTuitionForUpdate.TimePeriod)
+                throw new HttpRequestException("Não é possível alterar o período TimePeriod", null, HttpStatusCode.BadRequest);
+
+            PeriodValidate(productTuitionRequest.QuantityPeriod, productTuitionRequest.TimePeriod, productTuitionRequest.InitialDateTime, productTuitionRequest.FinalDateTime);
+
             if (productTuitionRequest.RentId != productTuitionForUpdate.RentId)
             {
                 var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
@@ -222,6 +259,35 @@ namespace Service.v1.Services
                     var productReleased = await ReleaseProduct(productTuitionForUpdate, productEntityForParts);
                     await RetainProduct(_mapper.Map<ProductTuitionEntity>(productTuitionRequest), productReleased);
                 }
+            }
+
+            var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
+            productTuitionEntity.Id = id;
+
+            var billsUpdated = false;
+
+            if (productTuitionRequest.Value != productTuitionForUpdate.Value && billsUpdated == false)
+            {
+                billsUpdated = true;
+                UpdateBills(productTuitionEntity);
+            }
+
+            if (productTuitionRequest.FirstDueDate != productTuitionForUpdate.FirstDueDate && billsUpdated == false)
+            {
+                billsUpdated = true;
+                UpdateBills(productTuitionEntity);
+            }
+
+            if (productTuitionRequest.InitialDateTime != productTuitionForUpdate.InitialDateTime && billsUpdated == false)
+            {
+                billsUpdated = true;
+                UpdateBills(productTuitionEntity);
+            }
+
+            if (productTuitionRequest.FinalDateTime != productTuitionForUpdate.FinalDateTime && productTuitionRequest.InitialDateTime == productTuitionForUpdate.InitialDateTime && billsUpdated == false)
+            {
+                billsUpdated = true;
+                UpdateBills(productTuitionEntity);
             }
 
             productTuitionForUpdate.RentId = productTuitionRequest.RentId;
@@ -296,6 +362,12 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
                 await ReleaseProduct(productTuitionForDelete, oldProductEntity);
             }
+            var bills = (await _billRepository.GetByProductTuitionId(id)).ToList();
+
+            foreach (var bill in bills)
+            {
+                _ = await _billService.DeleteById(bill.Id);
+            }
 
             productTuitionForDelete.Deleted = true;
             productTuitionForDelete.UpdatedAt = System.DateTime.Now;
@@ -305,7 +377,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public void CreateBills(ProductTuitionEntity productTuition)
+        public IEnumerable<BillEntity> CreateBills(ProductTuitionEntity productTuition)
         {
             var billsQuantity = 0;
             if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
@@ -313,11 +385,14 @@ namespace Service.v1.Services
             else if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2))
                 billsQuantity = productTuition.QuantityPeriod;
 
-            for (int i = 0; i < billsQuantity; i++)
+            var createdBills = new List<BillEntity>();
+
+            for (int i = 0, y = 1; i < billsQuantity; i++, y++)
             {
                 var bill = new BillEntity();
 
                 bill.RentId = productTuition.RentId;
+                bill.Order = y;
                 bill.ProductTuitionId = productTuition.Id;
                 bill.Value = productTuition.Value;
                 bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);
@@ -325,7 +400,32 @@ namespace Service.v1.Services
                 bill.PaymentMode = null;
                 bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-                _billRepository.CreateBill(bill);
+                createdBills.Add(_billRepository.CreateBill(bill).Result);
+            }
+
+            return createdBills;
+        }
+
+        public void UpdateBills(ProductTuitionEntity productTuition)
+        {
+            var oldBills = (_billRepository.GetByProductTuitionId(productTuition.Id)).Result.OrderBy(b => b.Order).ToList();
+            var payedOldBills = new List<BillEntity>();
+
+            foreach (var bill in oldBills)
+            {
+                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1))
+                    _billRepository.DeleteBill(bill);
+                else payedOldBills.Add(bill);
+            }
+
+            var newBills = CreateBills(productTuition).ToList();
+
+            foreach (var bill in payedOldBills)
+            {
+                var newBillForDelete = newBills.FirstOrDefault(b => b.Order == bill.Order);
+
+                if (newBillForDelete != null)
+                    _billRepository.DeleteBill(newBillForDelete);
             }
         }
 
@@ -367,7 +467,32 @@ namespace Service.v1.Services
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);
 
-           return productEntity;
+            return productEntity;
+        }
+
+        public void PeriodValidate(int quantityPeriod, string timePeriod, DateTime initialDateTime, DateTime finalDateTime)
+        {
+
+            if (initialDateTime > finalDateTime)
+                throw new HttpRequestException("Informe a data inicial e final corretamente", null, HttpStatusCode.BadRequest);
+
+            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0))
+            {
+                if ((finalDateTime.Date - initialDateTime.Date).Days != quantityPeriod)
+                    throw new HttpRequestException("A diferença da data inicial e a data final em dias deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
+            }
+
+            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
+            {
+                if ((finalDateTime.Date - initialDateTime.Date).Days / 7 != quantityPeriod)
+                    throw new HttpRequestException("A diferença da data inicial e a data final em semanas deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
+            }
+
+            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2))
+            {
+                if ((finalDateTime.Date.Month - initialDateTime.Date.Month) != quantityPeriod)
+                    throw new HttpRequestException("A diferença da data inicial e a data final em meses deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
+            }
         }
     }
 }

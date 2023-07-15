@@ -9,6 +9,7 @@
         public int? ProductTuitionParts { get; set; }
         public ProductTypeResponse? ProductType { get; set; }
         public decimal Value { get; set; }
+        public int? Order { get; set; }
         public DateTime? PayDate { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? InvoiceEmittedDate { get; set; }

@@ -14,6 +14,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Get
         public DateTime? InvoiceEmittedDate { get; set; }
         public string Status { get; set; }
         public int? NfIdFireBase { get; set; }
+        public int? Order { get; set; }
         public string PaymentMode { get; set; }
         public string? Description { get; set; }
         public string CreatedBy { get; set; }

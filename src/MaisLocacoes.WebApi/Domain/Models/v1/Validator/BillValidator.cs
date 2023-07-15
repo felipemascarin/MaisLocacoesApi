@@ -44,6 +44,12 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Id da nota fiscal se inserido deve ser número")
                 .When(bill => bill.NfIdFireBase != null);
 
+            RuleFor(bill => bill.Order)
+                .Must(nfIdFireBase => int.TryParse(nfIdFireBase.ToString(), out var result) &&
+                 result > 0)
+                .WithMessage("Número para ordenação da nota fiscal se inserido deve ser número inteiro maior que 0")
+                .When(bill => bill.Order != null);
+
             RuleFor(bill => bill.PaymentMode)
                 .Must(paymentMode => PaymentModes.PaymentModesEnum.Contains(paymentMode))
                 .WithMessage("Modo de pagamento não existente")

@@ -4,6 +4,7 @@
     {
         public int RentId { get; set; }
         public int? ProductTuitionId { get; set; }
+        public int? Order { get; set; }
         public decimal Value { get; set; }
         public DateTime? PayDate { get; set; }
         public DateTime DueDate { get; set; }

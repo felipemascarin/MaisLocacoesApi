@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 
@@ -8,6 +9,7 @@ namespace Service.v1.IServices
     {
         Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest);
         Task<bool> WithdrawProduct(int id);
+        Task<bool> RenewProduct(RenewProductTuitionRequest renewRequest);
         Task<GetProductTuitionRentResponse> GetById(int id);
         Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId);
         Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);

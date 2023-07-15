@@ -38,6 +38,8 @@ namespace Repository.v1.Entity
 
         public int? NfIdFireBase { get; set; }
 
+        public int? Order { get; set; }
+
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? PaymentMode { get; set; }

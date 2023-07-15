@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -71,6 +72,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("WithdrawProduct {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productTuitionService.WithdrawProduct(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPost("renew")]
+        public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest)
+        {
+            try
+            {
+                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} User:{@email}", System.DateTime.Now, renewRequest, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _productTuitionService.RenewProduct(renewRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
