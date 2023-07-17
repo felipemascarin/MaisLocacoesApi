@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -12,17 +14,26 @@ namespace Service.v1.Services
     public class OsService : IOsService
     {
         private readonly IOsRepository _osRepository;
+        private readonly IProductTuitionService _productTuitionService;
         private readonly IProductTuitionRepository _productTuitionRepository;
+        private readonly IProductRepository _productRepository;
+        private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public OsService(IOsRepository osRepository,
+            IProductTuitionService productTuitionService,
             IProductTuitionRepository productTuitionRepository,
+            IProductRepository productRepository,
+            IRentedPlaceRepository rentedPlaceRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _osRepository = osRepository;
+            _productTuitionService = productTuitionService;
             _productTuitionRepository = productTuitionRepository;
+            _productRepository = productRepository;
+            _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
@@ -44,6 +55,68 @@ namespace Service.v1.Services
             var osResponse = _mapper.Map<OsResponse>(osEntity);
 
             return osResponse;
+        }
+
+        public async Task<bool> CloseOs(int id, CloseOsRequest closeOsRequest)
+        {
+            var os = await _osRepository.GetById(id) ??
+                throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
+
+            if (os.Status == OsStatus.OsStatusEnum.ElementAt(2))
+                throw new HttpRequestException("Nota se serviço já cancelada", null, HttpStatusCode.NotFound);
+
+            var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
+                throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
+
+            os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(2);
+            os.FinalDateTime = DateTime.Now;
+            os.DeliveryObservation = closeOsRequest.DeliveryObservation;
+            os.UpdatedAt = DateTime.UtcNow;
+            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            var rentedPlace = new RentedPlaceEntity();
+            rentedPlace.ProductId = product.Id;
+            rentedPlace.Latitude = closeOsRequest.Latitude;
+            rentedPlace.Longitude = closeOsRequest.Longitude;
+            rentedPlace.ArrivalDate = os.FinalDateTime;
+            rentedPlace.ProductParts = productTuitionEntity.Parts;
+            rentedPlace.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //entrega
+            {
+                rentedPlace.RentId = productTuitionEntity.RentId;
+                rentedPlace.QgId = null;
+
+                await _productTuitionService.RetainProduct(productTuitionEntity, product);
+
+                productTuitionEntity.ProductCode = closeOsRequest.ProductCode;
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+                productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+                productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            }
+
+            if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //retirada
+            {
+                rentedPlace.RentId = null;
+                rentedPlace.QgId = closeOsRequest.QgId;
+
+                await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
+
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
+                productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+                productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            }
+
+            await _rentedPlaceRepository.CreateRentedPlace(rentedPlace);
+
+            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
+
+            if (await _osRepository.UpdateOs(os) > 0) return true;
+            else return false;
         }
 
         public async Task<OsResponse> GetById(int id)

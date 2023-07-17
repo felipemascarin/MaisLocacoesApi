@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using Repository.v1.Entity;
 
 namespace Service.v1.IServices
 {
@@ -19,5 +20,7 @@ namespace Service.v1.IServices
         Task<bool> UpdateProductCode(string productCode, int id);
         Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
+        Task<ProductEntity> RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity);
+        Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity);
     }
 }

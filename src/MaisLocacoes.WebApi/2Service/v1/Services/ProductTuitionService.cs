@@ -19,7 +19,6 @@ namespace Service.v1.Services
         private readonly IBillRepository _billRepository;
         private readonly IBillService _billService;
         private readonly IOsRepository _osRepository;
-        private readonly IOsService _osService;
         private readonly IProductRepository _productRepository;
         private readonly IProductService _productService;
         private readonly IProductTypeRepository _productTypeRepository;
@@ -31,7 +30,6 @@ namespace Service.v1.Services
             IBillRepository billRepository,
             IBillService billService,
             IOsRepository osRepository,
-            IOsService osService,
             IProductRepository productRepository,
             IProductService productService,
             IProductTypeRepository productTypeRepository,
@@ -43,7 +41,6 @@ namespace Service.v1.Services
             _billRepository = billRepository;
             _billService = billService;
             _osRepository = osRepository;
-            _osService = osService;
             _productRepository = productRepository;
             _productService = productService;
             _productTypeRepository = productTypeRepository;
@@ -139,7 +136,14 @@ namespace Service.v1.Services
 
             var os = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
 
-            await _osService.DeleteById(os.Id);
+            var osForDelete = await _osRepository.GetById(id) ??
+                throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
+
+            osForDelete.Deleted = true;
+            osForDelete.UpdatedAt = System.DateTime.Now;
+            osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            await _osRepository.UpdateOs(osForDelete);
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
 
@@ -505,7 +509,7 @@ namespace Service.v1.Services
 
             return productEntity;
         }
-
+        
         public async Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
             productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
@@ -518,10 +522,6 @@ namespace Service.v1.Services
 
         public void PeriodValidate(int quantityPeriod, string timePeriod, DateTime initialDateTime, DateTime finalDateTime)
         {
-
-            if (initialDateTime > finalDateTime)
-                throw new HttpRequestException("Informe a data inicial e final corretamente", null, HttpStatusCode.BadRequest);
-
             if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0))
             {
                 if ((finalDateTime.Date - initialDateTime.Date).Days != quantityPeriod)

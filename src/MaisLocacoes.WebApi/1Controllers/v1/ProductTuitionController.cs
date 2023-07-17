@@ -107,7 +107,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} User:{@email}", System.DateTime.Now, renewRequest, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(renewRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (await _productTuitionService.RenewProduct(renewRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));

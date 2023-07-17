@@ -10,6 +10,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\Models\v1\Request\Specifics\**" />
+    <Content Remove="Domain\Models\v1\Request\Specifics\**" />
+    <EmbeddedResource Remove="Domain\Models\v1\Request\Specifics\**" />
+    <None Remove="Domain\Models\v1\Request\Specifics\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="FluentValidation" Version="11.5.2" />
@@ -42,10 +49,6 @@
     <Content Update="appsettingsDocker.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\Models\v1\Request\Specifics\" />
   </ItemGroup>
 
 </Project>

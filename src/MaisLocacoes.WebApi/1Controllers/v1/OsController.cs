@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -59,6 +60,26 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPost("close/{id}")]
+        public async Task<IActionResult> CloseOs(int id, [FromBody] CloseOsRequest closeOsRequest)
+        {
+            try
+            {
+                _logger.LogInformation("CloseOs {@dateTime} id:{@id} request:{@request} User:{@email}", System.DateTime.Now, id, JsonConvert.SerializeObject(closeOsRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _osService.CloseOs(id, closeOsRequest)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
 
         [Authorize]
         [TokenValidationDataBase]

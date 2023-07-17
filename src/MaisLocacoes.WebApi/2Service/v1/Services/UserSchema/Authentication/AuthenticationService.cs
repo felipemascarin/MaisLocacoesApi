@@ -42,6 +42,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             var user = new User()
             {
                 Name = userEntity.Name,
+                Cpf = userEntity.Cpf,
                 Email = userEntity.Email,
                 Role = userEntity.Role,
                 Schema = userEntity.Cnpj,

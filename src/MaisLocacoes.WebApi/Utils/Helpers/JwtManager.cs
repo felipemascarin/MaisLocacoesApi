@@ -11,6 +11,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
     public class User
     {
         public string Name { get; set; }
+        public string Cpf { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
         public string Schema { get; set; }
@@ -40,7 +41,8 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role),
                     new Claim("schema", user.Schema),
-                    new Claim("module", user.Module)
+                    new Claim("module", user.Module),
+                    new Claim("cpf", user.Cpf)
                 }),
                 Expires = DateTime.Now.AddHours(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -81,6 +83,12 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             return ExtractModuleByToken(Token);
         }
 
+        public static string GetCpfByToken(IHttpContextAccessor httpContextAccessor)
+        {
+            Token = ExtractTokenByAuthorization(httpContextAccessor);
+            return ExtractCpfByToken(Token);
+        }
+
         public static string ExtractEmailByToken(string token)
         {
             var handler = new JwtSecurityTokenHandler();
@@ -103,6 +111,14 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             var decodedToken = handler.ReadJwtToken(token);
             var payload = decodedToken.Payload;
             return payload["module"].ToString();
+        }
+
+        public static string ExtractCpfByToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var decodedToken = handler.ReadJwtToken(token);
+            var payload = decodedToken.Payload;
+            return payload["cpf"].ToString();
         }
 
         //Verifica se é o ultimo token criado para o usuário acessando
