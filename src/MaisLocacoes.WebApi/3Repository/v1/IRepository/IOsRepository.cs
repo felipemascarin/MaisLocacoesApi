@@ -6,6 +6,7 @@ namespace Repository.v1.IRepository
     {
         Task<OsEntity> CreateOs(OsEntity osEntity);
         Task<OsEntity> GetById(int id);
+        Task<OsEntity> GetByProductTuitionId(int productTuitionId, string type);
         Task<int> UpdateOs(OsEntity osForUpdate);
     }
 }

@@ -83,6 +83,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpPost("cancelwithdraw/{id}")]
+        public async Task<IActionResult> CancelWithdrawProduct(int id)
+        {
+            try
+            {
+                _logger.LogInformation("CancelWithdrawProduct {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _productTuitionService.CancelWithdrawProduct(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPost("renew")]
         public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest)
         {

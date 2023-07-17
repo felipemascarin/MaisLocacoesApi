@@ -23,6 +23,8 @@ namespace Repository.v1.Repository
 
         public async Task<OsEntity> GetById(int id) => await _context.Oss.FirstOrDefaultAsync(o => o.Id == id && o.Deleted == false);
 
+        public async Task<OsEntity> GetByProductTuitionId(int productTuitionId, string type) => await _context.Oss.FirstOrDefaultAsync(o => o.ProductTuitionId == productTuitionId && o.Type == type && o.Deleted == false);
+
         public async Task<int> UpdateOs(OsEntity osForUpdate)
         {
             _context.Oss.Update(osForUpdate);

@@ -19,6 +19,7 @@ namespace Service.v1.Services
         private readonly IBillRepository _billRepository;
         private readonly IBillService _billService;
         private readonly IOsRepository _osRepository;
+        private readonly IOsService _osService;
         private readonly IProductRepository _productRepository;
         private readonly IProductService _productService;
         private readonly IProductTypeRepository _productTypeRepository;
@@ -30,6 +31,7 @@ namespace Service.v1.Services
             IBillRepository billRepository,
             IBillService billService,
             IOsRepository osRepository,
+            IOsService osService,
             IProductRepository productRepository,
             IProductService productService,
             IProductTypeRepository productTypeRepository,
@@ -41,6 +43,7 @@ namespace Service.v1.Services
             _billRepository = billRepository;
             _billService = billService;
             _osRepository = osRepository;
+            _osService = osService;
             _productRepository = productRepository;
             _productService = productService;
             _productTypeRepository = productTypeRepository;
@@ -93,7 +96,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             if (productTuitionEntity.ProductCode == null)
-                throw new HttpRequestException("Não é possível cancelar uma fatura de produto sem produto", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("Não é possível retirar o produto sem produto", null, HttpStatusCode.BadRequest);
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1))
             {
@@ -105,7 +108,7 @@ namespace Service.v1.Services
             {
                 var productEntity = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode);
 
-                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);   
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
                 await ReleaseProduct(productTuitionEntity, productEntity);
 
                 var productTuitionsRentList = (await _productTuitionRepository.GetAllByRentId(productTuitionEntity.RentId)).ToList();
@@ -125,6 +128,35 @@ namespace Service.v1.Services
                 }
             }
 
+            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> CancelWithdrawProduct(int id)
+        {
+            var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
+                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            var os = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
+
+            await _osService.DeleteById(os.Id);
+
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+
+            var rent = await _rentRepository.GetById(productTuitionEntity.Id);
+
+            if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
+            {
+                rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
+                rent.UpdatedAt = DateTime.UtcNow;
+                rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                await _rentRepository.UpdateRent(rent);
+            }
+
+            productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
             else return false;
         }

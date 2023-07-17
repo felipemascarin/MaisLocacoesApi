@@ -143,7 +143,5 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
-
-
     }
 }
