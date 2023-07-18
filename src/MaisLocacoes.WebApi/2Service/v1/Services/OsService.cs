@@ -6,6 +6,7 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -14,6 +15,8 @@ namespace Service.v1.Services
     public class OsService : IOsService
     {
         private readonly IOsRepository _osRepository;
+        private readonly IRentRepository _rentRepository;
+        private readonly IQgRepository _qgRepository;
         private readonly IProductTuitionService _productTuitionService;
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IProductRepository _productRepository;
@@ -22,6 +25,8 @@ namespace Service.v1.Services
         private readonly IMapper _mapper;
 
         public OsService(IOsRepository osRepository,
+            IRentRepository rentRepository,
+            IQgRepository qgRepository,
             IProductTuitionService productTuitionService,
             IProductTuitionRepository productTuitionRepository,
             IProductRepository productRepository,
@@ -30,6 +35,8 @@ namespace Service.v1.Services
             IMapper mapper)
         {
             _osRepository = osRepository;
+            _rentRepository = rentRepository;
+            _qgRepository = qgRepository;
             _productTuitionService = productTuitionService;
             _productTuitionRepository = productTuitionRepository;
             _productRepository = productRepository;
@@ -41,10 +48,14 @@ namespace Service.v1.Services
         public async Task<OsResponse> CreateOs(OsRequest osRequest)
         {
             var existsRent = await _productTuitionRepository.ProductTuitionExists(osRequest.ProductTuitionId);
+
             if (!existsRent)
-            {
                 throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
-            }
+
+            var os = await _osRepository.GetByProductTuitionIdForCreate(osRequest.ProductTuitionId, osRequest.Type);
+
+            if (os != null)
+                throw new HttpRequestException("Uma nota de serviço desse tipo já existe para esse produto.", null, HttpStatusCode.BadRequest);
 
             var osEntity = _mapper.Map<OsEntity>(osRequest);
 
@@ -57,29 +68,87 @@ namespace Service.v1.Services
             return osResponse;
         }
 
-        public async Task<bool> CloseOs(int id, CloseOsRequest closeOsRequest)
+        public async Task<bool> StartOs(int id)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (os.Status == OsStatus.OsStatusEnum.ElementAt(2))
-                throw new HttpRequestException("Nota se serviço já cancelada", null, HttpStatusCode.NotFound);
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(0) && os.Status != OsStatus.OsStatusEnum.ElementAt(3))
+                throw new HttpRequestException("Essa nota de serviço não pode mais ser iniciada.", null, HttpStatusCode.NotFound);
 
-            var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
+            var productTuitionEntity = await _productTuitionRepository.GetById(os.ProductTuitionId) ??
+               throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3);
+            productTuitionEntity.UpdatedAt = DateTime.Now;
+            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
+
+            os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(1);
+            os.InitialDateTime = DateTime.Now;
+            os.UpdatedAt = DateTime.Now;
+            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _osRepository.UpdateOs(os) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> ReturnOs(int id)
+        {
+            var os = await _osRepository.GetById(id) ??
+                throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
+
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Essa nota de serviço não pode ser devolvida.", null, HttpStatusCode.NotFound);
+
+            os.DeliveryCpf = null;
+            os.Status = OsStatus.OsStatusEnum.ElementAt(3);
+            os.InitialDateTime = null;
+            os.UpdatedAt = DateTime.Now;
+            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _osRepository.UpdateOs(os) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> CancelOs(int id)
+        {
+            var os = await _osRepository.GetById(id) ??
+                throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
+
+            if (os.Status == OsStatus.OsStatusEnum.ElementAt(2) || os.Status == OsStatus.OsStatusEnum.ElementAt(4))
+                throw new HttpRequestException("Essa nota de serviço não pode mais ser cancelada.", null, HttpStatusCode.NotFound);
+
+            os.DeliveryCpf = null;
+            os.Status = OsStatus.OsStatusEnum.ElementAt(4);
+            os.UpdatedAt = DateTime.Now;
+            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+            if (await _osRepository.UpdateOs(os) > 0) return true;
+            else return false;
+        }
+
+        public async Task<bool> FinishOs(int id, CloseOsRequest closeOsRequest)
+        {
+            var os = await _osRepository.GetById(id) ??
+                throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
+
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
+                throw new HttpRequestException("Não é possível finalizar uma nota de serviço não iniciada", null, HttpStatusCode.NotFound);
+
+            var productTuitionEntity = await _productTuitionRepository.GetById(closeOsRequest.ProductTuitionId) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
-
-            var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
-                throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(2);
             os.FinalDateTime = DateTime.Now;
             os.DeliveryObservation = closeOsRequest.DeliveryObservation;
-            os.UpdatedAt = DateTime.UtcNow;
+            os.UpdatedAt = DateTime.Now;
             os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             var rentedPlace = new RentedPlaceEntity();
-            rentedPlace.ProductId = product.Id;
             rentedPlace.Latitude = closeOsRequest.Latitude;
             rentedPlace.Longitude = closeOsRequest.Longitude;
             rentedPlace.ArrivalDate = os.FinalDateTime;
@@ -88,27 +157,48 @@ namespace Service.v1.Services
 
             if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //entrega
             {
-                rentedPlace.RentId = productTuitionEntity.RentId;
-                rentedPlace.QgId = null;
+                if (string.IsNullOrEmpty(closeOsRequest.ProductCode))
+                    throw new HttpRequestException("Código do produto é obrigatório para finalizar uma nota de entrega", null, HttpStatusCode.NotFound);
+
+                var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
+                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
                 await _productTuitionService.RetainProduct(productTuitionEntity, product);
 
                 productTuitionEntity.ProductCode = closeOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
-                productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+                productTuitionEntity.UpdatedAt = DateTime.Now;
                 productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                rentedPlace.RentId = productTuitionEntity.RentId;
+                rentedPlace.QgId = null;
+                rentedPlace.ProductId = product.Id;
+                rentedPlace.ProductParts = productTuitionEntity.Parts;
             }
 
             if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //retirada
             {
-                rentedPlace.RentId = null;
-                rentedPlace.QgId = closeOsRequest.QgId;
+                var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
+                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-                await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
+                if (closeOsRequest.QgId == null)
+                    throw new HttpRequestException("Id do Qg é obrigatório para finalizar uma nota de retirada", null, HttpStatusCode.NotFound);
+
+                var qg = await _qgRepository.GetById(closeOsRequest.QgId.Value) ??
+                    throw new HttpRequestException("Qg não encontrado", null, HttpStatusCode.NotFound);
+
+                product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
-                productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+                productTuitionEntity.UpdatedAt = DateTime.Now;
                 productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                rentedPlace.RentId = null;
+                rentedPlace.QgId = qg.Id;
+                rentedPlace.ProductId = product.Id;
+                rentedPlace.ProductParts = product.Parts - product.RentedParts;
+
+                _productTuitionService.FinishRentIfTheLast(productTuitionEntity);
             }
 
             await _rentedPlaceRepository.CreateRentedPlace(rentedPlace);

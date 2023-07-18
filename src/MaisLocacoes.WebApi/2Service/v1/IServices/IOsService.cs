@@ -7,7 +7,10 @@ namespace Service.v1.IServices
     public interface IOsService
     {
         Task<OsResponse> CreateOs(OsRequest osRequest);
-        Task<bool> CloseOs(int id, CloseOsRequest closeOsRequest);
+        Task<bool> StartOs(int id);
+        Task<bool> ReturnOs(int id);
+        Task<bool> CancelOs(int id);
+        Task<bool> FinishOs(int id, CloseOsRequest closeOsRequest);
         Task<OsResponse> GetById(int id);
         Task<bool> UpdateOs(OsRequest osRequest, int id);
         Task<bool> UpdateStatus(string status, int id);

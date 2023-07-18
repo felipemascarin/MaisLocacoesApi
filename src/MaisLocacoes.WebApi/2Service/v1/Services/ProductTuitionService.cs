@@ -79,7 +79,9 @@ namespace Service.v1.Services
 
             CreateBills(productTuitionEntity);
 
-            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1))
+            var module = JwtManager.GetModuleByToken(_httpContextAccessor);
+
+            if (module == ProjectModules.Modules.ElementAt(1))
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0));
 
             var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
@@ -95,34 +97,20 @@ namespace Service.v1.Services
             if (productTuitionEntity.ProductCode == null)
                 throw new HttpRequestException("Não é possível retirar o produto sem produto", null, HttpStatusCode.BadRequest);
 
-            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1))
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
             {
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1));
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
             }
 
-            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(0))
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(0)) //Module Basic
             {
                 var productEntity = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
                 await ReleaseProduct(productTuitionEntity, productEntity);
 
-                var productTuitionsRentList = (await _productTuitionRepository.GetAllByRentId(productTuitionEntity.RentId)).ToList();
-
-                productTuitionsRentList.Remove(productTuitionEntity);
-
-                var isNotTheLastProductTuitionOfRent = productTuitionsRentList.Exists(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5));
-
-                if (isNotTheLastProductTuitionOfRent == false)
-                {
-                    var rent = await _rentRepository.GetById(productTuitionEntity.Id);
-                    rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
-                    rent.UpdatedAt = DateTime.UtcNow;
-                    rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-
-                    await _rentRepository.UpdateRent(rent);
-                }
+                FinishRentIfTheLast(productTuitionEntity);
             }
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
@@ -152,13 +140,13 @@ namespace Service.v1.Services
             if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
             {
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
-                rent.UpdatedAt = DateTime.UtcNow;
+                rent.UpdatedAt = DateTime.Now;
                 rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
                 await _rentRepository.UpdateRent(rent);
             }
 
-            productTuitionEntity.UpdatedAt = DateTime.UtcNow;
+            productTuitionEntity.UpdatedAt = DateTime.Now;
             productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
             
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
@@ -412,11 +400,34 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
                 await ReleaseProduct(productTuitionForDelete, oldProductEntity);
             }
+
             var bills = (await _billRepository.GetByProductTuitionId(id)).ToList();
 
             foreach (var bill in bills)
             {
                 _ = await _billService.DeleteById(bill.Id);
+            }
+
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
+            {
+                var deliveryOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(0)));
+                var withdrawOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)));
+
+                if (deliveryOs != null)
+                {
+                    deliveryOs.Deleted = true;
+                    deliveryOs.UpdatedAt = System.DateTime.Now;
+                    deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    _ = await _osRepository.UpdateOs(deliveryOs);
+                }
+
+                if (withdrawOs != null)
+                {
+                    withdrawOs.Deleted = true;
+                    withdrawOs.UpdatedAt = System.DateTime.Now;
+                    withdrawOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    _ = await _osRepository.UpdateOs(withdrawOs);
+                }
             }
 
             productTuitionForDelete.Deleted = true;
@@ -476,6 +487,25 @@ namespace Service.v1.Services
 
                 if (newBillForDelete != null)
                     _billRepository.DeleteBill(newBillForDelete);
+            }
+        }
+
+        public async void FinishRentIfTheLast(ProductTuitionEntity productTuitionEntity)
+        {
+            var productTuitionsRentList = (await _productTuitionRepository.GetAllByRentId(productTuitionEntity.RentId)).ToList();
+
+            productTuitionsRentList.Remove(productTuitionEntity);
+
+            var isNotTheLastProductTuitionOfRent = productTuitionsRentList.Exists(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5));
+
+            if (isNotTheLastProductTuitionOfRent == false)
+            {
+                var rent = await _rentRepository.GetById(productTuitionEntity.RentId);
+                rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
+                rent.UpdatedAt = DateTime.Now;
+                rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                await _rentRepository.UpdateRent(rent);
             }
         }
 

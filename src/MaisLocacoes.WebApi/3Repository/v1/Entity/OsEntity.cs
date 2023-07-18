@@ -20,7 +20,7 @@ namespace Repository.v1.Entity
         public string Type { get; set; }
 
         [StringLength(11)]
-        [Column(TypeName = "char")]
+        [Column(TypeName = "character varying(11)")]
         public string? DeliveryCpf { get; set; }
 
         [Required]

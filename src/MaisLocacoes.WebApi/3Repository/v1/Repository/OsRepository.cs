@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -24,6 +25,8 @@ namespace Repository.v1.Repository
         public async Task<OsEntity> GetById(int id) => await _context.Oss.FirstOrDefaultAsync(o => o.Id == id && o.Deleted == false);
 
         public async Task<OsEntity> GetByProductTuitionId(int productTuitionId, string type) => await _context.Oss.FirstOrDefaultAsync(o => o.ProductTuitionId == productTuitionId && o.Type == type && o.Deleted == false);
+        
+        public async Task<OsEntity> GetByProductTuitionIdForCreate(int productTuitionId, string type) => await _context.Oss.FirstOrDefaultAsync(o => o.ProductTuitionId == productTuitionId && o.Type == type && o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) && o.Deleted == false);
 
         public async Task<int> UpdateOs(OsEntity osForUpdate)
         {

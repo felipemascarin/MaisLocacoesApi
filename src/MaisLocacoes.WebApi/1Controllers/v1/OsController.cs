@@ -63,14 +63,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPost("close/{id}")]
-        public async Task<IActionResult> CloseOs(int id, [FromBody] CloseOsRequest closeOsRequest)
+        [HttpPost("start/{id}")]
+        public async Task<IActionResult> StartOs(int id)
         {
             try
             {
-                _logger.LogInformation("CloseOs {@dateTime} id:{@id} request:{@request} User:{@email}", System.DateTime.Now, id, JsonConvert.SerializeObject(closeOsRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("StartOs {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id,JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                if (await _osService.CloseOs(id, closeOsRequest)) return Ok();
+                if (await _osService.StartOs(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
@@ -80,6 +80,62 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             }
         }
 
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPost("return/{id}")]
+        public async Task<IActionResult> ReturnOs(int id)
+        {
+            try
+            {
+                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _osService.ReturnOs(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPost("cancel/{id}")]
+        public async Task<IActionResult> CancelOs(int id)
+        {
+            try
+            {
+                _logger.LogInformation("CancelOs {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _osService.CancelOs(id)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpPost("finish/{id}")]
+        public async Task<IActionResult> FinishOs(int id, [FromBody] CloseOsRequest closeOsRequest)
+        {
+            try
+            {
+                _logger.LogInformation("FinishOs {@dateTime} id:{@id} request:{@request} User:{@email}", System.DateTime.Now, id, JsonConvert.SerializeObject(closeOsRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (await _osService.FinishOs(id, closeOsRequest)) return Ok();
+                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
 
         [Authorize]
         [TokenValidationDataBase]

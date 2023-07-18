@@ -20,6 +20,7 @@ namespace Service.v1.IServices
         Task<bool> UpdateProductCode(string productCode, int id);
         Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
+        void FinishRentIfTheLast(ProductTuitionEntity productTuitionEntity);
         Task<ProductEntity> RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity);
         Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity);
     }
