@@ -142,7 +142,7 @@ namespace Service.v1.Services
                 string productTypeName;
                 bool? isManyParts;
                 string productCode;
-                int? parts = 0;
+                int? parts;
 
                 if (bill.ProductTuitionId == null)
                 {
@@ -186,6 +186,12 @@ namespace Service.v1.Services
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            if (billForUpdate.NfIdFireBase != null)
+                throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
+
+            if (billRequest.NfIdFireBase != null && billForUpdate.Status != BillStatus.BillStatusEnum.ElementAt(1))
+                throw new HttpRequestException("NfIdFireBase só pode ser inserido para Fatura já paga", null, HttpStatusCode.NotFound);
 
             if (billRequest.RentId != billForUpdate.RentId)
             {
@@ -231,18 +237,46 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int id)
+        public async Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            if (billForUpdate.NfIdFireBase != null)
+                throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && paymentMode == null)
                 throw new HttpRequestException("Modo de pagamento deve ser inserido para status de fatura paga", null, HttpStatusCode.BadRequest);
 
             if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
             {
+                if (nfIdFireBase != null)
+                    throw new HttpRequestException("Nf Id só é permitido para pagar fatura", null, HttpStatusCode.BadRequest);
+
+                if (billForUpdate.ProductTuitionId != null)
+                {
+                    var productTuitionForUpdate = await _productTuitionRepository.GetById(billForUpdate.ProductTuitionId.Value);
+
+                    if (productTuitionForUpdate.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
+                    {
+                        productTuitionForUpdate.IsEditable = true;
+                        await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
+                    }
+                }
+
                 paymentMode = null;
                 payDate = null;
+            }
+
+            if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && billForUpdate.ProductTuitionId != null)
+            {
+                var productTuitionForUpdate = await _productTuitionRepository.GetById(billForUpdate.ProductTuitionId.Value);
+
+                if (productTuitionForUpdate.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
+                {
+                    productTuitionForUpdate.IsEditable = false;
+                    await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
+                }
             }
 
             if (paymentMode != null && !PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
@@ -250,6 +284,7 @@ namespace Service.v1.Services
 
             billForUpdate.Status = status;
             billForUpdate.PaymentMode = paymentMode;
+            billForUpdate.NfIdFireBase = nfIdFireBase;
             billForUpdate.PayDate = payDate;
             billForUpdate.UpdatedAt = System.DateTime.Now;
             billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
@@ -262,6 +297,9 @@ namespace Service.v1.Services
         {
             var billForDelete = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            if (billForDelete.NfIdFireBase != null)
+                throw new HttpRequestException("Fatura não pode ser deletada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             billForDelete.Deleted = true;
             billForDelete.UpdatedAt = System.DateTime.Now;

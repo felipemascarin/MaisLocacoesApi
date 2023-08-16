@@ -12,7 +12,7 @@ namespace Service.v1.IServices
         Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId);
         Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills();
         Task<bool> UpdateBill(BillRequest billRequest, int id);
-        Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int id);
+        Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id);
         Task<bool> DeleteById(int id);
     }
 }

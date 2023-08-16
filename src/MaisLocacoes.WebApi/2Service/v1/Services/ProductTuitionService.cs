@@ -173,6 +173,7 @@ namespace Service.v1.Services
             productTuitionEntity.FirstDueDate = renewRequest.FirstDueDate;
             productTuitionEntity.InitialDateTime = renewRequest.InitialDateTime;
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
+            productTuitionEntity.IsEditable = false;
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
             productTuitionEntity.UpdatedAt = System.DateTime.Now;
             productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
@@ -249,6 +250,9 @@ namespace Service.v1.Services
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            if (productTuitionForUpdate.IsEditable == false)
+                throw new HttpRequestException("Essa fatura de produto não é editável", null, HttpStatusCode.NotFound);
 
             if (productTuitionRequest.TimePeriod != productTuitionForUpdate.TimePeriod)
                 throw new HttpRequestException("Não é possível alterar o período TimePeriod", null, HttpStatusCode.BadRequest);

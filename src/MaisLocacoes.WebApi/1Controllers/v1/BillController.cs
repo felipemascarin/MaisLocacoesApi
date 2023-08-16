@@ -168,16 +168,16 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("id/{id}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, [FromQuery(Name = "payDate")] DateTime? payDate, int id)
+        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, [FromQuery(Name = "payDate")] DateTime? payDate, [FromQuery(Name = "nfIdFireBase")] int? nfIdFireBase, int id)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} payDate:{@payDate} id:{@id} User:{@email}", System.DateTime.Now, status, paymentMode, payDate, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} payDate:{@payDate} nfIdFireBase:{@nfIdFireBase} id:{@id} User:{@email}", System.DateTime.Now, status, paymentMode, payDate, nfIdFireBase, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 if (!BillStatus.BillStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _billService.UpdateStatus(status, paymentMode, payDate, id)) return Ok();
+                if (await _billService.UpdateStatus(status, paymentMode, payDate, nfIdFireBase, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)

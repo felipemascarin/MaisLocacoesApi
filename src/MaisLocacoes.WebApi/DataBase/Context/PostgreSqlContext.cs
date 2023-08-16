@@ -84,6 +84,11 @@ namespace MaisLocacoes.WebApi.Context
                 .Property(p => p.NotifyDaysBefore)
                 .HasDefaultValue(0);
 
+            //Definindo valor Default IsEditable de ProductTuitionEntity:
+            modelBuilder.Entity<ProductTuitionEntity>()
+                .Property(p => p.IsEditable)
+                .HasDefaultValue(true);
+
             //Definindo valor Default IsDefault de ProductTuitionValueEntity:
             modelBuilder.Entity<ProductTuitionValueEntity>()
                 .Property(p => p.IsDefault)
