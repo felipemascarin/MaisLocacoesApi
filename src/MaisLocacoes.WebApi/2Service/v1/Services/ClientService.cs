@@ -121,7 +121,7 @@ namespace Service.v1.Services
                         DocumentNumber = item.Cpf
                     });
 
-                if (!string.IsNullOrEmpty(item.Cnpj) && string.IsNullOrEmpty(item.Cpf))
+                if (!string.IsNullOrEmpty(item.Cnpj))
                     clientForRentResponse.Add(new GetClientForRentResponse
                     {
                         Id = item.Id,
