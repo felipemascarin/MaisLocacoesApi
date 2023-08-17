@@ -122,9 +122,8 @@ namespace Service.v1.Services
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            var os = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
-
-            var osForDelete = await _osRepository.GetById(id);
+            var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)) ??
+                throw new HttpRequestException("nulo", null, HttpStatusCode.NotFound)
 
             if (osForDelete != null)
             {
