@@ -161,7 +161,7 @@ namespace Service.v1.Services
             if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4))
                 throw new HttpRequestException("Não é possível renovar um produto em retirada", null, HttpStatusCode.BadRequest);
 
-            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, productTuitionEntity.InitialDateTime, renewRequest.FinalDateTime);
+            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, productTuitionEntity.FinalDateTime, renewRequest.FinalDateTime);
 
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod;
