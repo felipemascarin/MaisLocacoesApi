@@ -124,14 +124,16 @@ namespace Service.v1.Services
 
             var os = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
 
-            var osForDelete = await _osRepository.GetById(id) ??
-                throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
+            var osForDelete = await _osRepository.GetById(id);
 
-            osForDelete.Deleted = true;
-            osForDelete.UpdatedAt = System.DateTime.Now;
-            osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            if (osForDelete != null)
+            {
+                osForDelete.Deleted = true;
+                osForDelete.UpdatedAt = System.DateTime.Now;
+                osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
-            await _osRepository.UpdateOs(osForDelete);
+                await _osRepository.UpdateOs(osForDelete);
+            }
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
 
