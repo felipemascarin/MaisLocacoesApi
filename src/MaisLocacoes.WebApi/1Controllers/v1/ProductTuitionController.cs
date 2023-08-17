@@ -102,8 +102,8 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPost("renew")]
-        public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest, [FromQuery] int id)
+        [HttpPost("renew/{id}")]
+        public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest, int id)
         {
             try
             {
