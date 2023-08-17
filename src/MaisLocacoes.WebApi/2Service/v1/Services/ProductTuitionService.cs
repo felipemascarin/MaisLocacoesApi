@@ -153,25 +153,21 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> RenewProduct(RenewProductTuitionRequest renewRequest)
+        public async Task<bool> RenewProduct(int id, RenewProductTuitionRequest renewRequest)
         {
-            var productTuitionEntity = await _productTuitionRepository.GetById(renewRequest.Id) ??
+            var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4))
                 throw new HttpRequestException("Não é possível renovar um produto em retirada", null, HttpStatusCode.BadRequest);
 
-            if (renewRequest.InitialDateTime < productTuitionEntity.FinalDateTime)
-                throw new HttpRequestException("A data inicial da renovação não pode ser menor que a data final da locação do produto", null, HttpStatusCode.BadRequest);
-
-            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, renewRequest.InitialDateTime, renewRequest.FinalDateTime);
+            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, productTuitionEntity.InitialDateTime, renewRequest.FinalDateTime);
 
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod;
             productTuitionEntity.TimePeriod = renewRequest.TimePeriod;
             productTuitionEntity.Value = renewRequest.Value;
             productTuitionEntity.FirstDueDate = renewRequest.FirstDueDate;
-            productTuitionEntity.InitialDateTime = renewRequest.InitialDateTime;
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.IsEditable = false;
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);

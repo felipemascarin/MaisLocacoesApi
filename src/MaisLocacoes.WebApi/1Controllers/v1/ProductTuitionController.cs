@@ -102,14 +102,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPost("renew")]
-        public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest)
+        [HttpPost("renew/{id}")]
+        public async Task<IActionResult> RenewProduct([FromBody] RenewProductTuitionRequest renewRequest, int id)
         {
             try
             {
-                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(renewRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(renewRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                if (await _productTuitionService.RenewProduct(renewRequest)) return Ok();
+                if (await _productTuitionService.RenewProduct(id, renewRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
