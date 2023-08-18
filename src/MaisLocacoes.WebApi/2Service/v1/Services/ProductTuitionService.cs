@@ -125,6 +125,8 @@ namespace Service.v1.Services
             var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)) ??
                 throw new HttpRequestException("nulo", null, HttpStatusCode.NotFound);
 
+            Console.WriteLine("Passou aqui");
+
             if (osForDelete != null)
             {
                 osForDelete.Deleted = true;
@@ -133,6 +135,8 @@ namespace Service.v1.Services
 
                 await _osRepository.UpdateOs(osForDelete);
             }
+
+            Console.WriteLine("Passou aqui 2");
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
 
@@ -146,6 +150,8 @@ namespace Service.v1.Services
 
                 await _rentRepository.UpdateRent(rent);
             }
+
+            Console.WriteLine("Passou aqui 3 ");
 
             productTuitionEntity.UpdatedAt = DateTime.Now;
             productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
