@@ -123,7 +123,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)) ??
-                throw new HttpRequestException("nulo", null, HttpStatusCode.NotFound)
+                throw new HttpRequestException("nulo", null, HttpStatusCode.NotFound);
 
             if (osForDelete != null)
             {
