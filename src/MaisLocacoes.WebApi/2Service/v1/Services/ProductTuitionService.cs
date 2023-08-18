@@ -135,7 +135,7 @@ namespace Service.v1.Services
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
 
-            var rent = await _rentRepository.GetById(productTuitionEntity.Id) ??
+            var rent = await _rentRepository.GetById(productTuitionEntity.RentId) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
