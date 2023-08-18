@@ -122,10 +122,7 @@ namespace Service.v1.Services
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)) ??
-                throw new HttpRequestException("nulo", null, HttpStatusCode.NotFound);
-
-            Console.WriteLine("Passou aqui");
+            var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
 
             if (osForDelete != null)
             {
@@ -136,11 +133,10 @@ namespace Service.v1.Services
                 await _osRepository.UpdateOs(osForDelete);
             }
 
-            Console.WriteLine("Passou aqui 2");
-
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
 
-            var rent = await _rentRepository.GetById(productTuitionEntity.Id);
+            var rent = await _rentRepository.GetById(productTuitionEntity.Id) ??
+                throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
             {
@@ -150,8 +146,6 @@ namespace Service.v1.Services
 
                 await _rentRepository.UpdateRent(rent);
             }
-
-            Console.WriteLine("Passou aqui 3 ");
 
             productTuitionEntity.UpdatedAt = DateTime.Now;
             productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
