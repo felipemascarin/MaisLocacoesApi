@@ -218,6 +218,15 @@ namespace Service.v1.Services
             return osResponse;
         }
 
+        public async Task<IEnumerable<OsResponse>> GetAllByStatus(string status)
+        {
+            var osEntity = await _osRepository.GetAllByStatus(status);
+
+            var osResponse = _mapper.Map<IEnumerable<OsResponse>>(osEntity);
+
+            return osResponse;
+        }
+
         public async Task<bool> UpdateOs(OsRequest osRequest, int id)
         {
             var osForUpdate = await _osRepository.GetById(id) ??

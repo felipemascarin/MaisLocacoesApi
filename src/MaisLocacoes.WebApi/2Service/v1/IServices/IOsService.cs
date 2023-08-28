@@ -12,6 +12,7 @@ namespace Service.v1.IServices
         Task<bool> CancelOs(int id);
         Task<bool> FinishOs(int id, CloseOsRequest closeOsRequest);
         Task<OsResponse> GetById(int id);
+        Task<IEnumerable<OsResponse>> GetAllByStatus(string status);
         Task<bool> UpdateOs(OsRequest osRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);

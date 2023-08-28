@@ -158,6 +158,28 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet]
+        public async Task<IActionResult> GetAllByStatus([FromQuery(Name = "status")] string status)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllByStatus {@dateTime} status:{@status} User:{@email}", System.DateTime.Now, status, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                if (status != null && !OsStatus.OsStatusEnum.Contains(status.ToLower()))
+                    return BadRequest("Insira um status válido");
+
+                var os = await _osService.GetAllByStatus(status);
+                return Ok(os);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> Updateos([FromBody]OsRequest osRequest, int id)
         {
