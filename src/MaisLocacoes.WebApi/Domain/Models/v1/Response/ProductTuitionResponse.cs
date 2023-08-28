@@ -14,6 +14,7 @@
         public int QuantityPeriod { get; set; }
         public string TimePeriod { get; set; }
         public int Parts { get; set; }
+        public bool IsEditable { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
