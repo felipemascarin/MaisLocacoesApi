@@ -54,6 +54,15 @@ namespace Service.v1.Services
             return qgResponse;
         }
 
+        public async Task<IEnumerable<QgResponse>> GetAll()
+        {
+            var qgEntity = await _qgRepository.GetAll();
+
+            var qgResponse = _mapper.Map<IEnumerable<QgResponse>>(qgEntity);
+
+            return qgResponse;
+        }
+
         public async Task<bool> UpdateQg(QgRequest qgRequest, int id)
         {
             var qgForUpdate = await _qgRepository.GetById(id) ??

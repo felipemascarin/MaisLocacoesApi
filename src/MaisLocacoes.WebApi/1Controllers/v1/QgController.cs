@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -77,6 +78,26 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var os = await _qgService.GetAll();
+                return Ok(os);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
 
         [Authorize]
         [TokenValidationDataBase]

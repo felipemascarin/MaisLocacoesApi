@@ -7,6 +7,7 @@ namespace Service.v1.IServices
     {
         Task<QgResponse> CreateQg(QgRequest qgRequest);
         Task<QgResponse> GetById(int id);
+        Task<IEnumerable<QgResponse>> GetAll();
         Task<bool> UpdateQg(QgRequest qgRequest, int id);
         Task<bool> DeleteById(int id);
     }
