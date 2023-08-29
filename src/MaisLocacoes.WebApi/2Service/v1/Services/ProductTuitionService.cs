@@ -101,6 +101,7 @@ namespace Service.v1.Services
             {
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1));
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                productTuitionEntity.IsEditable = false;
             }
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(0)) //Module Basic
@@ -108,6 +109,7 @@ namespace Service.v1.Services
                 var productEntity = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                productTuitionEntity.IsEditable = false;
                 await ReleaseProduct(productTuitionEntity, productEntity);
 
                 FinishRentIfTheLast(productTuitionEntity);
@@ -134,6 +136,7 @@ namespace Service.v1.Services
             }
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+            productTuitionEntity.IsEditable = true;
 
             var rent = await _rentRepository.GetById(productTuitionEntity.RentId) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
