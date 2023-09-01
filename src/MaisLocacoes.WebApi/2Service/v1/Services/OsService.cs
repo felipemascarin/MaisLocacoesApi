@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -218,11 +219,25 @@ namespace Service.v1.Services
             return osResponse;
         }
 
-        public async Task<IEnumerable<OsResponse>> GetAllByStatus(string status)
+        public async Task<IEnumerable<GetOsByStatusResponse>> GetAllByStatus(string status)
         {
-            var osEntity = await _osRepository.GetAllByStatus(status);
+            var osEntityList = await _osRepository.GetAllByStatus(status);
 
-            var osResponse = _mapper.Map<IEnumerable<OsResponse>>(osEntity);
+            var osResponse = _mapper.Map<List<GetOsByStatusResponse>>(osEntityList);
+
+            var productTuitions = new List<GetProductTuitionRentProductTypeClientReponse>();
+
+            foreach (var osEntity in osEntityList)
+            {
+                productTuitions = (await _productTuitionService.GetAllByRentId(osEntity.ProductTuitionEntity.RentId)).ToList();
+
+                foreach (var os in osResponse)
+                {
+                    os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == osEntity.ProductTuitionId);
+                }
+
+                productTuitions.Clear();
+            }
 
             return osResponse;
         }
