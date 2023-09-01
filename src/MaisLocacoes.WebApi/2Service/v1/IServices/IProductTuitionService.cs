@@ -14,7 +14,7 @@ namespace Service.v1.IServices
         Task<bool> RenewProduct(int id, RenewProductTuitionRequest renewRequest);
         Task<GetProductTuitionRentResponse> GetById(int id);
         Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId);
-        Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId);
+        Task<GetProductTuitionProductIdResponse> GetAllByProductId(int productId);
         Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllToRemove();
         Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id);
         Task<bool> UpdateProductCode(string productCode, int id);

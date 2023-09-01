@@ -152,7 +152,7 @@ namespace Service.v1.Services
 
             productTuitionEntity.UpdatedAt = DateTime.Now;
             productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
-            
+
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
             else return false;
         }
@@ -214,16 +214,26 @@ namespace Service.v1.Services
             return productTuitionsResponseList;
         }
 
-        public async Task<IEnumerable<GetProductTuitionRentResponse>> GetAllByProductId(int productId)
+        public async Task<GetProductTuitionProductIdResponse> GetAllByProductId(int productId)
         {
             var productEntity = await _productRepository.GetById(productId) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllByProductTypeCode(productEntity.ProductTypeId, productEntity.Code);
 
-            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentResponse>>(productTuitionEntityList);
+            var productTuitionsResponse = new GetProductTuitionProductIdResponse
+            {
+                ProductTuitionsRentResponse = _mapper.Map<List<GetProductTuitionRentResponse>>(productTuitionEntityList)
+            };
 
-            return productTuitionsResponseList;
+            foreach (var productTuition in productTuitionEntityList)
+            {
+                var bills = (await _billRepository.GetByProductTuitionId(productTuition.Id)).ToList();
+                bills.ForEach(b => productTuitionsResponse.TotalBilledValue += b.Value);
+                bills.Clear();
+            }
+
+            return productTuitionsResponse;
         }
 
         public async Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllToRemove()
@@ -543,7 +553,7 @@ namespace Service.v1.Services
 
             return productEntity;
         }
-        
+
         public async Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
             productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
