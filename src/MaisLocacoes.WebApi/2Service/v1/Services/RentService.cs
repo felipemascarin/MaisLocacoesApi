@@ -111,9 +111,9 @@ namespace Service.v1.Services
                 productTuitions.Clear();
             }
 
-            rentsResponseList.OrderByDescending(r => r.Id);
+            var rentsResponseListReturn = rentsResponseList.OrderByDescending(r => r.Id);
 
-            return rentsResponseList;
+            return rentsResponseListReturn;
         }
 
         public async Task<bool> UpdateRent(RentRequest rentRequest, int id)
