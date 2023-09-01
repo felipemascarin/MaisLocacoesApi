@@ -5,7 +5,7 @@
         public static IEnumerable<string> OsTypesEnum = new List<string>
         {
             "delivery",
-            "withdrawal"
+            "withdraw"
         };
     }
 }
