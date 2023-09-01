@@ -244,6 +244,8 @@ namespace Service.v1.Services
                 bills.Clear();
             }
 
+            productTuitionsResponse.ProductTuitionsRentResponse.OrderByDescending(r => r.Id);
+
             return productTuitionsResponse;
         }
 
