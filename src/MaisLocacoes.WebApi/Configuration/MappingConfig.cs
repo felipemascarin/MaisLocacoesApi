@@ -8,6 +8,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductTuitionProductIdResponse;
 
 namespace Configuration
 {
@@ -54,6 +55,7 @@ namespace Configuration
 
                 config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
                 config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
+                config.CreateMap<ProductTuitionEntity, ResumedRentDto>();
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionRentProductTypeClientReponse>();
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>()
                .ForMember(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity))

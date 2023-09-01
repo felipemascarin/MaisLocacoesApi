@@ -9,6 +9,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductTuitionProductIdResponse;
 
 namespace Service.v1.Services
 {
@@ -223,18 +224,21 @@ namespace Service.v1.Services
 
             var productTuitionsResponse = new GetProductTuitionProductIdResponse
             {
-                ProductTuitionsRentResponse = _mapper.Map<List<GetProductTuitionRentResponse>>(productTuitionEntityList),
+                ProductTuitionsRentResponse = _mapper.Map<List<ResumedRentDto>>(productTuitionEntityList),
                 TotalBilledValue = 0
             };
 
-            foreach (var productTuition in productTuitionEntityList)
+            foreach (var productTuition in productTuitionsResponse.ProductTuitionsRentResponse)
             {
                 var bills = (await _billRepository.GetByProductTuitionId(productTuition.Id)).ToList();
 
                 foreach (var bill in bills)
                 {
                     if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                    {
                         productTuitionsResponse.TotalBilledValue += bill.Value;
+                        productTuition.BilledValue += bill.Value;
+                    }
                 }
 
                 bills.Clear();
