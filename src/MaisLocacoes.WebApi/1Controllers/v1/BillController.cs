@@ -5,6 +5,7 @@ using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
@@ -71,6 +72,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
                 var bill = await _billService.GetById(id);
+                return Ok(bill);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
+        [HttpGet("debts")]
+        public async Task<IActionResult> GetAllDebts()
+        {
+            try
+            {
+                _logger.LogInformation("GetAllDebts {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var bill = await _billService.GetAllDebts();
                 return Ok(bill);
             }
             catch (HttpRequestException ex)

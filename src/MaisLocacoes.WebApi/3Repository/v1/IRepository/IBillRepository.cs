@@ -8,6 +8,7 @@ namespace Repository.v1.IRepository
     {
         Task<BillEntity> CreateBill(BillEntity billEntity);
         Task<BillEntity> GetById(int id);
+        Task<IEnumerable<BillEntity>> GetAllDebts();
         Task<BillEntity> GetForTaxInvoice(int id);
         Task<IEnumerable<BillEntity>> GetByRentId(int rentId);
         Task<IEnumerable<BillEntity>> GetByProductTuitionId(int? productTuitionId);

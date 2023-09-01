@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
@@ -23,6 +24,8 @@ namespace Repository.v1.Repository
         }
 
         public async Task<BillEntity> GetById(int id) => await _context.Bills.FirstOrDefaultAsync(b => b.Id == id && b.Deleted == false);
+        
+        public async Task<IEnumerable<BillEntity>> GetAllDebts() => await _context.Bills.Where(b => b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.ProductTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) && b.Deleted == false).ToListAsync();
 
         public async Task<BillEntity> GetForTaxInvoice(int id) =>
         await _context.Bills

@@ -71,6 +71,16 @@ namespace Service.v1.Services
             return billResponse;
         }
 
+        public async Task<IEnumerable<BillResponse>> GetAllDebts()
+        {
+            var billEntity = await _billRepository.GetAllDebts() ??
+                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            var billResponse = _mapper.Map<IEnumerable<BillResponse>>(billEntity);
+
+            return billResponse;
+        }
+
         public async Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId)
         {
             ProductTuitionEntity productTuitionEntity = null;
