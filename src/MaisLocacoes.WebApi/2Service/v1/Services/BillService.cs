@@ -244,9 +244,6 @@ namespace Service.v1.Services
             if (billForUpdate.NfIdFireBase != null)
                 throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
-            if (billRequest.NfIdFireBase != null && billForUpdate.Status != BillStatus.BillStatusEnum.ElementAt(1))
-                throw new HttpRequestException("NfIdFireBase só pode ser inserido para Fatura já paga", null, HttpStatusCode.NotFound);
-
             if (billRequest.RentId != billForUpdate.RentId)
             {
                 var rentExists = await _rentRepository.RentExists(billRequest.RentId);
@@ -304,9 +301,6 @@ namespace Service.v1.Services
 
             if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
             {
-                if (nfIdFireBase != null)
-                    throw new HttpRequestException("Nf Id só é permitido para pagar fatura", null, HttpStatusCode.BadRequest);
-
                 if (billForUpdate.ProductTuitionId != null)
                 {
                     var productTuitionForUpdate = await _productTuitionRepository.GetById(billForUpdate.ProductTuitionId.Value);
