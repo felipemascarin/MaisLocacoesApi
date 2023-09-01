@@ -223,7 +223,8 @@ namespace Service.v1.Services
 
             var productTuitionsResponse = new GetProductTuitionProductIdResponse
             {
-                ProductTuitionsRentResponse = _mapper.Map<List<GetProductTuitionRentResponse>>(productTuitionEntityList)
+                ProductTuitionsRentResponse = _mapper.Map<List<GetProductTuitionRentResponse>>(productTuitionEntityList),
+                TotalBilledValue = 0
             };
 
             foreach (var productTuition in productTuitionEntityList)
