@@ -111,6 +111,8 @@ namespace Service.v1.Services
                 productTuitions.Clear();
             }
 
+            rentsResponseList.OrderByDescending(r => r.Id);
+
             return rentsResponseList;
         }
 
