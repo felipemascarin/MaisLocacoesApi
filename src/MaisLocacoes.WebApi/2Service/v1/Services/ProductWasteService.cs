@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -56,11 +57,17 @@ namespace Service.v1.Services
             return productWasteResponse;
         }
 
-        public async Task<IEnumerable<ProductWasteResponse>> GetAllByProductId(int productId)
+        public async Task<GetProductWasteProductIdResponse> GetAllByProductId(int productId)
         {
-            var productWastesEntityList = await _productWasteRepository.GetAllByProductId(productId);
+            var productWastesEntityList = (await _productWasteRepository.GetAllByProductId(productId)).ToList();
 
-            var productWastesResponse = _mapper.Map<IEnumerable<ProductWasteResponse>>(productWastesEntityList);
+            var productWastesResponse = new GetProductWasteProductIdResponse()
+            {
+                ProductsWastes = _mapper.Map<List<ProductWasteResponse>>(productWastesEntityList),
+                TotalWastesValue = 0
+            };
+
+            productWastesEntityList.ForEach(p => productWastesResponse.TotalWastesValue += p.Value);
 
             return productWastesResponse;
         }
