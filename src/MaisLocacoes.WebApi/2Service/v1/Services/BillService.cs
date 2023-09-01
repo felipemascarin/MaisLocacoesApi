@@ -71,16 +71,6 @@ namespace Service.v1.Services
             return billResponse;
         }
 
-        public async Task<IEnumerable<BillResponse>> GetAllDebts()
-        {
-            var billEntity = await _billRepository.GetAllDebts() ??
-                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
-
-            var billResponse = _mapper.Map<IEnumerable<BillResponse>>(billEntity);
-
-            return billResponse;
-        }
-
         public async Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId)
         {
             ProductTuitionEntity productTuitionEntity = null;
@@ -183,7 +173,62 @@ namespace Service.v1.Services
                     ProductTypeName = productTypeName,
                     ProductCode = productCode,
                     Parts = parts,
-                    IsManyParts = isManyParts
+                    IsManyParts = isManyParts,
+                    InvoiceEmittedDate = bill.InvoiceEmittedDate
+                };
+
+                billDtoList.Add(billDto);
+            }
+
+            return billDtoList;
+        }
+
+        public async Task<IEnumerable<GetDebtsBillsResponse>> GetAllDebts()
+        {
+            var billsEntityList = await _billRepository.GetAllDebts() ??
+                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
+
+            var billDtoList = new List<GetDebtsBillsResponse>();
+
+
+            foreach (var bill in billsEntityList)
+            {
+                string productTypeName;
+                bool? isManyParts;
+                string productCode;
+                int? parts;
+
+                if (bill.ProductTuitionId == null)
+                {
+                    productTypeName = null;
+                    isManyParts = null;
+                    productCode = null;
+                    parts = null;
+                }
+                else
+                {
+                    var productTuitionEntity = await _productTuitionRepository.GetById(bill.ProductTuitionId.Value);
+                    productTypeName = productTuitionEntity.ProductTypeEntity.Type;
+                    isManyParts = productTuitionEntity.ProductTypeEntity.IsManyParts;
+                    productCode = productTuitionEntity.ProductCode;
+                    parts = productTuitionEntity.Parts;
+                }
+
+                var billDto = new GetDebtsBillsResponse()
+                {
+                    ClientName = bill.RentEntity.ClientEntity.ClientName,
+                    DueDate = bill.DueDate,
+                    Value = bill.Value,
+                    ClientPhone = bill.RentEntity.ClientEntity.Cel,
+                    RentId = bill.RentEntity.Id,
+                    BillId = bill.Id,
+                    BillDescription = bill.Description,
+                    NfIdFireBase = bill.NfIdFireBase,
+                    ProductTypeName = productTypeName,
+                    ProductCode = productCode,
+                    Parts = parts,
+                    IsManyParts = isManyParts,
+                    InvoiceEmittedDate = bill.InvoiceEmittedDate
                 };
 
                 billDtoList.Add(billDto);

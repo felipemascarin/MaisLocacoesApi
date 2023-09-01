@@ -8,10 +8,10 @@ namespace Service.v1.IServices
     {
         Task<BillResponse> CreateBill(BillRequest billRequest);
         Task<BillResponse> GetById(int id);
-        Task<IEnumerable<BillResponse>> GetAllDebts();
         Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId);
         Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId);
         Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills();
+        Task<IEnumerable<GetDebtsBillsResponse>> GetAllDebts();
         Task<bool> UpdateBill(BillRequest billRequest, int id);
         Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id);
         Task<bool> DeleteById(int id);
