@@ -230,7 +230,13 @@ namespace Service.v1.Services
             foreach (var productTuition in productTuitionEntityList)
             {
                 var bills = (await _billRepository.GetByProductTuitionId(productTuition.Id)).ToList();
-                bills.ForEach(b => productTuitionsResponse.TotalBilledValue += b.Value);
+
+                foreach (var bill in bills)
+                {
+                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                        productTuitionsResponse.TotalBilledValue += bill.Value;
+                }
+
                 bills.Clear();
             }
 

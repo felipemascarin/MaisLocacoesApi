@@ -190,7 +190,6 @@ namespace Service.v1.Services
 
             var billDtoList = new List<GetDebtsBillsResponse>();
 
-
             foreach (var bill in billsEntityList)
             {
                 string productTypeName;

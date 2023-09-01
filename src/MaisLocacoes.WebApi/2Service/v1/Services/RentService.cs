@@ -16,6 +16,7 @@ namespace Service.v1.Services
         private readonly IRentRepository _rentRepository;
         private readonly IBillRepository _billRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -23,6 +24,7 @@ namespace Service.v1.Services
         public RentService(IRentRepository rentRepository,
             IBillRepository billRepository,
             IClientRepository clientRepository,
+            IProductTuitionRepository productTuitionRepository,
             IAddressService addressService,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
@@ -30,6 +32,7 @@ namespace Service.v1.Services
             _rentRepository = rentRepository;
             _billRepository = billRepository;
             _clientRepository = clientRepository;
+            _productTuitionRepository = productTuitionRepository;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -78,14 +81,35 @@ namespace Service.v1.Services
             return rentsResponseList;
         }
 
-        public async Task<IEnumerable<GetRentClientResponse>> GetRentsByPage(int items, int page, string query, string status)
+        public async Task<IEnumerable<GetRentByPageResponse>> GetRentsByPage(int items, int page, string query, string status)
         {
             if (items <= 0 || page <= 0)
                 throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
 
             var rentsEntityList = await _rentRepository.GetRentsByPage(items, page, query, status);
 
-            var rentsResponseList = _mapper.Map<IEnumerable<GetRentClientResponse>>(rentsEntityList);
+            var rentsResponseList = _mapper.Map<IEnumerable<GetRentByPageResponse>>(rentsEntityList);
+
+            foreach (var rent in rentsResponseList)
+            {
+                var productTuitions = (await _productTuitionRepository.GetAllByRentId(rent.Id)).ToList();
+
+                foreach (var productTuition in productTuitions)
+                {
+                    if (productTuition.ProductCode != null)
+                    {
+                        rent.ProductCodes.Add(productTuition.ProductCode);
+                    }
+
+                    productTuitions.OrderBy(p => p.InitialDateTime);
+                    rent.InitialDate = productTuitions.FirstOrDefault().InitialDateTime;
+
+                    productTuitions.OrderByDescending(p => p.FinalDateTime);
+                    rent.FinalDate = productTuitions.FirstOrDefault().FinalDateTime;
+                }
+
+                productTuitions.Clear();
+            }
 
             return rentsResponseList;
         }
