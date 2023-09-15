@@ -8,6 +8,7 @@ namespace Service.v1.IServices.UserSchema
         Task<UserResponse> CreateUser(UserRequest userRequest);
         Task<UserResponse> GetByEmail(string email, string cnpj);
         Task<UserResponse> GetByCpf(string cpf, string cnpj);
+        Task<IEnumerable<UserResponse>> GetAllByCnpj(string cnpj);
         Task<bool> UpdateUser(UserRequest userRequest, string email, string cnpj);
         Task<bool> UpdateStatus(string status, string email, string cnpj);
     }

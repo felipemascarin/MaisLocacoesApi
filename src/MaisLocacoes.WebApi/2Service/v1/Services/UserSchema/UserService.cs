@@ -65,6 +65,14 @@ namespace Service.v1.Services.UserSchema
 
             return userResponse;
         }
+        public async Task<IEnumerable<UserResponse>> GetAllByCnpj(string cnpj)
+        {
+            var userEntities = await _userRepository.GetAllByCnpj(cnpj);
+
+            var usersResponse = _mapper.Map<IEnumerable<UserResponse>>(userEntities);
+
+            return usersResponse;
+        }
 
         public async Task<bool> UpdateUser(UserRequest userRequest, string email, string cnpj)
         {

@@ -27,6 +27,8 @@ namespace Repository.v1.Repository.UserSchema
 
         public async Task<UserEntity> GetByCpf(string cpf, string cnpj) => await _context.Users.FirstOrDefaultAsync(u => u.Cpf == cpf);
 
+        public async Task<IEnumerable<UserEntity>> GetAllByCnpj(string cnpj) => await _context.Users.Where(u => u.Cnpj == cnpj).ToListAsync();
+
         public async Task<bool> UserExists(string email, string cpf, string cnpj) => await _context.Users.AnyAsync(u => u.Email == email && u.Cnpj == cnpj || u.Cpf == cpf && u.Cnpj == cnpj);
 
         public async Task<int> UpdateUser(UserEntity userForUpdate)

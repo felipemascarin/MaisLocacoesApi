@@ -100,6 +100,18 @@ namespace Service.v1.Services
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
             {
+                var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0));
+                if (deliveryOs != null)
+                {
+                    if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(0) || deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(3))
+                    {
+                        deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4);
+                        deliveryOs.UpdatedAt = System.DateTime.Now;
+                        deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                        await _osRepository.UpdateOs(deliveryOs);
+                    }
+                }
+
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1));
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
                 productTuitionEntity.IsEditable = false;
@@ -125,15 +137,33 @@ namespace Service.v1.Services
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            var osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
+            var osForDelete = new OsEntity();
 
-            if (osForDelete != null)
+            do
             {
-                osForDelete.Deleted = true;
-                osForDelete.UpdatedAt = System.DateTime.Now;
-                osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
 
-                await _osRepository.UpdateOs(osForDelete);
+                if (osForDelete != null)
+                {
+                    osForDelete.Deleted = true;
+                    osForDelete.UpdatedAt = System.DateTime.Now;
+                    osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+
+                    await _osRepository.UpdateOs(osForDelete);
+                }
+
+            } while (osForDelete != null);
+
+            var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0));
+            if (deliveryOs != null)
+            {
+                if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(4))
+                {
+                    deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0);
+                    deliveryOs.UpdatedAt = System.DateTime.Now;
+                    deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    await _osRepository.UpdateOs(deliveryOs);
+                }
             }
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
@@ -536,7 +566,7 @@ namespace Service.v1.Services
             }
         }
 
-        public void CreateOs(ProductTuitionEntity productTuition, string type)
+        public async void CreateOs(ProductTuitionEntity productTuition, string type)
         {
             var os = new OsEntity();
 

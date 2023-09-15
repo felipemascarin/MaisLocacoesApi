@@ -1,8 +1,10 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
+using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
@@ -89,6 +91,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 
                 var user = await _userService.GetByCpf(cpf, cnpj);
                 return Ok(user);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        //[Authorize]
+        //[TokenValidationDataBase]
+        [HttpGet("cnpj/{cnpj}")]
+        public async Task<IActionResult> GetAllByCnpj(string cnpj)
+        {
+            try
+            {
+                _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+
+                var os = await _userService.GetAllByCnpj(cnpj);
+                return Ok(os);
             }
             catch (HttpRequestException ex)
             {

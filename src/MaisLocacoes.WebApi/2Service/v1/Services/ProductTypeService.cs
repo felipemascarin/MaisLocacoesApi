@@ -13,14 +13,17 @@ namespace Service.v1.Services
     public class ProductTypeService : IProductTypeService
     {
         private readonly IProductTypeRepository _productTypeRepository;
+        private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
 
         public ProductTypeService(IProductTypeRepository productTypeRepository,
+            IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _productTypeRepository = productTypeRepository;
+            _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
         }
@@ -57,6 +60,12 @@ namespace Service.v1.Services
             var productsTypeEntityList = await _productTypeRepository.GetAll();
 
             var productsTypeResponseList = _mapper.Map<IEnumerable<ProductTypeResponse>>(productsTypeEntityList);
+
+            foreach (var productType in productsTypeResponseList)
+            {
+                var productLastCreated = await _productRepository.GetTheLastsCreated(productType.Id);
+                productType.LastCreatedCode = productLastCreated.Code;
+            }
 
             return productsTypeResponseList;
         }
