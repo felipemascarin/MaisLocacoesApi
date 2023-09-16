@@ -8,6 +8,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetOsByStatusResponse;
 using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductTuitionProductIdResponse;
 
 namespace Configuration
@@ -49,6 +50,7 @@ namespace Configuration
                 config.CreateMap<OsRequest, OsEntity>();
                 config.CreateMap<OsEntity, OsResponse>();
                 config.CreateMap<OsEntity, GetOsByStatusResponse>();
+                config.CreateMap<GetOsByStatusRelationTuition, GetOsByStatusResponse>();
 
                 config.CreateMap<ProductRequest, ProductEntity>();
                 config.CreateMap<ProductEntity, ProductResponse>();

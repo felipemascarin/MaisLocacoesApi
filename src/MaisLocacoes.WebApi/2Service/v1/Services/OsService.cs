@@ -9,6 +9,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetOsByStatusResponse;
 
 namespace Service.v1.Services
 {
@@ -223,7 +224,7 @@ namespace Service.v1.Services
         {
             var osEntityList = await _osRepository.GetAllByStatus(status);
 
-            var osResponse = _mapper.Map<List<GetOsByStatusResponse>>(osEntityList);
+            var osRelationTuition = _mapper.Map<List<GetOsByStatusRelationTuition>>(osEntityList);
 
             var productTuitions = new List<GetProductTuitionRentProductTypeClientReponse>();
 
@@ -231,15 +232,15 @@ namespace Service.v1.Services
             {
                 productTuitions = (await _productTuitionService.GetAllByRentId(osEntity.ProductTuitionEntity.RentId)).ToList();
 
-                foreach (var os in osResponse)
+                foreach (var os in osRelationTuition)
                 {
-                    os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == osEntity.ProductTuitionId);
+                    os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == os.ProductTuitionId);
                 }
 
                 productTuitions.Clear();
             }
 
-            return osResponse;
+            return _mapper.Map<List<GetOsByStatusResponse>>(osRelationTuition); ;
         }
 
         public async Task<bool> UpdateOs(OsRequest osRequest, int id)
