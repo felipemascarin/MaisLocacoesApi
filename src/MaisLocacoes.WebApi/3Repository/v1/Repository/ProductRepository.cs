@@ -53,7 +53,7 @@ namespace Repository.v1.Repository
                     RentedParts = p.RentedParts
                 }).ToListAsync();
 
-        public async Task<ProductEntity> GetTheLastsCreated(int productTypeId) => await _context.Products.OrderBy(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductTypeEntity.Id == productTypeId && p.Deleted == false);
+        public async Task<ProductEntity> GetTheLastsCreated(int productTypeId) => await _context.Products.OrderByDescending(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductTypeEntity.Id == productTypeId && p.Deleted == false);
 
         public async Task<int> UpdateProduct(ProductEntity productForUpdate)
         {
