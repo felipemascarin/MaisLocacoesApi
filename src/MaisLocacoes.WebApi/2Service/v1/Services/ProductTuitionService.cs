@@ -59,8 +59,6 @@ namespace Service.v1.Services
             if (!existsProductType)
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
-            PeriodValidate(productTuitionRequest.QuantityPeriod, productTuitionRequest.TimePeriod, productTuitionRequest.InitialDateTime, productTuitionRequest.FinalDateTime);
-
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
             if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
@@ -196,8 +194,6 @@ namespace Service.v1.Services
             if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4))
                 throw new HttpRequestException("Não é possível renovar um produto em retirada", null, HttpStatusCode.BadRequest);
 
-            PeriodValidate(renewRequest.QuantityPeriod, renewRequest.TimePeriod, productTuitionEntity.FinalDateTime, renewRequest.FinalDateTime);
-
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod;
             productTuitionEntity.TimePeriod = renewRequest.TimePeriod;
@@ -309,8 +305,6 @@ namespace Service.v1.Services
 
             if (productTuitionRequest.TimePeriod != productTuitionForUpdate.TimePeriod)
                 throw new HttpRequestException("Não é possível alterar o período TimePeriod", null, HttpStatusCode.BadRequest);
-
-            PeriodValidate(productTuitionRequest.QuantityPeriod, productTuitionRequest.TimePeriod, productTuitionRequest.InitialDateTime, productTuitionRequest.FinalDateTime);
 
             if (productTuitionRequest.RentId != productTuitionForUpdate.RentId)
             {
@@ -605,27 +599,6 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);
 
             return productEntity;
-        }
-
-        public void PeriodValidate(int quantityPeriod, string timePeriod, DateTime initialDateTime, DateTime finalDateTime)
-        {
-            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0))
-            {
-                if ((finalDateTime.Date - initialDateTime.Date).Days != quantityPeriod)
-                    throw new HttpRequestException("A diferença da data inicial e a data final em dias deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
-            }
-
-            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
-            {
-                if ((finalDateTime.Date - initialDateTime.Date).Days / 7 != quantityPeriod)
-                    throw new HttpRequestException("A diferença da data inicial e a data final em semanas deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
-            }
-
-            if (timePeriod.ToLower() == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2))
-            {
-                if ((finalDateTime.Date.Month - initialDateTime.Date.Month) != quantityPeriod)
-                    throw new HttpRequestException("A diferença da data inicial e a data final em meses deve ser o mesmo valor da quantidade de período.", null, HttpStatusCode.BadRequest);
-            }
         }
     }
 }
