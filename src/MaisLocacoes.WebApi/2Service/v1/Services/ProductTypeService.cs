@@ -64,7 +64,10 @@ namespace Service.v1.Services
             foreach (var productType in productsTypeResponseList)
             {
                 var productLastCreated = await _productRepository.GetTheLastsCreated(productType.Id);
-                productType.LastCreatedCode = productLastCreated.Code;
+                if (productLastCreated != null)
+                {
+                    productType.LastCreatedCode = productLastCreated.Code;
+                }
             }
 
             return productsTypeResponseList;
