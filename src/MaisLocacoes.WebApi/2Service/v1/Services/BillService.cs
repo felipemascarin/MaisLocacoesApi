@@ -293,9 +293,6 @@ namespace Service.v1.Services
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (billForUpdate.NfIdFireBase != null)
-                throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
-
             if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && paymentMode == null)
                 throw new HttpRequestException("Modo de pagamento deve ser inserido para status de fatura paga", null, HttpStatusCode.BadRequest);
 

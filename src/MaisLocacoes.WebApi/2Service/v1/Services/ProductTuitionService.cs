@@ -525,7 +525,7 @@ namespace Service.v1.Services
 
             foreach (var bill in oldBills)
             {
-                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1))
+                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1) && bill.NfIdFireBase == null)
                     _billRepository.DeleteBill(bill);
                 else payedOldBills.Add(bill);
             }
