@@ -50,6 +50,7 @@ namespace Configuration
                 config.CreateMap<OsRequest, OsEntity>();
                 config.CreateMap<OsEntity, OsResponse>();
                 config.CreateMap<OsEntity, GetOsByStatusResponse>();
+                config.CreateMap<OsEntity, GetOsByStatusRelationTuition>();
                 config.CreateMap<GetOsByStatusRelationTuition, GetOsByStatusResponse>();
 
                 config.CreateMap<ProductRequest, ProductEntity>();

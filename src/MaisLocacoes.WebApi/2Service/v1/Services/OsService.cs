@@ -234,7 +234,8 @@ namespace Service.v1.Services
 
                 foreach (var os in osRelationTuition)
                 {
-                    os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == os.ProductTuitionId);
+                    if (os.ProductTuition == null)
+                        os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == os.ProductTuitionId);
                 }
 
                 productTuitions.Clear();
