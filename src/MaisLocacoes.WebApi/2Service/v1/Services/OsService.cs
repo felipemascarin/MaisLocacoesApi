@@ -23,6 +23,8 @@ namespace Service.v1.Services
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public OsService(IOsRepository osRepository,
             IQgRepository qgRepository,
@@ -41,6 +43,8 @@ namespace Service.v1.Services
             _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateOsResponse> CreateOs(CreateOsRequest osRequest)
@@ -57,7 +61,7 @@ namespace Service.v1.Services
 
             var osEntity = _mapper.Map<OsEntity>(osRequest);
 
-            osEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            osEntity.CreatedBy = _email;
 
             osEntity = await _osRepository.CreateOs(osEntity);
 
@@ -79,7 +83,7 @@ namespace Service.v1.Services
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3);
             productTuitionEntity.UpdatedAt = DateTime.Now;
-            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionEntity.UpdatedBy = _email;
 
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
@@ -87,7 +91,7 @@ namespace Service.v1.Services
             os.Status = OsStatus.OsStatusEnum.ElementAt(1);
             os.InitialDateTime = DateTime.Now;
             os.UpdatedAt = DateTime.Now;
-            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
             else return false;
@@ -105,7 +109,7 @@ namespace Service.v1.Services
             os.Status = OsStatus.OsStatusEnum.ElementAt(3);
             os.InitialDateTime = null;
             os.UpdatedAt = DateTime.Now;
-            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
             else return false;
@@ -122,7 +126,7 @@ namespace Service.v1.Services
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(4);
             os.UpdatedAt = DateTime.Now;
-            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
             else return false;
@@ -144,14 +148,14 @@ namespace Service.v1.Services
             os.FinalDateTime = DateTime.Now;
             os.DeliveryObservation = finishOsRequest.DeliveryObservation;
             os.UpdatedAt = DateTime.Now;
-            os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            os.UpdatedBy = _email;
 
             var rentedPlace = new RentedPlaceEntity();
             rentedPlace.Latitude = finishOsRequest.Latitude;
             rentedPlace.Longitude = finishOsRequest.Longitude;
             rentedPlace.ArrivalDate = os.FinalDateTime;
             rentedPlace.ProductParts = productTuitionEntity.Parts;
-            rentedPlace.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentedPlace.CreatedBy = _email;
 
             if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //entrega
             {
@@ -166,7 +170,7 @@ namespace Service.v1.Services
                 productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
                 productTuitionEntity.UpdatedAt = DateTime.Now;
-                productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = productTuitionEntity.RentId;
                 rentedPlace.QgId = null;
@@ -189,7 +193,7 @@ namespace Service.v1.Services
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
                 productTuitionEntity.UpdatedAt = DateTime.Now;
-                productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = null;
                 rentedPlace.QgId = qg.Id;
@@ -262,7 +266,7 @@ namespace Service.v1.Services
             osForUpdate.Type = osRequest.Type;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
             osForUpdate.UpdatedAt = System.DateTime.Now;
-            osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
             else return false;
@@ -275,7 +279,7 @@ namespace Service.v1.Services
 
             osForUpdate.Status = status;
             osForUpdate.UpdatedAt = System.DateTime.Now;
-            osForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
             else return false;
@@ -288,7 +292,7 @@ namespace Service.v1.Services
 
             osForDelete.Deleted = true;
             osForDelete.UpdatedAt = System.DateTime.Now;
-            osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            osForDelete.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForDelete) > 0) return true;
             else return false;

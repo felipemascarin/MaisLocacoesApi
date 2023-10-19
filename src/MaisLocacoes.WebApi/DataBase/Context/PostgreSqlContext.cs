@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi.Context
             {
                 if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
                 {
-                    var schema = JwtManager.ExtractSchemaByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1]);
+                    var schema = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "schema");
 
                     var connectionString = string.Concat(Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "SearchPath=", schema, ";");
 

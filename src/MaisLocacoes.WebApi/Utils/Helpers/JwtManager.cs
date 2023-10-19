@@ -16,6 +16,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public string Role { get; set; }
         public string Schema { get; set; }
         public string Module { get; set; }
+        public string TimeZone { get; set; }
     }
 
     public class JwtManager
@@ -42,7 +43,8 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim(ClaimTypes.Role, user.Role),
                     new Claim("schema", user.Schema),
                     new Claim("module", user.Module),
-                    new Claim("cpf", user.Cpf)
+                    new Claim("cpf", user.Cpf),
+                    new Claim("timeZone", user.TimeZone)
                 }),
                 Expires = DateTime.Now.AddHours(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -65,60 +67,42 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             return httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
         }
 
+        public static string GetTimeZoneByToken(IHttpContextAccessor httpContextAccessor)
+        {
+            Token = ExtractTokenByAuthorization(httpContextAccessor);
+            return ExtractPropertyByToken(Token, "timeZone");
+        }
+
         public static string GetEmailByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractEmailByToken(Token);
+            return ExtractPropertyByToken(Token, "email");
         }
 
         public static string GetSchemaByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractSchemaByToken(Token);
+            return ExtractPropertyByToken(Token, "schema");
         }
 
         public static string GetModuleByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractModuleByToken(Token);
+            return ExtractPropertyByToken(Token, "module");
         }
 
         public static string GetCpfByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractCpfByToken(Token);
+            return ExtractPropertyByToken(Token, "cpf");
         }
 
-        public static string ExtractEmailByToken(string token)
+        public static string ExtractPropertyByToken(string token, string property)
         {
             var handler = new JwtSecurityTokenHandler();
             var decodedToken = handler.ReadJwtToken(token);
             var payload = decodedToken.Payload;
-            return payload["email"].ToString();
-        }
-
-        public static string ExtractSchemaByToken(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var decodedToken = handler.ReadJwtToken(token);
-            var payload = decodedToken.Payload;
-            return payload["schema"].ToString();
-        }
-
-        public static string ExtractModuleByToken(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var decodedToken = handler.ReadJwtToken(token);
-            var payload = decodedToken.Payload;
-            return payload["module"].ToString();
-        }
-
-        public static string ExtractCpfByToken(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var decodedToken = handler.ReadJwtToken(token);
-            var payload = decodedToken.Payload;
-            return payload["cpf"].ToString();
+            return payload[property].ToString();
         }
 
         //Verifica se é o ultimo token criado para o usuário acessando

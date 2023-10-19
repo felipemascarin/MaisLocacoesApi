@@ -17,6 +17,8 @@ namespace Service.v1.Services.UserSchema
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public UserService(IUserRepository userRepository,
             IMapper mapper,
@@ -27,6 +29,8 @@ namespace Service.v1.Services.UserSchema
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _companyRepository = companyRepository;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateUserResponse> CreateUser(CreateUserRequest userRequest)
@@ -41,7 +45,7 @@ namespace Service.v1.Services.UserSchema
 
             var userEntity = _mapper.Map<UserEntity>(userRequest);
 
-            userEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            userEntity.CreatedBy = _email;
 
             userEntity = await _userRepository.CreateUser(userEntity);
 
@@ -114,7 +118,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.CivilStatus = userRequest.CivilStatus;
             userForUpdate.CpfDocumentUrl = userRequest.CpfDocumentUrl;
             userForUpdate.UpdatedAt = System.DateTime.Now;
-            userForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
             else return false;
@@ -127,7 +131,7 @@ namespace Service.v1.Services.UserSchema
 
             userForUpdate.Status = status;
             userForUpdate.UpdatedAt = System.DateTime.Now;
-            userForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
             else return false;

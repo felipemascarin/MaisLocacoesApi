@@ -16,15 +16,15 @@ namespace Service.v1.Services
         private readonly IProductRepository _productRepository;
         private readonly IRentRepository _rentRepository;
         private readonly IQgRepository _qgRepository;
-        private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public RentedPlaceService(IRentedPlaceRepository rentedPlaceRepository,
             IProductRepository productRepository,
             IRentRepository rentRepository,
             IQgRepository qgRepository,
-            IAddressService addressService,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
@@ -32,9 +32,10 @@ namespace Service.v1.Services
             _productRepository = productRepository;
             _rentRepository = rentRepository;
             _qgRepository = qgRepository;
-            _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateRentedPlaceResponse> CreateRentedPlace(CreateRentedPlaceRequest rentedPlaceRequest)
@@ -59,7 +60,7 @@ namespace Service.v1.Services
 
             var rentedPlaceEntity = _mapper.Map<RentedPlaceEntity>(rentedPlaceRequest);
 
-            rentedPlaceEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentedPlaceEntity.CreatedBy = _email;
 
             rentedPlaceEntity = await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
 
@@ -113,7 +114,7 @@ namespace Service.v1.Services
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
             rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts;
             rentedPlaceForUpdate.UpdatedAt = System.DateTime.Now;
-            rentedPlaceForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentedPlaceForUpdate.UpdatedBy = _email;
 
             if (await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceForUpdate) > 0) return true;
             else return false;

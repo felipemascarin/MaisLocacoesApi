@@ -25,6 +25,8 @@ namespace Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
             IRentRepository rentRepository,
@@ -47,6 +49,8 @@ namespace Service.v1.Services
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateProductTuitionResponse> CreateProductTuition(CreateProductTuitionRequest productTuitionRequest)
@@ -72,7 +76,7 @@ namespace Service.v1.Services
                 await RetainProduct(productTuitionEntity, productEntity);
             }
 
-            productTuitionEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionEntity.CreatedBy = _email;
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
@@ -105,7 +109,7 @@ namespace Service.v1.Services
                     {
                         deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4);
                         deliveryOs.UpdatedAt = System.DateTime.Now;
-                        deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                        deliveryOs.UpdatedBy = _email;
                         await _osRepository.UpdateOs(deliveryOs);
                     }
                 }
@@ -145,7 +149,7 @@ namespace Service.v1.Services
                 {
                     osForDelete.Deleted = true;
                     osForDelete.UpdatedAt = System.DateTime.Now;
-                    osForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    osForDelete.UpdatedBy = _email;
 
                     await _osRepository.UpdateOs(osForDelete);
                 }
@@ -159,7 +163,7 @@ namespace Service.v1.Services
                 {
                     deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0);
                     deliveryOs.UpdatedAt = System.DateTime.Now;
-                    deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    deliveryOs.UpdatedBy = _email;
                     await _osRepository.UpdateOs(deliveryOs);
                 }
             }
@@ -174,13 +178,13 @@ namespace Service.v1.Services
             {
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
                 rent.UpdatedAt = DateTime.Now;
-                rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);
             }
 
             productTuitionEntity.UpdatedAt = DateTime.Now;
-            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionEntity.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
             else return false;
@@ -203,7 +207,7 @@ namespace Service.v1.Services
             productTuitionEntity.IsEditable = false;
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
             productTuitionEntity.UpdatedAt = System.DateTime.Now;
-            productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionEntity.UpdatedBy = _email;
 
             CreateBills(productTuitionEntity);
 
@@ -391,7 +395,7 @@ namespace Service.v1.Services
             productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
             productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
             productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
-            productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
             else return false;
@@ -421,7 +425,7 @@ namespace Service.v1.Services
 
             productTuitionForUpdate.ProductCode = productCode;
             productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
-            productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
             else return false;
@@ -434,7 +438,7 @@ namespace Service.v1.Services
 
             productTuitionForUpdate.Status = status;
             productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
-            productTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
             else return false;
@@ -468,7 +472,7 @@ namespace Service.v1.Services
                 {
                     deliveryOs.Deleted = true;
                     deliveryOs.UpdatedAt = System.DateTime.Now;
-                    deliveryOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    deliveryOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(deliveryOs);
                 }
 
@@ -476,14 +480,14 @@ namespace Service.v1.Services
                 {
                     withdrawOs.Deleted = true;
                     withdrawOs.UpdatedAt = System.DateTime.Now;
-                    withdrawOs.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                    withdrawOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(withdrawOs);
                 }
             }
 
             productTuitionForDelete.Deleted = true;
             productTuitionForDelete.UpdatedAt = System.DateTime.Now;
-            productTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionForDelete.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;
             else return false;
@@ -510,7 +514,7 @@ namespace Service.v1.Services
                 bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(0);
                 bill.PaymentMode = null;
-                bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                bill.CreatedBy = _email;
 
                 createdBills.Add(_billRepository.CreateBill(bill).Result);
             }
@@ -554,7 +558,7 @@ namespace Service.v1.Services
                 var rent = await _rentRepository.GetById(productTuitionEntity.RentId);
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
                 rent.UpdatedAt = DateTime.Now;
-                rent.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);
             }
@@ -567,7 +571,7 @@ namespace Service.v1.Services
             os.ProductTuitionId = productTuition.Id;
             os.Type = type;
             os.Status = OsStatus.OsStatusEnum.ElementAt(0);
-            os.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            os.CreatedBy = _email;
 
             _osRepository.CreateOs(os);
         }

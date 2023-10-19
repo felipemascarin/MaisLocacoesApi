@@ -22,8 +22,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
 
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
         {
-            //Log entrou no método
-            var email = JwtManager.ExtractEmailByToken(loginRequest.GoogleToken);
+            var email = JwtManager.ExtractPropertyByToken(loginRequest.GoogleToken, "email");
 
             var userEntity = await _userRepository.GetByEmail(email, loginRequest.Cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
@@ -46,7 +45,8 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 Email = userEntity.Email,
                 Role = userEntity.Role,
                 Schema = userEntity.Cnpj,
-                Module = companyEntity.Module
+                Module = companyEntity.Module,
+                TimeZone = companyEntity.TimeZone.ToString()
             };
 
             var tokenResponse = JwtManager.CreateToken(user);
@@ -57,13 +57,11 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             return tokenResponse;
         }
 
-        //Adicionar validações para entrar no end, se n estiver logado nem faz logout
         public async Task<bool> Logout(LogoutRequest tokenRequest)
         {
-            //Log entrou no método
-            var email = JwtManager.ExtractEmailByToken(tokenRequest.Token);
+            var email = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "email");
 
-            var cnpj = JwtManager.ExtractSchemaByToken(tokenRequest.Token);
+            var cnpj = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "schema");
 
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);

@@ -17,6 +17,8 @@ namespace Service.v1.Services
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public ProductTypeService(IProductTypeRepository productTypeRepository,
             IProductRepository productRepository,
@@ -27,6 +29,8 @@ namespace Service.v1.Services
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateProductTypeResponse> CreateProductType(CreateProductTypeRequest productTypeRequest)
@@ -37,7 +41,7 @@ namespace Service.v1.Services
 
             var productTypeEntity = _mapper.Map<ProductTypeEntity>(productTypeRequest);
 
-            productTypeEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTypeEntity.CreatedBy = _email;
 
             productTypeEntity = await _productTypeRepository.CreateProductType(productTypeEntity);
 
@@ -91,7 +95,7 @@ namespace Service.v1.Services
             productTypeForUpdate.Type = productTypeRequest.Type;
             productTypeForUpdate.IsManyParts = productTypeRequest.IsManyParts;
             productTypeForUpdate.UpdatedAt = System.DateTime.Now;
-            productTypeForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTypeForUpdate.UpdatedBy = _email;
 
             if (await _productTypeRepository.UpdateProductType(productTypeForUpdate) > 0) return true;
             else return false;
@@ -104,7 +108,7 @@ namespace Service.v1.Services
 
             productTypeForDelete.Deleted = true;
             productTypeForDelete.UpdatedAt = System.DateTime.Now;
-            productTypeForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTypeForDelete.UpdatedBy = _email;
 
             if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;
             else return false;

@@ -97,7 +97,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .When(company => !string.IsNullOrEmpty(company.Module));
 
             RuleFor(company => company.TimeZone)
-                .Empty()
+                .NotNull()
                 .WithMessage("TimeZone é obrigatório")
                 .Must(timeZone => int.TryParse(timeZone.ToString(), out var result))
                 .WithMessage("TimeZone deve ser um número inteiro positivo ou negativo");

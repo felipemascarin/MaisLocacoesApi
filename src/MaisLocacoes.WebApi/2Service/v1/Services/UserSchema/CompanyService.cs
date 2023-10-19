@@ -18,6 +18,8 @@ namespace Service.v1.Services.UserSchema
         private readonly ICompanyAddressService _companyAddressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public CompanyService(ICompanyRepository companyRepository,
             ICompanyAddressService companyAddressService,
@@ -28,6 +30,8 @@ namespace Service.v1.Services.UserSchema
             _companyAddressService = companyAddressService;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateCompanyResponse> CreateCompany(CreateCompanyRequest companyRequest)
@@ -46,7 +50,7 @@ namespace Service.v1.Services.UserSchema
             var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
 
             companyEntity.CompanyAddressId = companyAddressResponse.Id;
-            companyEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyEntity.CreatedBy = _email;
 
             companyEntity = await _companyRepository.CreateCompany(companyEntity);
 
@@ -62,7 +66,9 @@ namespace Service.v1.Services.UserSchema
 
             var companyResponse = _mapper.Map<GetCompanyByCnpjResponse>(companyEntity);
 
-            return companyResponse;
+            var timeZoneConverter = new TimeZoneConverter<GetCompanyByCnpjResponse>(_companyRepository, _httpContextAccessor);
+
+            return await timeZoneConverter.ConvertToTimeZoneLocal(companyResponse);
         }
 
         public async Task<bool> UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj)
@@ -94,7 +100,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.Module = companyRequest.Module;
             companyForUpdate.TimeZone = companyRequest.TimeZone;
             companyForUpdate.UpdatedAt = System.DateTime.Now;
-            companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyForUpdate.UpdatedBy = _email;
 
             if (!await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id))
                 throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a empresa", null, HttpStatusCode.InternalServerError);
@@ -110,7 +116,7 @@ namespace Service.v1.Services.UserSchema
 
             companyForUpdate.Status = status;
             companyForUpdate.UpdatedAt = System.DateTime.Now;
-            companyForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyForUpdate.UpdatedBy = _email;
 
             if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;
             else return false;

@@ -16,6 +16,8 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public SupplierService(ISupplierRepository supplierRepository,
             IAddressService addressService,
@@ -26,6 +28,8 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateSupplierResponse> CreateSupplier(CreateSupplierRequest supplierRequest)
@@ -35,7 +39,7 @@ namespace Service.v1.Services
             var supplierEntity = _mapper.Map<SupplierEntity>(supplierRequest);
 
             supplierEntity.AddressId = addressResponse.Id;
-            supplierEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            supplierEntity.CreatedBy = _email;
 
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 
@@ -74,7 +78,7 @@ namespace Service.v1.Services
             supplierForUpdate.Tel = supplierRequest.Tel;
             supplierForUpdate.Cel = supplierRequest.Cel;
             supplierForUpdate.UpdatedAt = System.DateTime.Now;
-            supplierForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            supplierForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id))
                 throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o fornecedor", null, HttpStatusCode.InternalServerError);
@@ -90,7 +94,7 @@ namespace Service.v1.Services
 
             supplierForDelete.Deleted = true;
             supplierForDelete.UpdatedAt = System.DateTime.Now;
-            supplierForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            supplierForDelete.UpdatedBy = _email;
 
             if (await _supplierRepository.UpdateSupplier(supplierForDelete) > 0) return true;
             else return false;

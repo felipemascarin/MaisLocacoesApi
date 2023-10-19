@@ -16,6 +16,8 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public QgService(IQgRepository qgRepository,
             IAddressService addressService,
@@ -26,6 +28,8 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateQgResponse> CreateQg(CreateQgRequest qgRequest)
@@ -35,7 +39,7 @@ namespace Service.v1.Services
             var qgEntity = _mapper.Map<QgEntity>(qgRequest);
 
             qgEntity.AddressId = addressResponse.Id;
-            qgEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            qgEntity.CreatedBy = _email;
 
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 
@@ -72,7 +76,7 @@ namespace Service.v1.Services
             qgForUpdate.Latitude = qgRequest.Latitude;
             qgForUpdate.Longitude = qgRequest.Longitude;
             qgForUpdate.UpdatedAt = System.DateTime.Now;
-            qgForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            qgForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id))
                 throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o QG", null, HttpStatusCode.InternalServerError);
@@ -88,7 +92,7 @@ namespace Service.v1.Services
 
             qgForDelete.Deleted = true;
             qgForDelete.UpdatedAt = System.DateTime.Now;
-            qgForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            qgForDelete.UpdatedBy = _email;
 
             if (await _qgRepository.UpdateQg(qgForDelete) > 0) return true;
             else return false;

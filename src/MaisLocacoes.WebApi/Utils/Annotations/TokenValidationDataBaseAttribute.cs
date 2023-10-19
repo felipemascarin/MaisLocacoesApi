@@ -1,8 +1,6 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
-using MaisLocacoes.WebApi.Utils.Helpers;
+﻿using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Newtonsoft.Json;
 using Repository.v1.IRepository.UserSchema;
 
 namespace MaisLocacoes.WebApi.Utils.Annotations
@@ -30,9 +28,9 @@ namespace MaisLocacoes.WebApi.Utils.Annotations
 
                 var token = context.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
 
-                var email = JwtManager.ExtractEmailByToken(token);
+                var email = JwtManager.ExtractPropertyByToken(token, "email");
 
-                var cnpj = JwtManager.ExtractSchemaByToken(token);
+                var cnpj = JwtManager.ExtractPropertyByToken(token, "schema");
 
                 var tokenExists = await _userRepository.UserHasToken(token, email, cnpj);
 

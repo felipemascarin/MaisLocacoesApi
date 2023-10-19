@@ -20,6 +20,8 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public RentService(IRentRepository rentRepository,
             IBillRepository billRepository,
@@ -36,6 +38,8 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateRentResponse> CreateRent(CreateRentRequest rentRequest)
@@ -51,7 +55,7 @@ namespace Service.v1.Services
             var rentEntity = _mapper.Map<RentEntity>(rentRequest);
 
             rentEntity.AddressId = addressResponse.Id;
-            rentEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentEntity.CreatedBy = _email;
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
 
@@ -136,7 +140,7 @@ namespace Service.v1.Services
             rentForUpdate.SignedAt = rentRequest.SignedAt;
             rentForUpdate.UrlSignature = rentRequest.UrlSignature;
             rentForUpdate.UpdatedAt = System.DateTime.Now;
-            rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id))
                 throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a locação", null, HttpStatusCode.InternalServerError);
@@ -152,7 +156,7 @@ namespace Service.v1.Services
 
             rentForUpdate.Status = status;
             rentForUpdate.UpdatedAt = System.DateTime.Now;
-            rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentForUpdate.UpdatedBy = _email;
 
             if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
             else return false;
@@ -165,7 +169,7 @@ namespace Service.v1.Services
 
             rentForDelete.Deleted = true;
             rentForDelete.UpdatedAt = System.DateTime.Now;
-            rentForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            rentForDelete.UpdatedBy = _email;
 
             if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
             else return false;
@@ -184,7 +188,7 @@ namespace Service.v1.Services
                 bill.PaymentMode = null;
                 bill.Description = "Fatura de frete";
                 bill.DueDate = DateTime.Now;
-                bill.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+                bill.CreatedBy = _email;
 
                 _billRepository.CreateBill(bill);
             }

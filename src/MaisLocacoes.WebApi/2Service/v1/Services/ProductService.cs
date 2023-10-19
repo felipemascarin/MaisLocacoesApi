@@ -17,6 +17,8 @@ namespace Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public ProductService(IProductRepository productRepository,
             IProductTypeRepository productTypeRepository,
@@ -25,8 +27,10 @@ namespace Service.v1.Services
         {
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
-            _mapper = mapper;
             _productTypeRepository = productTypeRepository;
+            _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateProductResponse> CreateProduct(CreateProductRequest productRequest)
@@ -45,7 +49,7 @@ namespace Service.v1.Services
 
             productEntity.ProductTypeEntity = existsProductType;
 
-            productEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productEntity.CreatedBy = _email;
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
@@ -155,7 +159,7 @@ namespace Service.v1.Services
             productForUpdate.Parts = productRequest.Parts;
             productForUpdate.RentedParts = productRequest.RentedParts;
             productForUpdate.UpdatedAt = System.DateTime.Now;
-            productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productForUpdate.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
             else return false;
@@ -168,7 +172,7 @@ namespace Service.v1.Services
 
             productForUpdate.Status = status;
             productForUpdate.UpdatedAt = System.DateTime.Now;
-            productForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productForUpdate.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
             else return false;
@@ -181,7 +185,7 @@ namespace Service.v1.Services
 
             productForDelete.Deleted = true;
             productForDelete.UpdatedAt = System.DateTime.Now;
-            productForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productForDelete.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
             else return false;

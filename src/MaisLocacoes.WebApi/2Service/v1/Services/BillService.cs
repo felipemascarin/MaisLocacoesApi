@@ -21,6 +21,8 @@ namespace Service.v1.Services
         private readonly IRentRepository _rentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public BillService(IBillRepository billRepository,
             IProductTuitionRepository productTuitionRepository,
@@ -35,6 +37,8 @@ namespace Service.v1.Services
             _rentRepository = rentRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateBillResponse> CreateBill(CreateBillRequest billRequest)
@@ -52,7 +56,7 @@ namespace Service.v1.Services
 
             var billEntity = _mapper.Map<BillEntity>(billRequest);
 
-            billEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            billEntity.CreatedBy = _email;
 
             billEntity = await _billRepository.CreateBill(billEntity);
 
@@ -282,7 +286,7 @@ namespace Service.v1.Services
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
             billForUpdate.UpdatedAt = System.DateTime.Now;
-            billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
             else return false;
@@ -332,7 +336,7 @@ namespace Service.v1.Services
             billForUpdate.NfIdFireBase = nfIdFireBase;
             billForUpdate.PayDate = payDate;
             billForUpdate.UpdatedAt = System.DateTime.Now;
-            billForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
             else return false;
@@ -348,7 +352,7 @@ namespace Service.v1.Services
 
             billForDelete.Deleted = true;
             billForDelete.UpdatedAt = System.DateTime.Now;
-            billForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            billForDelete.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForDelete) > 0) return true;
             else return false;

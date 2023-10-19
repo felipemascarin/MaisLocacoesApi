@@ -16,6 +16,8 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public ProductTuitionValueService(IProductTuitionValueRepository productTuitionValueRepository,
             IProductTypeRepository productTypeRepository,
@@ -26,6 +28,8 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateProductTuitionValueResponse> CreateProductTuitionValue(CreateProductTuitionValueRequest productTuitionValueRequest)
@@ -40,7 +44,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
 
             var productTuitionValueEntity = _mapper.Map<ProductTuitionValueEntity>(productTuitionValueRequest);
 
-            productTuitionValueEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionValueEntity.CreatedBy = _email;
 
             productTuitionValueEntity = await _productTuitionValueRepository.CreateProductTuitionValue(productTuitionValueEntity);
 
@@ -95,7 +99,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             productTuitionValueForUpdate.IsDefault = productTuitionValueRequest.IsDefault;
             productTuitionValueForUpdate.Value = productTuitionValueRequest.Value;
             productTuitionValueForUpdate.UpdatedAt = System.DateTime.Now;
-            productTuitionValueForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            productTuitionValueForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate) > 0) return true;
             else return false;

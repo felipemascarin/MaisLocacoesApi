@@ -15,6 +15,8 @@ namespace Service.v1.Services
         private readonly ICompanyWasteRepository _companyWasteRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public CompanyWasteService(ICompanyWasteRepository companyWasteRepository,
             IHttpContextAccessor httpContextAccessor,
@@ -23,13 +25,15 @@ namespace Service.v1.Services
             _companyWasteRepository = companyWasteRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateCompanyWasteResponse> CreateCompanyWaste(CreateCompanyWasteRequest companyWasteRequest)
         {
             var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
 
-            companyWasteEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyWasteEntity.CreatedBy = _email;
 
             companyWasteEntity = await _companyWasteRepository.CreateCompanyWaste(companyWasteEntity);
 
@@ -57,7 +61,7 @@ namespace Service.v1.Services
             companyWasteForUpdate.Value = companyWasteRequest.Value;
             companyWasteForUpdate.Date = companyWasteRequest.Date;
             companyWasteForUpdate.UpdatedAt = System.DateTime.Now;
-            companyWasteForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyWasteForUpdate.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
             else return false;
@@ -70,7 +74,7 @@ namespace Service.v1.Services
 
             companyWasteForDelete.Deleted = true;
             companyWasteForDelete.UpdatedAt = System.DateTime.Now;
-            companyWasteForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyWasteForDelete.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;
             else return false;

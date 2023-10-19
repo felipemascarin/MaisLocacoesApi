@@ -16,6 +16,8 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public ClientService(IClientRepository clientRepository,
             IMapper mapper,
@@ -26,6 +28,8 @@ namespace Service.v1.Services
             _mapper = mapper;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateClientResponse> CreateClient(CreateClientRequest clientRequest)
@@ -44,7 +48,7 @@ namespace Service.v1.Services
             var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
 
             clientEntity.AddressId = addressResponse.Id;
-            clientEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientEntity.CreatedBy = _email;
 
             clientEntity = await _clientRepository.CreateClient(clientEntity);
 
@@ -178,7 +182,7 @@ namespace Service.v1.Services
             clientForUpdate.AddressDocumentUrl = clientRequest.AddressDocumentUrl;
             clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
             clientForUpdate.UpdatedAt = System.DateTime.Now;
-            clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
                 throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);
@@ -194,7 +198,7 @@ namespace Service.v1.Services
 
             clientForUpdate.Status = status;
             clientForUpdate.UpdatedAt = System.DateTime.Now;
-            clientForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientForUpdate.UpdatedBy = _email;
 
             if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
             else return false;
@@ -207,7 +211,7 @@ namespace Service.v1.Services
 
             clientForDelete.Deleted = true;
             clientForDelete.UpdatedAt = System.DateTime.Now;
-            clientForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            clientForDelete.UpdatedBy = _email;
 
             if (await _clientRepository.UpdateClient(clientForDelete) > 0) return true;
             else return false;

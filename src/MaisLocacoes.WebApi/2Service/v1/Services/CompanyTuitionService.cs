@@ -15,6 +15,8 @@ namespace Service.v1.Services
         private readonly ICompanyTuitionRepository _companyTuitionRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
+        private readonly int _timeZone;
+        private readonly string _email;
 
         public CompanyTuitionService(ICompanyTuitionRepository companyTuitionRepository,
             IHttpContextAccessor httpContextAccessor,
@@ -23,13 +25,15 @@ namespace Service.v1.Services
             _companyTuitionRepository = companyTuitionRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
         public async Task<CreateCompanyTuitionResponse> CreateCompanyTuition(CreateCompanyTuitionRequest companyTuitionRequest)
         {
             var companyTuitionEntity = _mapper.Map<CompanyTuitionEntity>(companyTuitionRequest);
 
-            companyTuitionEntity.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyTuitionEntity.CreatedBy = _email;
 
             companyTuitionEntity = await _companyTuitionRepository.CreateCompanyTuition(companyTuitionEntity);
 
@@ -59,7 +63,7 @@ namespace Service.v1.Services
             companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
             companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate;
             companyTuitionForUpdate.UpdatedAt = System.DateTime.Now;
-            companyTuitionForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyTuitionForUpdate.UpdatedBy = _email;
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate) > 0) return true;
             else return false;
@@ -72,7 +76,7 @@ namespace Service.v1.Services
 
             companyTuitionForDelete.Deleted = true;
             companyTuitionForDelete.UpdatedAt = System.DateTime.Now;
-            companyTuitionForDelete.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
+            companyTuitionForDelete.UpdatedBy = _email;
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;
             else return false;
