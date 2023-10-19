@@ -62,7 +62,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
             RuleFor(person => person.BornDate)
                 .Must(bornDate => DateTime.TryParse(bornDate.ToString(), out var result))
                 .WithMessage("A data de nascimento se inserida deve ser uma data válida")
-                .Must(bornDate => bornDate < DateTime.Now)
+                .Must(bornDate => bornDate < DateTime.Now.Date)
                 .WithMessage("A data de nascimento se inserida deve ser data passada")
                 .When(person => person.BornDate != null);
 

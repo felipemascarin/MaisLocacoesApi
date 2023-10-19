@@ -46,6 +46,7 @@ namespace Service.v1.Services.UserSchema
             var userEntity = _mapper.Map<UserEntity>(userRequest);
 
             userEntity.CreatedBy = _email;
+            userEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             userEntity = await _userRepository.CreateUser(userEntity);
 

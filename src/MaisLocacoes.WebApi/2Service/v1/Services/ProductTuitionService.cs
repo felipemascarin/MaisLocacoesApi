@@ -77,6 +77,7 @@ namespace Service.v1.Services
             }
 
             productTuitionEntity.CreatedBy = _email;
+            productTuitionEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
@@ -177,13 +178,13 @@ namespace Service.v1.Services
             if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
             {
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
-                rent.UpdatedAt = DateTime.Now;
+                rent.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                 rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);
             }
 
-            productTuitionEntity.UpdatedAt = DateTime.Now;
+            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionEntity.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
@@ -557,7 +558,7 @@ namespace Service.v1.Services
             {
                 var rent = await _rentRepository.GetById(productTuitionEntity.RentId);
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
-                rent.UpdatedAt = DateTime.Now;
+                rent.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                 rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);

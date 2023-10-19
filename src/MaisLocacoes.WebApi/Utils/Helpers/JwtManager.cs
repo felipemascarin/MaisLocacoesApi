@@ -46,7 +46,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim("cpf", user.Cpf),
                     new Claim("timeZone", user.TimeZone)
                 }),
-                Expires = DateTime.Now.AddHours(15),
+                Expires = (System.DateTime.UtcNow + TimeSpan.FromHours(int.Parse(user.TimeZone))).AddHours(15),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 

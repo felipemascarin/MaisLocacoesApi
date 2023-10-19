@@ -34,6 +34,7 @@ namespace Service.v1.Services
             var companyTuitionEntity = _mapper.Map<CompanyTuitionEntity>(companyTuitionRequest);
 
             companyTuitionEntity.CreatedBy = _email;
+            companyTuitionEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             companyTuitionEntity = await _companyTuitionRepository.CreateCompanyTuition(companyTuitionEntity);
 

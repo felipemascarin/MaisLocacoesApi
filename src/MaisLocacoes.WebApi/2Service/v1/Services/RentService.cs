@@ -56,6 +56,7 @@ namespace Service.v1.Services
 
             rentEntity.AddressId = addressResponse.Id;
             rentEntity.CreatedBy = _email;
+            rentEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
 
@@ -187,7 +188,7 @@ namespace Service.v1.Services
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(2);
                 bill.PaymentMode = null;
                 bill.Description = "Fatura de frete";
-                bill.DueDate = DateTime.Now;
+                bill.DueDate = System.DateTime.UtcNow + _timeZone;
                 bill.CreatedBy = _email;
 
                 _billRepository.CreateBill(bill);

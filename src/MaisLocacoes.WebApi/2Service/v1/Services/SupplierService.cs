@@ -40,6 +40,7 @@ namespace Service.v1.Services
 
             supplierEntity.AddressId = addressResponse.Id;
             supplierEntity.CreatedBy = _email;
+            supplierEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 

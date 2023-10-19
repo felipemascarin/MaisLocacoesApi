@@ -61,6 +61,7 @@ namespace Service.v1.Services
             var rentedPlaceEntity = _mapper.Map<RentedPlaceEntity>(rentedPlaceRequest);
 
             rentedPlaceEntity.CreatedBy = _email;
+            rentedPlaceEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             rentedPlaceEntity = await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
 

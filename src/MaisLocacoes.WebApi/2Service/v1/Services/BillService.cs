@@ -57,6 +57,7 @@ namespace Service.v1.Services
             var billEntity = _mapper.Map<BillEntity>(billRequest);
 
             billEntity.CreatedBy = _email;
+            billEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             billEntity = await _billRepository.CreateBill(billEntity);
 

@@ -43,6 +43,7 @@ namespace Service.v1.Services
             var productWasteEntity = _mapper.Map<ProductWasteEntity>(productWasteRequest);
 
             productWasteEntity.CreatedBy = _email;
+            productWasteEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             productWasteEntity = await _productWasteRepository.CreateProductWaste(productWasteEntity);
 

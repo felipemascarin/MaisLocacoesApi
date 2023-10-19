@@ -62,6 +62,7 @@ namespace Service.v1.Services
             var osEntity = _mapper.Map<OsEntity>(osRequest);
 
             osEntity.CreatedBy = _email;
+            osEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             osEntity = await _osRepository.CreateOs(osEntity);
 
@@ -82,15 +83,15 @@ namespace Service.v1.Services
                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3);
-            productTuitionEntity.UpdatedAt = DateTime.Now;
+            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionEntity.UpdatedBy = _email;
 
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(1);
-            os.InitialDateTime = DateTime.Now;
-            os.UpdatedAt = DateTime.Now;
+            os.InitialDateTime = System.DateTime.UtcNow + _timeZone;
+            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -108,7 +109,7 @@ namespace Service.v1.Services
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(3);
             os.InitialDateTime = null;
-            os.UpdatedAt = DateTime.Now;
+            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -125,7 +126,7 @@ namespace Service.v1.Services
 
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(4);
-            os.UpdatedAt = DateTime.Now;
+            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -145,9 +146,9 @@ namespace Service.v1.Services
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(2);
-            os.FinalDateTime = DateTime.Now;
+            os.FinalDateTime = System.DateTime.UtcNow + _timeZone;
             os.DeliveryObservation = finishOsRequest.DeliveryObservation;
-            os.UpdatedAt = DateTime.Now;
+            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             os.UpdatedBy = _email;
 
             var rentedPlace = new RentedPlaceEntity();
@@ -169,7 +170,7 @@ namespace Service.v1.Services
 
                 productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
-                productTuitionEntity.UpdatedAt = DateTime.Now;
+                productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                 productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = productTuitionEntity.RentId;
@@ -192,7 +193,7 @@ namespace Service.v1.Services
                 product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
-                productTuitionEntity.UpdatedAt = DateTime.Now;
+                productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                 productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = null;

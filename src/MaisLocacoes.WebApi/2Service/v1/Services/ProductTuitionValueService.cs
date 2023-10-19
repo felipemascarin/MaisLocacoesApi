@@ -45,6 +45,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             var productTuitionValueEntity = _mapper.Map<ProductTuitionValueEntity>(productTuitionValueRequest);
 
             productTuitionValueEntity.CreatedBy = _email;
+            productTuitionValueEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             productTuitionValueEntity = await _productTuitionValueRepository.CreateProductTuitionValue(productTuitionValueEntity);
 

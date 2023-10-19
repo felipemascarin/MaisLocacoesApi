@@ -40,6 +40,7 @@ namespace Service.v1.Services
 
             qgEntity.AddressId = addressResponse.Id;
             qgEntity.CreatedBy = _email;
+            qgEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 

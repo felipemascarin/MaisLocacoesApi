@@ -34,6 +34,7 @@ namespace Service.v1.Services
             var addressEntity = _mapper.Map<AddressEntity>(addressRequest);
 
             addressEntity.CreatedBy = _email;
+            addressEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             addressEntity = await _addressRepository.CreateAddress(addressEntity);
 

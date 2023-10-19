@@ -49,6 +49,7 @@ namespace Service.v1.Services
 
             clientEntity.AddressId = addressResponse.Id;
             clientEntity.CreatedBy = _email;
+            clientEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             clientEntity = await _clientRepository.CreateClient(clientEntity);
 

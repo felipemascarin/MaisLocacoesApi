@@ -42,6 +42,7 @@ namespace Service.v1.Services
             var productTypeEntity = _mapper.Map<ProductTypeEntity>(productTypeRequest);
 
             productTypeEntity.CreatedBy = _email;
+            productTypeEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             productTypeEntity = await _productTypeRepository.CreateProductType(productTypeEntity);
 

@@ -34,6 +34,7 @@ namespace Service.v1.Services
             var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
 
             companyWasteEntity.CreatedBy = _email;
+            companyWasteEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             companyWasteEntity = await _companyWasteRepository.CreateCompanyWaste(companyWasteEntity);
 

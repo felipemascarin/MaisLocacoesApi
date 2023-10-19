@@ -51,6 +51,7 @@ namespace Service.v1.Services.UserSchema
 
             companyEntity.CompanyAddressId = companyAddressResponse.Id;
             companyEntity.CreatedBy = _email;
+            companyEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             companyEntity = await _companyRepository.CreateCompany(companyEntity);
 

@@ -50,6 +50,7 @@ namespace Service.v1.Services
             productEntity.ProductTypeEntity = existsProductType;
 
             productEntity.CreatedBy = _email;
+            productEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
