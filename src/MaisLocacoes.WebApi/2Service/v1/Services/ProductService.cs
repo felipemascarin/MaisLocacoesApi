@@ -17,7 +17,7 @@ namespace Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public ProductService(IProductRepository productRepository,
@@ -29,7 +29,7 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
             _productTypeRepository = productTypeRepository;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -158,7 +158,7 @@ namespace Service.v1.Services
             productForUpdate.CurrentRentedPlaceId = productRequest.CurrentRentedPlaceId;
             productForUpdate.Parts = productRequest.Parts;
             productForUpdate.RentedParts = productRequest.RentedParts;
-            productForUpdate.UpdatedAt = System.DateTime.Now;
+            productForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productForUpdate.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
@@ -171,7 +171,7 @@ namespace Service.v1.Services
                     throw new HttpRequestException("produto não encontrado", null, HttpStatusCode.NotFound);
 
             productForUpdate.Status = status;
-            productForUpdate.UpdatedAt = System.DateTime.Now;
+            productForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productForUpdate.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
@@ -184,7 +184,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             productForDelete.Deleted = true;
-            productForDelete.UpdatedAt = System.DateTime.Now;
+            productForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productForDelete.UpdatedBy = _email;
 
             if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;

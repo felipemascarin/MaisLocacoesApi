@@ -19,6 +19,9 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         private readonly IValidator<UpdateProductTuitionValueRequest> _updateProductTuitionValueValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public ProductTuitionValueController(IProductTuitionValueService productTuitionValueService,
          IValidator<CreateProductTuitionValueRequest> createProductTuitionValueValidator,
@@ -31,6 +34,9 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
             _updateProductTuitionValueValidator = updateProductTuitionValueValidator;
             _logger = loggerFactory.CreateLogger<CreateProductTuitionValueRequest>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -40,7 +46,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateProductTuitionValue {@dateTime} {@productTuitionValueRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionValueRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateProductTuitionValue {@dateTime} {@productTuitionValueRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productTuitionValueRequest), _email, _schema);
 
                 var validatedProductTuitionValue = _createProductTuitionValueValidator.Validate(productTuitionValueRequest);
 
@@ -69,7 +75,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 var _productTuitionValue = await _productTuitionValueService.GetProductTuitionValueById(id);
                 return Ok(_productTuitionValue);
@@ -88,7 +94,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllByProductTypeId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, productTypeId, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetAllByProductTypeId {@dateTime} rentId:{@rentId} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, productTypeId, _email, _schema);
 
                 var productTuitionValue = await _productTuitionValueService.GetAllProductTuitionValueByProductTypeId(productTypeId);
                 return Ok(productTuitionValue);
@@ -107,7 +113,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateproductTuitionValue {@dateTime} {@productTuitionValueRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionValueRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateproductTuitionValue {@dateTime} {@productTuitionValueRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productTuitionValueRequest), id, _email, _schema);
 
                 var validatedProductTuitionValue = _updateProductTuitionValueValidator.Validate(productTuitionValueRequest);
 
@@ -135,7 +141,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 if (await _productTuitionValueService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

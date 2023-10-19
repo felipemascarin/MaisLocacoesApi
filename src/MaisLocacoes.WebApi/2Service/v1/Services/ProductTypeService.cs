@@ -17,7 +17,7 @@ namespace Service.v1.Services
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public ProductTypeService(IProductTypeRepository productTypeRepository,
@@ -29,7 +29,7 @@ namespace Service.v1.Services
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -94,7 +94,7 @@ namespace Service.v1.Services
 
             productTypeForUpdate.Type = productTypeRequest.Type;
             productTypeForUpdate.IsManyParts = productTypeRequest.IsManyParts;
-            productTypeForUpdate.UpdatedAt = System.DateTime.Now;
+            productTypeForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTypeForUpdate.UpdatedBy = _email;
 
             if (await _productTypeRepository.UpdateProductType(productTypeForUpdate) > 0) return true;
@@ -107,7 +107,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
             productTypeForDelete.Deleted = true;
-            productTypeForDelete.UpdatedAt = System.DateTime.Now;
+            productTypeForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTypeForDelete.UpdatedBy = _email;
 
             if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;

@@ -16,7 +16,7 @@ namespace Service.v1.Services
         private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public ProductWasteService(IProductWasteRepository productWasteRepository,
@@ -28,7 +28,7 @@ namespace Service.v1.Services
             _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -108,7 +108,7 @@ namespace Service.v1.Services
             productWasteForUpdate.Description = productWasteRequest.Description;
             productWasteForUpdate.Value = productWasteRequest.Value;
             productWasteForUpdate.Date = productWasteRequest.Date;
-            productWasteForUpdate.UpdatedAt = System.DateTime.Now;
+            productWasteForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productWasteForUpdate.UpdatedBy = _email;
 
             if (await _productWasteRepository.UpdateProductWaste(productWasteForUpdate) > 0) return true;
@@ -121,7 +121,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
 
             productWasteForDelete.Deleted = true;
-            productWasteForDelete.UpdatedAt = System.DateTime.Now;
+            productWasteForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productWasteForDelete.UpdatedBy = _email;
 
             if (await _productWasteRepository.UpdateProductWaste(productWasteForDelete) > 0) return true;

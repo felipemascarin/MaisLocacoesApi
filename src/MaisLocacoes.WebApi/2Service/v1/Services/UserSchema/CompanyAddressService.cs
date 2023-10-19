@@ -16,7 +16,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public CompanyAddressService(ICompanyAddressRepository companyAddressRepository,
@@ -28,7 +28,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             _companyRepository = companyRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressRequest);
 
             companyAddressEntity.CreatedBy = _email;
-            companyAddressEntity.CreatedAt = DateTime.UtcNow + TimeSpan.FromHours(_timeZone);
+            companyAddressEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
 
             companyAddressEntity = await _companyAddressRepository.CreateCompanyAddress(companyAddressEntity);
 
@@ -65,7 +65,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             companyAddressForUpdate.City = companyAddressRequest.City;
             companyAddressForUpdate.State = companyAddressRequest.State;
             companyAddressForUpdate.Country = companyAddressRequest.Country;
-            companyAddressForUpdate.UpdatedAt = DateTime.UtcNow + TimeSpan.FromHours(_timeZone);
+            companyAddressForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             companyAddressForUpdate.UpdatedBy = _email;
 
             if (await _companyAddressRepository.UpdateCompanyAddress(companyAddressForUpdate) > 0) return true;

@@ -17,7 +17,7 @@ namespace Service.v1.Services.UserSchema
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public UserService(IUserRepository userRepository,
@@ -29,7 +29,7 @@ namespace Service.v1.Services.UserSchema
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _companyRepository = companyRepository;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -117,7 +117,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.Cel = userRequest.Cel;
             userForUpdate.CivilStatus = userRequest.CivilStatus;
             userForUpdate.CpfDocumentUrl = userRequest.CpfDocumentUrl;
-            userForUpdate.UpdatedAt = System.DateTime.Now;
+            userForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
@@ -130,7 +130,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             userForUpdate.Status = status;
-            userForUpdate.UpdatedAt = System.DateTime.Now;
+            userForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;

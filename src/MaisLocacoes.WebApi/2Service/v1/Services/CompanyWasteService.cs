@@ -15,7 +15,7 @@ namespace Service.v1.Services
         private readonly ICompanyWasteRepository _companyWasteRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public CompanyWasteService(ICompanyWasteRepository companyWasteRepository,
@@ -25,7 +25,7 @@ namespace Service.v1.Services
             _companyWasteRepository = companyWasteRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -60,7 +60,7 @@ namespace Service.v1.Services
             companyWasteForUpdate.Description = companyWasteRequest.Description;
             companyWasteForUpdate.Value = companyWasteRequest.Value;
             companyWasteForUpdate.Date = companyWasteRequest.Date;
-            companyWasteForUpdate.UpdatedAt = System.DateTime.Now;
+            companyWasteForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             companyWasteForUpdate.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
@@ -73,7 +73,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             companyWasteForDelete.Deleted = true;
-            companyWasteForDelete.UpdatedAt = System.DateTime.Now;
+            companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             companyWasteForDelete.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;

@@ -18,7 +18,7 @@ namespace Service.v1.Services.UserSchema
         private readonly ICompanyAddressService _companyAddressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public CompanyService(ICompanyRepository companyRepository,
@@ -30,7 +30,7 @@ namespace Service.v1.Services.UserSchema
             _companyAddressService = companyAddressService;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -99,7 +99,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore;
             companyForUpdate.Module = companyRequest.Module;
             companyForUpdate.TimeZone = companyRequest.TimeZone;
-            companyForUpdate.UpdatedAt = System.DateTime.Now;
+            companyForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             companyForUpdate.UpdatedBy = _email;
 
             if (!await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id))
@@ -115,7 +115,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             companyForUpdate.Status = status;
-            companyForUpdate.UpdatedAt = System.DateTime.Now;
+            companyForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             companyForUpdate.UpdatedBy = _email;
 
             if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;

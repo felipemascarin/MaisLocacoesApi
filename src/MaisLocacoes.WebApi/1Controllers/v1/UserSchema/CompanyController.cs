@@ -21,6 +21,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         private readonly IValidator<UpdateCompanyRequest> _updateCompanyValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public CompanyController(ICompanyService companyService,
             IValidator<CreateCompanyRequest> createCompanyValidator,
@@ -33,6 +36,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _updateCompanyValidator = updateCompanyValidator;
             _logger = loggerFactory.CreateLogger<CompanyController>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         //[Authorize]
@@ -42,7 +48,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("CreateCompany {@dateTime} {@companyRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateCompany {@dateTime} {@companyRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyRequest), _email, _schema);
 
                 var validatedCompany = _createCompanyValidator.Validate(companyRequest);
 
@@ -71,7 +77,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByCnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cnpj, _email, _schema);
 
                 var company = await _companyService.GetCompanyByCnpj(cnpj);
                 return Ok(company);
@@ -90,7 +96,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByToken {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetByToken {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
 
                 var company = await _companyService.GetCompanyByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
                 return Ok(company);
@@ -109,7 +115,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateCompany {@dateTime} {@companyRequest} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyRequest), cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateCompany {@dateTime} {@companyRequest} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyRequest), cnpj, _email, _schema);
 
                 var validatedCompany = _updateCompanyValidator.Validate(companyRequest);
 
@@ -137,7 +143,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, status, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, cnpj, _email, _schema);
 
                 if (!CompanyStatus.CompanyStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");

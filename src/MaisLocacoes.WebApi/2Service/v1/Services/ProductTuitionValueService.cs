@@ -16,7 +16,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public ProductTuitionValueService(IProductTuitionValueRepository productTuitionValueRepository,
@@ -28,7 +28,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -98,7 +98,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             productTuitionValueForUpdate.TimePeriod = productTuitionValueRequest.TimePeriod;
             productTuitionValueForUpdate.IsDefault = productTuitionValueRequest.IsDefault;
             productTuitionValueForUpdate.Value = productTuitionValueRequest.Value;
-            productTuitionValueForUpdate.UpdatedAt = System.DateTime.Now;
+            productTuitionValueForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionValueForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate) > 0) return true;

@@ -16,7 +16,7 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public QgService(IQgRepository qgRepository,
@@ -28,7 +28,7 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -75,7 +75,7 @@ namespace Service.v1.Services
             qgForUpdate.Description = qgRequest.Description;
             qgForUpdate.Latitude = qgRequest.Latitude;
             qgForUpdate.Longitude = qgRequest.Longitude;
-            qgForUpdate.UpdatedAt = System.DateTime.Now;
+            qgForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             qgForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id))
@@ -91,7 +91,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             qgForDelete.Deleted = true;
-            qgForDelete.UpdatedAt = System.DateTime.Now;
+            qgForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             qgForDelete.UpdatedBy = _email;
 
             if (await _qgRepository.UpdateQg(qgForDelete) > 0) return true;

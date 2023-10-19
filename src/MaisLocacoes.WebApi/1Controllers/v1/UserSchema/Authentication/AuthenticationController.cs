@@ -20,6 +20,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<LogoutRequest> _logoutRequestValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public AuthenticationController(IAuthenticationService authenticationService,
             IValidator<LoginRequest> loginRequestValidator,
@@ -32,6 +35,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _logoutRequestValidator = logoutRequestValidator;
             _logger = loggerFactory.CreateLogger<AuthenticationController>();
             _httpContextAccessor = httpContextAccessor;
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [HttpPost("login")]
@@ -39,7 +45,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Login {@dateTime} {@request}", System.DateTime.Now, JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Login {@dateTime} {@request}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request));
 
                 var validatedLogin = _loginRequestValidator.Validate(request);
 
@@ -68,7 +74,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Logout {@dateTime} {@request}", System.DateTime.Now, JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Logout {@dateTime} {@request}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request));
 
                 var validatedLogout = _logoutRequestValidator.Validate(request);
 
@@ -96,7 +102,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("IsValidToken {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("IsValidToken {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
 
                 return Ok();
             }

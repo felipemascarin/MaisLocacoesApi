@@ -21,7 +21,7 @@ namespace Service.v1.Services
         private readonly IRentRepository _rentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public BillService(IBillRepository billRepository,
@@ -37,7 +37,7 @@ namespace Service.v1.Services
             _rentRepository = rentRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -285,7 +285,7 @@ namespace Service.v1.Services
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
-            billForUpdate.UpdatedAt = System.DateTime.Now;
+            billForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -335,7 +335,7 @@ namespace Service.v1.Services
             billForUpdate.PaymentMode = paymentMode;
             billForUpdate.NfIdFireBase = nfIdFireBase;
             billForUpdate.PayDate = payDate;
-            billForUpdate.UpdatedAt = System.DateTime.Now;
+            billForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -351,7 +351,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura não pode ser deletada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             billForDelete.Deleted = true;
-            billForDelete.UpdatedAt = System.DateTime.Now;
+            billForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             billForDelete.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForDelete) > 0) return true;

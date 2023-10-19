@@ -19,6 +19,9 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         private readonly IValidator<UpdateCompanyAddressRequest> _updateCompanyAddressValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public CompanyAddressController(ICompanyAddressService companyAddressService,
         IValidator<CreateCompanyAddressRequest> createCompanyAddressValidator,
@@ -31,6 +34,9 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
             _updateCompanyAddressValidator = updateCompanyAddressValidator;
             _logger = loggerFactory.CreateLogger<CompanyAddressController>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -40,7 +46,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@request} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(request), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@request} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request), _email, _schema);
 
                 var validatedCompanyAddress = _createCompanyAddressValidator.Validate(request);
 
@@ -68,7 +74,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 var companyAddress = await _companyAddressService.GetById(id);
                 return Ok(companyAddress);
@@ -87,7 +93,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@request} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(request), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@request} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request), id, _email, _schema);
 
                 var validatedCompanyAddress = _updateCompanyAddressValidator.Validate(request);
 

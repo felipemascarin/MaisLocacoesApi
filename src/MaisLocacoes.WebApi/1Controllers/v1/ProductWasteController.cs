@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -20,6 +19,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateProductWasteRequest> _updateProductWasteValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public ProductWasteController(IProductWasteService productWasteService,
             IValidator<CreateProductWasteRequest> createProductWasteValidator,
@@ -32,6 +34,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateProductWasteValidator = updateProductWasteValidator;
             _logger = loggerFactory.CreateLogger<ProductWasteController>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -41,7 +46,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateProductWaste {@dateTime} {@productWasteRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productWasteRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateProductWaste {@dateTime} {@productWasteRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productWasteRequest), _email, _schema);
 
                 var validatedProductWaste = _createProductWasteValidator.Validate(productWasteRequest);
 
@@ -70,7 +75,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 var productWaste = await _productWasteService.GetProductWasteById(id);
                 return Ok(productWaste);
@@ -89,7 +94,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email}", System.DateTime.Now, productId, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, productId, _email, _schema);
 
                 var productWaste = await _productWasteService.GetAllProductWastesByProductId(productId);
                 return Ok(productWaste);
@@ -108,7 +113,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetProductWastesByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email}", System.DateTime.Now, items, page, query, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetProductWastesByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, items, page, query, _email, _schema);
 
                 var productWastesList = await _productWasteService.GetProductWastesByPage(items, page, query);
                 return Ok(productWastesList);
@@ -127,7 +132,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateProductWaste {@dateTime} {@ProductWasteRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productWasteRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateProductWaste {@dateTime} {@ProductWasteRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productWasteRequest), id, _email, _schema);
 
                 var validatedProductWaste = _updateProductWasteValidator.Validate(productWasteRequest);
 
@@ -155,7 +160,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 if (await _productWasteService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

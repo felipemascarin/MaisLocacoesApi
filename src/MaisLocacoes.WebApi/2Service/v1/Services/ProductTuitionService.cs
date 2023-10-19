@@ -25,7 +25,7 @@ namespace Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
@@ -49,7 +49,7 @@ namespace Service.v1.Services
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -108,7 +108,7 @@ namespace Service.v1.Services
                     if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(0) || deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(3))
                     {
                         deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4);
-                        deliveryOs.UpdatedAt = System.DateTime.Now;
+                        deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                         deliveryOs.UpdatedBy = _email;
                         await _osRepository.UpdateOs(deliveryOs);
                     }
@@ -148,7 +148,7 @@ namespace Service.v1.Services
                 if (osForDelete != null)
                 {
                     osForDelete.Deleted = true;
-                    osForDelete.UpdatedAt = System.DateTime.Now;
+                    osForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                     osForDelete.UpdatedBy = _email;
 
                     await _osRepository.UpdateOs(osForDelete);
@@ -162,7 +162,7 @@ namespace Service.v1.Services
                 if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(4))
                 {
                     deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0);
-                    deliveryOs.UpdatedAt = System.DateTime.Now;
+                    deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                     deliveryOs.UpdatedBy = _email;
                     await _osRepository.UpdateOs(deliveryOs);
                 }
@@ -206,7 +206,7 @@ namespace Service.v1.Services
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.IsEditable = false;
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
-            productTuitionEntity.UpdatedAt = System.DateTime.Now;
+            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionEntity.UpdatedBy = _email;
 
             CreateBills(productTuitionEntity);
@@ -394,7 +394,7 @@ namespace Service.v1.Services
             productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;
             productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
             productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -424,7 +424,7 @@ namespace Service.v1.Services
             }
 
             productTuitionForUpdate.ProductCode = productCode;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -437,7 +437,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionForUpdate.Status = status;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.Now;
+            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -471,7 +471,7 @@ namespace Service.v1.Services
                 if (deliveryOs != null)
                 {
                     deliveryOs.Deleted = true;
-                    deliveryOs.UpdatedAt = System.DateTime.Now;
+                    deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                     deliveryOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(deliveryOs);
                 }
@@ -479,14 +479,14 @@ namespace Service.v1.Services
                 if (withdrawOs != null)
                 {
                     withdrawOs.Deleted = true;
-                    withdrawOs.UpdatedAt = System.DateTime.Now;
+                    withdrawOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
                     withdrawOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(withdrawOs);
                 }
             }
 
             productTuitionForDelete.Deleted = true;
-            productTuitionForDelete.UpdatedAt = System.DateTime.Now;
+            productTuitionForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             productTuitionForDelete.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;

@@ -19,6 +19,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateQgRequest> _updateQgValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public QgController(IQgService qgService,
             IValidator<CreateQgRequest> createQgValidator,
@@ -31,6 +34,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateQgValidator = updateQgValidator;
             _logger = loggerFactory.CreateLogger<QgController>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -40,7 +46,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateQg {@dateTime} {@qgRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(qgRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateQg {@dateTime} {@qgRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(qgRequest), _email, _schema);
 
                 var validatedQg = _createQgValidator.Validate(qgRequest);
 
@@ -69,7 +75,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 var qg = await _qgService.GetQgById(id);
                 return Ok(qg);
@@ -88,7 +94,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
 
                 var os = await _qgService.GetAllQgs();
                 return Ok(os);
@@ -108,7 +114,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(qgRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(qgRequest), id, _email, _schema);
 
                 var validatedQg = _updateQgValidator.Validate(qgRequest);
 
@@ -136,7 +142,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 if (await _qgService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

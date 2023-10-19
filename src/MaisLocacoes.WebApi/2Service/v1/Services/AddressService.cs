@@ -15,7 +15,7 @@ namespace Service.v1.Services
         private readonly IAddressRepository _addressRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public AddressService(IAddressRepository addressRepository,
@@ -25,7 +25,7 @@ namespace Service.v1.Services
             _addressRepository = addressRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -59,7 +59,7 @@ namespace Service.v1.Services
             addressForUpdate.City = addressRequest.City;
             addressForUpdate.State = addressRequest.State;
             addressForUpdate.Country = addressRequest.Country;
-            addressForUpdate.UpdatedAt = System.DateTime.Now;
+            addressForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             addressForUpdate.UpdatedBy = _email;
 
             if (await _addressRepository.UpdateAddress(addressForUpdate) > 0) return true;

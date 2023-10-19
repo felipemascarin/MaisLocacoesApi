@@ -23,7 +23,7 @@ namespace Service.v1.Services
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly int _timeZone;
+        private readonly TimeSpan _timeZone;
         private readonly string _email;
 
         public OsService(IOsRepository osRepository,
@@ -43,7 +43,7 @@ namespace Service.v1.Services
             _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -265,7 +265,7 @@ namespace Service.v1.Services
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;
             osForUpdate.Type = osRequest.Type;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
-            osForUpdate.UpdatedAt = System.DateTime.Now;
+            osForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -278,7 +278,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForUpdate.Status = status;
-            osForUpdate.UpdatedAt = System.DateTime.Now;
+            osForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -291,7 +291,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForDelete.Deleted = true;
-            osForDelete.UpdatedAt = System.DateTime.Now;
+            osForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
             osForDelete.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForDelete) > 0) return true;

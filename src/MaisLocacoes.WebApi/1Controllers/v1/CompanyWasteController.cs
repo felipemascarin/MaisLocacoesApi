@@ -19,6 +19,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateCompanyWasteRequest> _updateCompanyWasteValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly TimeSpan _timeZone;
+        private readonly string _email;
+        private readonly string _schema;
 
         public CompanyWasteController(ICompanyWasteService companyWasteService,
             IValidator<CreateCompanyWasteRequest> createCompanyWasteValidator,
@@ -31,6 +34,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateCompanyWasteValidator = updateCompanyWasteValidator;
             _logger = loggerFactory.CreateLogger<CompanyWasteController>();
             _httpContextAccessor = httpContextAccessor;
+            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -40,7 +46,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateCompanyWaste {@dateTime} {@companyWasteRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyWasteRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateCompanyWaste {@dateTime} {@companyWasteRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyWasteRequest), _email, _schema);
 
                 var validatedCompanyWaste = _createCompanyWasteValidator.Validate(companyWasteRequest);
 
@@ -69,7 +75,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 var companyWaste = await _companyWasteService.GetCompanyWasteById(id);
                 return Ok(companyWaste);
@@ -88,7 +94,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateCompanyWaste {@dateTime} {@companyWasteRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyWasteRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateCompanyWaste {@dateTime} {@companyWasteRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyWasteRequest), id, _email, _schema);
 
                 var validatedCompanyWaste = _updateCompanyWasteValidator.Validate(companyWasteRequest);
 
@@ -116,7 +122,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
 
                 if (await _companyWasteService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));
