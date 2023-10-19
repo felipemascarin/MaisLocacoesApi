@@ -6,11 +6,11 @@ namespace Service.v1.IServices
 {
     public interface IRentService
     {
-        Task<RentResponse> CreateRent(RentRequest rentRequest);
-        Task<GetRentClientResponse> GetById(int id);
-        Task<IEnumerable<RentResponse>> GetAllByClientId(int clientId);
+        Task<CreateRentResponse> CreateRent(CreateRentRequest rentRequest);
+        Task<GetRentByIdResponse> GetRentById(int id);
+        Task<IEnumerable<GetAllRentsByClientIdResponse>> GetAllRentsByClientId(int clientId);
         Task<IEnumerable<GetRentByPageResponse>> GetRentsByPage(int items, int page, string query, string status);
-        Task<bool> UpdateRent(RentRequest rentRequest, int id);
+        Task<bool> UpdateRent(UpdateRentRequest rentRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
     }

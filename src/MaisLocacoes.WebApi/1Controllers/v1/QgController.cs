@@ -2,7 +2,6 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
-using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class QgController : Controller
     {
         private readonly IQgService _qgService;
-        private readonly IValidator<QgRequest> _qgValidator;
+        private readonly IValidator<CreateQgRequest> _createQgValidator;
+        private readonly IValidator<UpdateQgRequest> _updateQgValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public QgController(IQgService qgService,
-            IValidator<QgRequest> qgValidator,
+            IValidator<CreateQgRequest> createQgValidator,
+            IValidator<UpdateQgRequest> updateQgValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _qgService = qgService;
-            _qgValidator = qgValidator;
+            _createQgValidator = createQgValidator;
+            _updateQgValidator = updateQgValidator;
             _logger = loggerFactory.CreateLogger<QgController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateQg([FromBody] QgRequest qgRequest)
+        public async Task<IActionResult> CreateQg([FromBody] CreateQgRequest qgRequest)
         {
             try
             {
                 _logger.LogInformation("CreateQg {@dateTime} {@qgRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(qgRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedQg = _qgValidator.Validate(qgRequest);
+                var validatedQg = _createQgValidator.Validate(qgRequest);
 
                 if (!validatedQg.IsValid)
                 {
@@ -69,7 +71,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var qg = await _qgService.GetById(id);
+                var qg = await _qgService.GetQgById(id);
                 return Ok(qg);
             }
             catch (HttpRequestException ex)
@@ -88,7 +90,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var os = await _qgService.GetAll();
+                var os = await _qgService.GetAllQgs();
                 return Ok(os);
             }
             catch (HttpRequestException ex)
@@ -102,13 +104,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateQg([FromBody] QgRequest qgRequest, int id)
+        public async Task<IActionResult> UpdateQg([FromBody] UpdateQgRequest qgRequest, int id)
         {
             try
             {
                 _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(qgRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedQg = _qgValidator.Validate(qgRequest);
+                var validatedQg = _updateQgValidator.Validate(qgRequest);
 
                 if (!validatedQg.IsValid)
                 {

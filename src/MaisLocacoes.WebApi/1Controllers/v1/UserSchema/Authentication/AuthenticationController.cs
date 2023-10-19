@@ -16,32 +16,32 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class AuthenticationController : Controller
     {
         private readonly IAuthenticationService _authenticationService;
-        private readonly IValidator<LoginRequest> _loginValidator;
-        private readonly IValidator<TokenRequest> _tokenRequestValidator;
+        private readonly IValidator<LoginRequest> _loginRequestValidator;
+        private readonly IValidator<LogoutRequest> _logoutRequestValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AuthenticationController(IAuthenticationService authenticationService,
-            IValidator<LoginRequest> loginValidator,
-            IValidator<TokenRequest> tokenRequestValidator,
+            IValidator<LoginRequest> loginRequestValidator,
+            IValidator<LogoutRequest> logoutRequestValidator,
             ILoggerFactory loggerFactory,
             IHttpContextAccessor httpContextAccessor)
         {
             _authenticationService = authenticationService;
-            _loginValidator = loginValidator;
-            _tokenRequestValidator = tokenRequestValidator;
+            _loginRequestValidator = loginRequestValidator;
+            _logoutRequestValidator = logoutRequestValidator;
             _logger = loggerFactory.CreateLogger<AuthenticationController>();
             _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
-                _logger.LogInformation("Login {@dateTime} {@loginRequest}", System.DateTime.Now, JsonConvert.SerializeObject(loginRequest));
+                _logger.LogInformation("Login {@dateTime} {@request}", System.DateTime.Now, JsonConvert.SerializeObject(request));
 
-                var validatedLogin = _loginValidator.Validate(loginRequest);
+                var validatedLogin = _loginRequestValidator.Validate(request);
 
                 if (!validatedLogin.IsValid)
                 {
@@ -50,10 +50,11 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(loginValidationErros);
                 }
 
-                //if (!await FireBaseAuthentication.IsFirebaseTokenValid(loginRequest.GoogleToken))
+                //Verificar se o token recebido no request é um token válido no firebase:
+                //if (!await FireBaseAuthentication.IsFirebaseTokenValid(request.GoogleToken))
                     //return Unauthorized();
 
-                return Ok(await _authenticationService.Login(loginRequest));
+                return Ok(await _authenticationService.Login(request));
             }
             catch (HttpRequestException ex)
             {
@@ -63,13 +64,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         }
 
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout([FromBody] TokenRequest tokenRequest)
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
         {
             try
             {
-                _logger.LogInformation("Logout {@dateTime} {@tokenRequest}", System.DateTime.Now, JsonConvert.SerializeObject(tokenRequest));
+                _logger.LogInformation("Logout {@dateTime} {@request}", System.DateTime.Now, JsonConvert.SerializeObject(request));
 
-                var validatedLogout = _tokenRequestValidator.Validate(tokenRequest);
+                var validatedLogout = _logoutRequestValidator.Validate(request);
 
                 if (!validatedLogout.IsValid)
                 {
@@ -78,7 +79,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(logoutValidationErros);
                 }
 
-                if (await _authenticationService.Logout(tokenRequest)) return Ok();
+                if (await _authenticationService.Logout(request)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o usuário para deslogado"));
             }
             catch (HttpRequestException ex)

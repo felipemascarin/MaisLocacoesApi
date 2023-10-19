@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -8,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -17,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class CompanyTuitionController : Controller
     {
         private readonly ICompanyTuitionService _companyTuitionService;
-        private readonly IValidator<CompanyTuitionRequest> _companyTuitionValidator;
+        private readonly IValidator<CreateCompanyTuitionRequest> _createCompanyTuitionValidator;
+        private readonly IValidator<UpdateCompanyTuitionRequest> _updateTuitionValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CompanyTuitionController(ICompanyTuitionService companyTuitionService,
-            IValidator<CompanyTuitionRequest> companyTuitionValidator,
+            IValidator<CreateCompanyTuitionRequest> createCompanyTuitionValidator,
+            IValidator<UpdateCompanyTuitionRequest> updateTuitionValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _companyTuitionService = companyTuitionService;
-            _companyTuitionValidator = companyTuitionValidator;
+            _createCompanyTuitionValidator = createCompanyTuitionValidator;
+            _updateTuitionValidator = updateTuitionValidator;
             _logger = loggerFactory.CreateLogger<CompanyTuitionController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -35,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateCompanyTuition([FromBody] CompanyTuitionRequest companyTuitionRequest)
+        public async Task<IActionResult> CreateCompanyTuition([FromBody] CreateCompanyTuitionRequest companyTuitionRequest)
         {
             try
             {
                 _logger.LogInformation("CreateCompanyTuition {@dateTime} {@companyTuitionRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyTuitionRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyTuition = _companyTuitionValidator.Validate(companyTuitionRequest);
+                var validatedCompanyTuition = _createCompanyTuitionValidator.Validate(companyTuitionRequest);
 
                 if (!validatedCompanyTuition.IsValid)
                 {
@@ -70,7 +71,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var companyTuition = await _companyTuitionService.GetById(id);
+                var companyTuition = await _companyTuitionService.GetCompanyTuitionById(id);
                 return Ok(companyTuition);
             }
             catch (HttpRequestException ex)
@@ -83,13 +84,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompanyTuition([FromBody] CompanyTuitionRequest companyTuitionRequest, int id)
+        public async Task<IActionResult> UpdateCompanyTuition([FromBody] UpdateCompanyTuitionRequest companyTuitionRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateCompanyTuition {@dateTime} {@companyTuitionRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyTuitionRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyTuition = _companyTuitionValidator.Validate(companyTuitionRequest);
+                var validatedCompanyTuition = _updateTuitionValidator.Validate(companyTuitionRequest);
 
                 if (!validatedCompanyTuition.IsValid)
                 {

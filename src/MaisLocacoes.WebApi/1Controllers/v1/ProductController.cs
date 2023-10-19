@@ -16,17 +16,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
-        private readonly IValidator<ProductRequest> _productValidator;
+        private readonly IValidator<CreateProductRequest> _createProductValidator;
+        private readonly IValidator<UpdateProductRequest> _updateProductValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductController(IProductService productService,
-        IValidator<ProductRequest> productValidator,
+        IValidator<CreateProductRequest> createProductValidator,
+        IValidator<UpdateProductRequest> updateProductValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _productService = productService;
-            _productValidator = productValidator;
+            _createProductValidator = createProductValidator;
+            _updateProductValidator = updateProductValidator;
             _logger = loggerFactory.CreateLogger<ProductController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +37,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductRequest productRequest)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest productRequest)
         {
             try
             {
                 _logger.LogInformation("CreateProduct {@dateTime} {@productRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProduct = _productValidator.Validate(productRequest);
+                var validatedProduct = _createProductValidator.Validate(productRequest);
 
                 if (!validatedProduct.IsValid)
                 {
@@ -69,7 +72,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var product = await _productService.GetById(id);
+                var product = await _productService.GetProductById(id);
                 return Ok(product);
             }
             catch (HttpRequestException ex)
@@ -88,7 +91,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email}", System.DateTime.Now, typeId, code, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var product = await _productService.GetByTypeCode(typeId, code);
+                var product = await _productService.GetProductByTypeCode(typeId, code);
                 return Ok(product);
             }
             catch (HttpRequestException ex)
@@ -139,13 +142,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest, int id)
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequest productRequest, int id)
         {
             try
             {
                 _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProduct = _productValidator.Validate(productRequest);
+                var validatedProduct = _updateProductValidator.Validate(productRequest);
 
                 if (!validatedProduct.IsValid)
                 {

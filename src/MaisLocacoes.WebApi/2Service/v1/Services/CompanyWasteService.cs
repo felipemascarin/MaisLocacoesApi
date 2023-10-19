@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -25,7 +25,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<CompanyWasteResponse> CreateCompanyWaste(CompanyWasteRequest companyWasteRequest)
+        public async Task<CreateCompanyWasteResponse> CreateCompanyWaste(CreateCompanyWasteRequest companyWasteRequest)
         {
             var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
 
@@ -33,22 +33,22 @@ namespace Service.v1.Services
 
             companyWasteEntity = await _companyWasteRepository.CreateCompanyWaste(companyWasteEntity);
 
-            var companyWasteResponse = _mapper.Map<CompanyWasteResponse>(companyWasteEntity);
+            var companyWasteResponse = _mapper.Map<CreateCompanyWasteResponse>(companyWasteEntity);
 
             return companyWasteResponse;
         }
 
-        public async Task<CompanyWasteResponse> GetById(int id)
+        public async Task<GetCompanyWasteByIdResponse> GetCompanyWasteById(int id)
         {
             var companyWasteEntity = await _companyWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            var companyWasteResponse = _mapper.Map<CompanyWasteResponse>(companyWasteEntity);
+            var companyWasteResponse = _mapper.Map<GetCompanyWasteByIdResponse>(companyWasteEntity);
 
             return companyWasteResponse;
         }
 
-        public async Task<bool> UpdateCompanyWaste(CompanyWasteRequest companyWasteRequest, int id)
+        public async Task<bool> UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id)
         {
             var companyWasteForUpdate = await _companyWasteRepository.GetById(id) ??
                throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);

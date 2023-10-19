@@ -8,8 +8,8 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetOsByStatusResponse;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductTuitionProductIdResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllOsByStatusResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllProductTuitionByProductIdResponse;
 
 namespace Configuration
 {
@@ -19,68 +19,97 @@ namespace Configuration
         {
             var mappingConfig = new MapperConfiguration(config =>
             {
-                config.CreateMap<CompanyAddressRequest, CompanyAddressEntity>();
-                config.CreateMap<CompanyAddressEntity, CompanyAddressResponse>();
+                config.CreateMap<CreateCompanyAddressRequest, CompanyAddressEntity>();
+                config.CreateMap<CompanyAddressEntity, CreateCompanyAddressResponse>();
 
-                config.CreateMap<AddressRequest, AddressEntity>();
-                config.CreateMap<AddressEntity, AddressResponse>();
+                config.CreateMap<CreateAddressRequest, AddressEntity>();
+                config.CreateMap<AddressEntity, CreateAddressResponse>();
+                config.CreateMap<AddressEntity, GetAddressByIdResponse>();
 
-                config.CreateMap<CompanyRequest, CompanyEntity>();
-                config.CreateMap<CompanyEntity, CompanyResponse>()
+                config.CreateMap<CreateCompanyRequest, CompanyEntity>();
+                config.CreateMap<CompanyEntity, GetCompanyByCnpjResponse>();
+                config.CreateMap<CompanyEntity, CreateCompanyResponse>()
                 .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
 
-                config.CreateMap<UserRequest, UserEntity>();
-                config.CreateMap<UserEntity, UserResponse>();
+                config.CreateMap<CreateUserRequest, UserEntity>();
+                config.CreateMap<UserEntity, GetUserByEmailResponse>();
+                config.CreateMap<UserEntity, GetUserByCpfResponse>();
+                config.CreateMap<UserEntity, GetAllUsersByCnpjResponse>();
+                config.CreateMap<UserEntity, CreateUserResponse>();
 
-                config.CreateMap<ClientRequest, ClientEntity>();
-                config.CreateMap<ClientEntity, ClientResponse>()
+                config.CreateMap<CreateClientRequest, ClientEntity>();
+                config.CreateMap<ClientEntity, GetClientByIdResponse>();
+                config.CreateMap<ClientEntity, GetClientByIdDetailsResponse>();
+                config.CreateMap<ClientEntity, GetClientByCpfResponse>();
+                config.CreateMap<ClientEntity, GetClientByCnpjResponse>();
+                config.CreateMap<ClientEntity, GetClientsByPageResponse>();
+                config.CreateMap<ClientEntity, CreateClientResponse>()
                 .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
 
-                config.CreateMap<BillRequest, BillEntity>();
-                config.CreateMap<BillEntity, BillResponse>();
-                config.CreateMap<BillEntity, GetBillProductTypeForRentResponse>();
+                config.CreateMap<CreateBillRequest, BillEntity>();
+                config.CreateMap<BillEntity, CreateBillResponse>();
+                config.CreateMap<BillEntity, GetBillByRentIdResponse>();
                 config.CreateMap<BillEntity, GetBillForTaxInvoiceResponse>();
+                config.CreateMap<BillEntity, GetBillByIdResponse>();
 
-                config.CreateMap<CompanyTuitionRequest, CompanyTuitionEntity>();
-                config.CreateMap<CompanyTuitionEntity, CompanyTuitionResponse>();
+                config.CreateMap<CreateCompanyTuitionRequest, CompanyTuitionEntity>();
+                config.CreateMap<CompanyTuitionEntity, GetCompanyTuitionByIdResponse>();
+                config.CreateMap<CompanyTuitionEntity, CreateCompanyTuitionResponse>();
 
-                config.CreateMap<CompanyWasteRequest, CompanyWasteEntity>();
-                config.CreateMap<CompanyWasteEntity, CompanyWasteResponse>();
+                config.CreateMap<CreateCompanyWasteRequest, CompanyWasteEntity>();
+                config.CreateMap<CompanyWasteEntity, GetCompanyWasteByIdResponse>();
+                config.CreateMap<CompanyWasteEntity, CreateCompanyWasteResponse>();
 
-                config.CreateMap<OsRequest, OsEntity>();
-                config.CreateMap<OsEntity, OsResponse>();
-                config.CreateMap<OsEntity, GetOsByStatusResponse>();
+                config.CreateMap<CreateOsRequest, OsEntity>();
+                config.CreateMap<OsEntity, GetOsByIdResponse>();
+                config.CreateMap<OsEntity, CreateOsResponse>();
+                config.CreateMap<OsEntity, GetAllOsByStatusResponse>();
                 config.CreateMap<OsEntity, GetOsByStatusRelationTuition>();
-                config.CreateMap<GetOsByStatusRelationTuition, GetOsByStatusResponse>();
+                config.CreateMap<GetOsByStatusRelationTuition, GetAllOsByStatusResponse>();
 
-                config.CreateMap<ProductRequest, ProductEntity>();
-                config.CreateMap<ProductEntity, ProductResponse>();
+                config.CreateMap<CreateProductRequest, ProductEntity>();
+                config.CreateMap<ProductEntity, GetProductByIdResponse>();
+                config.CreateMap<ProductEntity, GetProductByTypeCodeResponse>();
+                config.CreateMap<ProductEntity, GetProductsByPageResponse>();
+                config.CreateMap<ProductEntity, CreateProductResponse>();
 
-                config.CreateMap<ProductTuitionRequest, ProductTuitionEntity>();
-                config.CreateMap<ProductTuitionEntity, ProductTuitionResponse>();
+                config.CreateMap<CreateProductTuitionRequest, ProductTuitionEntity>();
+                config.CreateMap<ProductTuitionEntity, CreateProductTuitionResponse>();
                 config.CreateMap<ProductTuitionEntity, ResumedRentDto>();
-                config.CreateMap<ProductTuitionEntity, GetProductTuitionRentProductTypeClientReponse>();
-                config.CreateMap<ProductTuitionEntity, GetProductTuitionRentResponse>()
+                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionByRentIdReponse>();
+                config.CreateMap<ProductTuitionEntity, GetProductTuitionByIdResponse>()
                .ForMember(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity))
                .ForPath(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent.Address, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity.AddressEntity));
 
-                config.CreateMap<ProductTuitionValueRequest, ProductTuitionValueEntity>();
-                config.CreateMap<ProductTuitionValueEntity, ProductTuitionValueResponse>();
+                config.CreateMap<CreateProductTuitionValueRequest, ProductTuitionValueEntity>();
+                config.CreateMap<ProductTuitionValueEntity, GetAllProductTuitionToRemoveReponse>();
+                config.CreateMap<ProductTuitionValueEntity, CreateProductTuitionValueResponse>();
+                config.CreateMap<ProductTuitionValueEntity, GetProductTuitionValueByIdResponse>();
+                config.CreateMap<ProductTuitionValueEntity, GetAllProductTuitionValueByProductTypeIdResponse>();
 
-                config.CreateMap<ProductTypeRequest, ProductTypeEntity>();
-                config.CreateMap<ProductTypeEntity, ProductTypeResponse>();
+                config.CreateMap<CreateProductTypeRequest, ProductTypeEntity>();
+                config.CreateMap<ProductTypeEntity, CreateProductTypeResponse>();
+                config.CreateMap<ProductTypeEntity, GetProductTypeByIdResponse>();
+                config.CreateMap<ProductTypeEntity, GetAllProductTypesResponse>();
 
-                config.CreateMap<ProductWasteRequest, ProductWasteEntity>();
-                config.CreateMap<ProductWasteEntity, ProductWasteResponse>();
+                config.CreateMap<CreateProductWasteRequest, ProductWasteEntity>();
+                config.CreateMap<ProductWasteEntity, CreateProductWasteResponse>();
+                config.CreateMap<ProductWasteEntity, GetProductWasteByIdResponse>();
+                config.CreateMap<ProductWasteEntity, GetProductWastesByPageResponse>();
 
-                config.CreateMap<QgRequest, QgEntity>();
-                config.CreateMap<QgEntity, QgResponse>();
+                config.CreateMap<CreateQgRequest, QgEntity>();
+                config.CreateMap<QgEntity, CreateQgResponse>();
+                config.CreateMap<QgEntity, GetQgByIdResponse>();
+                config.CreateMap<QgEntity, GetAllQgsResponse>();
 
-                config.CreateMap<RentedPlaceRequest, RentedPlaceEntity>();
-                config.CreateMap<RentedPlaceEntity, RentedPlaceResponse>();
+                config.CreateMap<CreateRentedPlaceRequest, RentedPlaceEntity>();
+                config.CreateMap<RentedPlaceEntity, GetRentedPlaceByIdResponse>();
+                config.CreateMap<RentedPlaceEntity, CreateRentedPlaceResponse>();
 
-                config.CreateMap<RentRequest, RentEntity>();
-                config.CreateMap<RentEntity, RentResponse>()
+                config.CreateMap<CreateRentRequest, RentEntity>();
+                config.CreateMap<RentEntity, GetRentByIdResponse>();
+                config.CreateMap<RentEntity, GetAllRentsByClientIdResponse>();
+                config.CreateMap<RentEntity, CreateRentResponse>()
                 .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity));
                 config.CreateMap<RentEntity, GetRentClientResponse>()
                 .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity))
@@ -91,8 +120,10 @@ namespace Configuration
                 .ForMember(RentResponse => RentResponse.Client, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity))
                 .ForPath(RentResponse => RentResponse.Client.Address, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity.AddressEntity));
 
-                config.CreateMap<SupplierRequest, SupplierEntity>();
-                config.CreateMap<SupplierEntity, SupplierResponse>()
+                config.CreateMap<CreateSupplierRequest, SupplierEntity>();
+                config.CreateMap<SupplierEntity, GetSupplierByIdResponse>();
+                config.CreateMap<SupplierEntity, GetAllSuppliersResponse>();
+                config.CreateMap<SupplierEntity, CreateSupplierResponse>()
                 .ForMember(SupplierResponse => SupplierResponse.Address, opt => opt.MapFrom(SupplierEntity => SupplierEntity.AddressEntity));
             });
             return mappingConfig;

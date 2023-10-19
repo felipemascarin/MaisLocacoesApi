@@ -17,17 +17,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class RentController : Controller
     {
         private readonly IRentService _rentService;
-        private readonly IValidator<RentRequest> _rentValidator;
+        private readonly IValidator<CreateRentRequest> _createRentValidator;
+        private readonly IValidator<UpdateRentRequest> _updateRentValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RentController(IRentService rentService,
-            IValidator<RentRequest> rentValidator,
+            IValidator<CreateRentRequest> createRentValidator,
+            IValidator<UpdateRentRequest> updateRentValidator,
             ILoggerFactory loggerFactory,
             IHttpContextAccessor httpContextAccessor)
         {
             _rentService = rentService;
-            _rentValidator = rentValidator;
+            _createRentValidator = createRentValidator;
+            _updateRentValidator = updateRentValidator;
             _logger = loggerFactory.CreateLogger<RentController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -35,13 +38,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateRent([FromBody] RentRequest rentRequest)
+        public async Task<IActionResult> CreateRent([FromBody] CreateRentRequest rentRequest)
         {
             try
             {
                 _logger.LogInformation("CreateRent {@dateTime} {@rentRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedRent = _rentValidator.Validate(rentRequest);
+                var validatedRent = _createRentValidator.Validate(rentRequest);
 
                 if (!validatedRent.IsValid)
                 {
@@ -70,7 +73,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var rent = await _rentService.GetById(id);
+                var rent = await _rentService.GetRentById(id);
                 return Ok(rent);
             }
             catch (HttpRequestException ex)
@@ -89,7 +92,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllByClientId {@dateTime} clientId:{@clientId} User:{@email}", System.DateTime.Now, clientId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var rents = await _rentService.GetAllByClientId(clientId);
+                var rents = await _rentService.GetAllRentsByClientId(clientId);
                 return Ok(rents);
             }
             catch (HttpRequestException ex)
@@ -121,13 +124,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRent([FromBody] RentRequest rentRequest, int id)
+        public async Task<IActionResult> UpdateRent([FromBody] UpdateRentRequest rentRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateRent {@dateTime} {@rentRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedRent = _rentValidator.Validate(rentRequest);
+                var validatedRent = _updateRentValidator.Validate(rentRequest);
 
                 if (!validatedRent.IsValid)
                 {

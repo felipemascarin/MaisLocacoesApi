@@ -18,31 +18,34 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class ProductTuitionController : Controller
     {
         private readonly IProductTuitionService _productTuitionService;
-        private readonly IValidator<ProductTuitionRequest> _productTuitionValidator;
+        private readonly IValidator<CreateProductTuitionRequest> _createProductTuitionValidator;
+        private readonly IValidator<UpdateProductTuitionRequest> _updateProductTuitionValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductTuitionController(IProductTuitionService productTuitionService,
-        IValidator<ProductTuitionRequest> productTuitionValidator,
+        IValidator<CreateProductTuitionRequest> createProductTuitionValidator,
+        IValidator<UpdateProductTuitionRequest> updateProductTuitionValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _productTuitionService = productTuitionService;
-            _productTuitionValidator = productTuitionValidator;
-            _logger = loggerFactory.CreateLogger<ProductTuitionRequest>();
+            _createProductTuitionValidator = createProductTuitionValidator;
+            _updateProductTuitionValidator = updateProductTuitionValidator;
+            _logger = loggerFactory.CreateLogger<CreateProductTuitionRequest>();
             _httpContextAccessor = httpContextAccessor;
         }
 
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateProductTuition([FromBody] ProductTuitionRequest productTuitionRequest)
+        public async Task<IActionResult> CreateProductTuition([FromBody] CreateProductTuitionRequest productTuitionRequest)
         {
             try
             {
                 _logger.LogInformation("CreateProductTuition {@dateTime} {@productTuitionRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductTuition = _productTuitionValidator.Validate(productTuitionRequest);
+                var validatedProductTuition = _createProductTuitionValidator.Validate(productTuitionRequest);
 
                 if (!validatedProductTuition.IsValid)
                 {
@@ -109,7 +112,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("RenewProduct {@dateTime} request:{@request} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(renewRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                if (await _productTuitionService.RenewProduct(id, renewRequest)) return Ok();
+                if (await _productTuitionService.RenewProductTuition(id, renewRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
             }
             catch (HttpRequestException ex)
@@ -128,7 +131,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var _productTuition = await _productTuitionService.GetById(id);
+                var _productTuition = await _productTuitionService.GetProductTuitionById(id);
                 return Ok(_productTuition);
             }
             catch (HttpRequestException ex)
@@ -147,7 +150,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllByRentId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, rentId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productTuition = await _productTuitionService.GetAllByRentId(rentId);
+                var productTuition = await _productTuitionService.GetAllProductTuitionByRentId(rentId);
                 return Ok(productTuition);
             }
             catch (HttpRequestException ex)
@@ -166,7 +169,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email}", System.DateTime.Now, productId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productTuitions = await _productTuitionService.GetAllByProductId(productId);
+                var productTuitions = await _productTuitionService.GetAllProductTuitionByProductId(productId);
                 return Ok(productTuitions);
             }
             catch (HttpRequestException ex)
@@ -185,7 +188,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllToRemove {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productTuitions = await _productTuitionService.GetAllToRemove();
+                var productTuitions = await _productTuitionService.GetAllProductTuitionToRemove();
                 return Ok(productTuitions);
             }
             catch (HttpRequestException ex)
@@ -198,13 +201,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProductTuition([FromBody] ProductTuitionRequest productTuitionRequest, int id)
+        public async Task<IActionResult> UpdateProductTuition([FromBody] UpdateProductTuitionRequest productTuitionRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateproductTuition {@dateTime} {@productTuitionRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductTuition = _productTuitionValidator.Validate(productTuitionRequest);
+                var validatedProductTuition = _updateProductTuitionValidator.Validate(productTuitionRequest);
 
                 if (!validatedProductTuition.IsValid)
                 {

@@ -16,17 +16,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class SupplierController : Controller
     {
         private readonly ISupplierService _supplierService;
-        private readonly IValidator<SupplierRequest> _supplierValidator;
+        private readonly IValidator<CreateSupplierRequest> _createSupplierValidator;
+        private readonly IValidator<UpdateSupplierRequest> _updateSupplierValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public SupplierController(ISupplierService supplierService,
-            IValidator<SupplierRequest> supplierValidator,
+            IValidator<CreateSupplierRequest> createSupplierValidator,
+            IValidator<UpdateSupplierRequest> updateSupplierValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _supplierService = supplierService;
-            _supplierValidator = supplierValidator;
+            _createSupplierValidator = createSupplierValidator;
+            _updateSupplierValidator = updateSupplierValidator;
             _logger = loggerFactory.CreateLogger<SupplierController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +37,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateSupplier([FromBody] SupplierRequest supplierRequest)
+        public async Task<IActionResult> CreateSupplier([FromBody] CreateSupplierRequest supplierRequest)
         {
             try
             {
                 _logger.LogInformation("CreateSupplier {@dateTime} {@supplierRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(supplierRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedSupplier = _supplierValidator.Validate(supplierRequest);
+                var validatedSupplier = _createSupplierValidator.Validate(supplierRequest);
 
                 if (!validatedSupplier.IsValid)
                 {
@@ -69,7 +72,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var supplier = await _supplierService.GetById(id);
+                var supplier = await _supplierService.GetSupplierById(id);
                 return Ok(supplier);
             }
             catch (HttpRequestException ex)
@@ -88,7 +91,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var suppliers = await _supplierService.GetAll();
+                var suppliers = await _supplierService.GetAllSuppliers();
                 return Ok(suppliers);
             }
             catch (HttpRequestException ex)
@@ -101,13 +104,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateSupplier([FromBody] SupplierRequest supplierRequest, int id)
+        public async Task<IActionResult> UpdateSupplier([FromBody] UpdateSupplierRequest supplierRequest, int id)
         {
             try
             {
                 _logger.LogInformation("Updatesupplier {@dateTime} {@supplierRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(supplierRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedSupplier = _supplierValidator.Validate(supplierRequest);
+                var validatedSupplier = _updateSupplierValidator.Validate(supplierRequest);
 
                 if (!validatedSupplier.IsValid)
                 {

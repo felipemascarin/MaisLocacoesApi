@@ -15,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class ProductTypeController : Controller
     {
         private readonly IProductTypeService _productTypeService;
-        private readonly IValidator<ProductTypeRequest> _productTypeValidator;
+        private readonly IValidator<CreateProductTypeRequest> _createProductTypeValidator;
+        private readonly IValidator<UpdateProductTypeRequest> _updateProductTypeValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductTypeController(IProductTypeService productTypeService,
-            IValidator<ProductTypeRequest> productTypeValidator,
+            IValidator<CreateProductTypeRequest> createProductTypeValidator,
+            IValidator<UpdateProductTypeRequest> updateProductTypeValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _productTypeService = productTypeService;
-            _productTypeValidator = productTypeValidator;
+            _createProductTypeValidator = createProductTypeValidator;
+            _updateProductTypeValidator = updateProductTypeValidator;
             _logger = loggerFactory.CreateLogger<ProductTypeController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -33,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateProductType([FromBody] ProductTypeRequest productTypeRequest)
+        public async Task<IActionResult> CreateProductType([FromBody] CreateProductTypeRequest productTypeRequest)
         {
             try
             {
                 _logger.LogInformation("CreateProductType {@dateTime} {@productTypeRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTypeRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductType = _productTypeValidator.Validate(productTypeRequest);
+                var validatedProductType = _createProductTypeValidator.Validate(productTypeRequest);
 
                 if (!validatedProductType.IsValid)
                 {
@@ -67,7 +70,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productType = await _productTypeService.GetById(id);
+                var productType = await _productTypeService.GetProductTypeById(id);
                 return Ok(productType);
             }
             catch (HttpRequestException ex)
@@ -86,7 +89,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAll {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productTypes = await _productTypeService.GetAll();
+                var productTypes = await _productTypeService.GetAllProductTypes();
                 return Ok(productTypes);
             }
             catch (HttpRequestException ex)
@@ -99,13 +102,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProductType([FromBody] ProductTypeRequest productTypeRequest, int id)
+        public async Task<IActionResult> UpdateProductType([FromBody] UpdateProductTypeRequest productTypeRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateProductType {@dateTime} {@productTypeRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTypeRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductType = _productTypeValidator.Validate(productTypeRequest);
+                var validatedProductType = _updateProductTypeValidator.Validate(productTypeRequest);
 
                 if (!validatedProductType.IsValid)
                 {

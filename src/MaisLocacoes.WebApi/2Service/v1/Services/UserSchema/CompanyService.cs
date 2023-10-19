@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -28,7 +30,7 @@ namespace Service.v1.Services.UserSchema
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CompanyResponse> CreateCompany(CompanyRequest companyRequest)
+        public async Task<CreateCompanyResponse> CreateCompany(CreateCompanyRequest companyRequest)
         {
             var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
 
@@ -48,22 +50,22 @@ namespace Service.v1.Services.UserSchema
 
             companyEntity = await _companyRepository.CreateCompany(companyEntity);
 
-            var companyResponse = _mapper.Map<CompanyResponse>(companyEntity);
+            var companyResponse = _mapper.Map<CreateCompanyResponse>(companyEntity);
 
             return companyResponse;
         }
 
-        public async Task<CompanyResponse> GetByCnpj(string cnpj)
+        public async Task<GetCompanyByCnpjResponse> GetCompanyByCnpj(string cnpj)
         {
             var companyEntity = await _companyRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
-            var companyResponse = _mapper.Map<CompanyResponse>(companyEntity);
+            var companyResponse = _mapper.Map<GetCompanyByCnpjResponse>(companyEntity);
 
             return companyResponse;
         }
 
-        public async Task<bool> UpdateCompany(CompanyRequest companyRequest, string cnpj)
+        public async Task<bool> UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj)
         {
             var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);

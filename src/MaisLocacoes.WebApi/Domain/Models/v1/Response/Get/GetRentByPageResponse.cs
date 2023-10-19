@@ -3,8 +3,8 @@
     public class GetRentByPageResponse
     {
         public int Id { get; set; }
-        public ClientResponse Client { get; set; }
-        public AddressResponse Address { get; set; }
+        public CreateClientResponse Client { get; set; }
+        public CreateAddressResponse Address { get; set; }
         public List<string> ProductCodes { get; set; } = new List<string>() { };
         public string Status { get; set; }
         public decimal? Carriage { get; set; }

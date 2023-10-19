@@ -20,7 +20,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             _companyRepository = companyRepository;
         }
 
-        public async Task<CreateTokenResponse> Login(LoginRequest loginRequest)
+        public async Task<LoginResponse> Login(LoginRequest loginRequest)
         {
             //Log entrou no método
             var email = JwtManager.ExtractEmailByToken(loginRequest.GoogleToken);
@@ -58,7 +58,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
         }
 
         //Adicionar validações para entrar no end, se n estiver logado nem faz logout
-        public async Task<bool> Logout(TokenRequest tokenRequest)
+        public async Task<bool> Logout(LogoutRequest tokenRequest)
         {
             //Log entrou no método
             var email = JwtManager.ExtractEmailByToken(tokenRequest.Token);

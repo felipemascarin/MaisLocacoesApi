@@ -1,10 +1,9 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
-using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
@@ -16,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
     public class UserController : Controller
     {
         private readonly IUserService _userService;
-        private readonly IValidator<UserRequest> _userValidator;
+        private readonly IValidator<CreateUserRequest> _createUserValidator;
+        private readonly IValidator<UpdateUserRequest> _updateUserValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public UserController(IUserService userService,
-            IValidator<UserRequest> userValidator,
+            IValidator<CreateUserRequest> createUserValidator,
+            IValidator<UpdateUserRequest> updateUserValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _userService = userService;
-            _userValidator = userValidator;
+            _createUserValidator = createUserValidator;
+            _updateUserValidator = updateUserValidator;
             _logger = loggerFactory.CreateLogger<UserController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         //[Authorize]
         //[TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] UserRequest userRequest)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest userRequest)
         {
             try
             {
                 _logger.LogInformation("CreateUser {@dateTime} {@userRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(userRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedUser = _userValidator.Validate(userRequest);
+                var validatedUser = _createUserValidator.Validate(userRequest);
 
                 if (!validatedUser.IsValid)
                 {
@@ -69,7 +71,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, email, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var user = await _userService.GetByEmail(email, cnpj);
+                var user = await _userService.GetUserByEmail(email, cnpj);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
                 return Ok(user);
             }
@@ -89,7 +91,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cpf, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var user = await _userService.GetByCpf(cpf, cnpj);
+                var user = await _userService.GetUserByCpf(cpf, cnpj);
                 return Ok(user);
             }
             catch (HttpRequestException ex)
@@ -108,7 +110,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var os = await _userService.GetAllByCnpj(cnpj);
+                var os = await _userService.GetAllUsersByCnpj(cnpj);
                 return Ok(os);
             }
             catch (HttpRequestException ex)
@@ -121,13 +123,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         //[Authorize]
         //[TokenValidationDataBase]
         [HttpPut("email/{email}/cnpj/{cnpj}")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserRequest userRequest, string email, string cnpj)
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest userRequest, string email, string cnpj)
         {
             try
             {
                 _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(userRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedUser = _userValidator.Validate(userRequest);
+                var validatedUser = _updateUserValidator.Validate(userRequest);
 
                 if (!validatedUser.IsValid)
                 {

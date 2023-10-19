@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -25,7 +25,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<CompanyTuitionResponse> CreateCompanyTuition(CompanyTuitionRequest companyTuitionRequest)
+        public async Task<CreateCompanyTuitionResponse> CreateCompanyTuition(CreateCompanyTuitionRequest companyTuitionRequest)
         {
             var companyTuitionEntity = _mapper.Map<CompanyTuitionEntity>(companyTuitionRequest);
 
@@ -33,22 +33,22 @@ namespace Service.v1.Services
 
             companyTuitionEntity = await _companyTuitionRepository.CreateCompanyTuition(companyTuitionEntity);
 
-            var companyTuitionResponse = _mapper.Map<CompanyTuitionResponse>(companyTuitionEntity);
+            var companyTuitionResponse = _mapper.Map<CreateCompanyTuitionResponse>(companyTuitionEntity);
 
             return companyTuitionResponse;
         }
 
-        public async Task<CompanyTuitionResponse> GetById(int id)
+        public async Task<GetCompanyTuitionByIdResponse> GetCompanyTuitionById(int id)
         {
             var companyTuitionEntity = await _companyTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
-            var companyTuitionResponse = _mapper.Map<CompanyTuitionResponse>(companyTuitionEntity);
+            var companyTuitionResponse = _mapper.Map<GetCompanyTuitionByIdResponse>(companyTuitionEntity);
 
             return companyTuitionResponse;
         }
 
-        public async Task<bool> UpdateCompanyTuition(CompanyTuitionRequest companyTuitionRequest, int id)
+        public async Task<bool> UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id)
         {
             var companyTuitionForUpdate = await _companyTuitionRepository.GetById(id) ??
                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);

@@ -6,13 +6,13 @@ namespace Service.v1.IServices
 {
     public interface IBillService
     {
-        Task<BillResponse> CreateBill(BillRequest billRequest);
-        Task<BillResponse> GetById(int id);
-        Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId);
-        Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId);
+        Task<CreateBillResponse> CreateBill(CreateBillRequest billRequest);
+        Task<GetBillByIdResponse> GetBillById(int id);
+        Task<GetBillForTaxInvoiceResponse> GetBillForTaxInvoice(int billId);
+        Task<IEnumerable<GetBillByRentIdResponse>> GetBillByRentId(int rentId);
         Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills();
-        Task<IEnumerable<GetDebtsBillsResponse>> GetAllDebts();
-        Task<bool> UpdateBill(BillRequest billRequest, int id);
+        Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts();
+        Task<bool> UpdateBill(UpdateBillRequest billRequest, int id);
         Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id);
         Task<bool> DeleteById(int id);
     }

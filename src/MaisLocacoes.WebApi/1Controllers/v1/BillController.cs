@@ -5,11 +5,9 @@ using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
-using Service.v1.Services;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -18,17 +16,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class BillController : Controller
     {
         private readonly IBillService _billService;
-        private readonly IValidator<BillRequest> _billValidator;
+        private readonly IValidator<CreateBillRequest> _createBillValidator;
+        private readonly IValidator<UpdateBillRequest> _updateBillValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BillController(IBillService billService,
-            IValidator<BillRequest> billValidator,
+            IValidator<CreateBillRequest> createBillValidator,
+            IValidator<UpdateBillRequest> updateBillValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _billService = billService;
-            _billValidator = billValidator;
+            _createBillValidator = createBillValidator;
+            _updateBillValidator = updateBillValidator;
             _logger = loggerFactory.CreateLogger<BillController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -36,13 +37,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateBill([FromBody] BillRequest billRequest)
+        public async Task<IActionResult> CreateBill([FromBody] CreateBillRequest billRequest)
         {
             try
             {
                 _logger.LogInformation("CreateBill {@dateTime} {@billRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(billRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedBill = _billValidator.Validate(billRequest);
+                var validatedBill = _createBillValidator.Validate(billRequest);
 
                 if (!validatedBill.IsValid)
                 {
@@ -71,7 +72,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var bill = await _billService.GetById(id);
+                var bill = await _billService.GetBillById(id);
                 return Ok(bill);
             }
             catch (HttpRequestException ex)
@@ -90,7 +91,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllDebts {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var bill = await _billService.GetAllDebts();
+                var bill = await _billService.GetAllBillsDebts();
                 return Ok(bill);
             }
             catch (HttpRequestException ex)
@@ -109,7 +110,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetForTaxInvoice {@dateTime} billId:{@billId} User:{@email}", System.DateTime.Now, billId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var billsList = await _billService.GetForTaxInvoice(billId);
+                var billsList = await _billService.GetBillForTaxInvoice(billId);
                 return Ok(billsList);
             }
             catch (HttpRequestException ex)
@@ -128,7 +129,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetByRentTuitionId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, rentId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var billsList = await _billService.GetByRentId(rentId);
+                var billsList = await _billService.GetBillByRentId(rentId);
                 return Ok(billsList);
             }
             catch (HttpRequestException ex)
@@ -160,13 +161,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBill([FromBody] BillRequest billRequest, int id)
+        public async Task<IActionResult> UpdateBill([FromBody] UpdateBillRequest billRequest, int id)
         {
             try
             {
                 _logger.LogInformation("Updatebill {@dateTime} {@billRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(billRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedbill = _billValidator.Validate(billRequest);
+                var validatedbill = _updateBillValidator.Validate(billRequest);
 
                 if (!validatedbill.IsValid)
                 {

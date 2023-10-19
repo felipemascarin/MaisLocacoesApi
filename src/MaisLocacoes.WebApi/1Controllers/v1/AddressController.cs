@@ -15,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class AddressController : Controller
     {
         private readonly IAddressService _addressService;
-        private readonly IValidator<AddressRequest> _addressValidator;
+        private readonly IValidator<CreateAddressRequest> _createAddressValidator;
+        private readonly IValidator<UpdateAddressRequest> _updateAddressValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public AddressController(IAddressService addressService,
-            IValidator<AddressRequest> addressValidator,
+            IValidator<CreateAddressRequest> createAddressValidator,
+            IValidator<UpdateAddressRequest> updateAddressValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _addressService = addressService;
-            _addressValidator = addressValidator;
+            _createAddressValidator = createAddressValidator;
+            _updateAddressValidator = updateAddressValidator;
             _logger = loggerFactory.CreateLogger<AddressController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -33,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateAddress([FromBody] AddressRequest address)
+        public async Task<IActionResult> CreateAddress([FromBody] CreateAddressRequest address)
         {
             try
             {
                 _logger.LogInformation("CreateAddress {@dateTime} {@address} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(address), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedAddress = _addressValidator.Validate(address);
+                var validatedAddress = _createAddressValidator.Validate(address);
 
                 if (!validatedAddress.IsValid)
                 {
@@ -67,7 +70,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var address = await _addressService.GetById(id);
+                var address = await _addressService.GetAddressById(id);
                 return Ok(address);
             }
             catch (HttpRequestException ex)
@@ -80,13 +83,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAddress([FromBody] AddressRequest addressRequest, int id)
+        public async Task<IActionResult> UpdateAddress([FromBody] UpdateAddressRequest addressRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateAddress {@dateTime} {@addressRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(addressRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedAddress = _addressValidator.Validate(addressRequest);
+                var validatedAddress = _updateAddressValidator.Validate(addressRequest);
 
                 if (!validatedAddress.IsValid)
                 {

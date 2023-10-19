@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity.UserSchema;
@@ -27,7 +29,7 @@ namespace Service.v1.Services.UserSchema
             _companyRepository = companyRepository;
         }
 
-        public async Task<UserResponse> CreateUser(UserRequest userRequest)
+        public async Task<CreateUserResponse> CreateUser(CreateUserRequest userRequest)
         {
             var existsUser = await _userRepository.UserExists(userRequest.Email, userRequest.Cpf, userRequest.Cnpj);
             if (existsUser)
@@ -43,38 +45,38 @@ namespace Service.v1.Services.UserSchema
 
             userEntity = await _userRepository.CreateUser(userEntity);
 
-            return _mapper.Map<UserResponse>(userEntity);
+            return _mapper.Map<CreateUserResponse>(userEntity);
         }
 
-        public async Task<UserResponse> GetByEmail(string email, string cnpj)
+        public async Task<GetUserByEmailResponse> GetUserByEmail(string email, string cnpj)
         {
             var userEntity = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-            var userResponse = _mapper.Map<UserResponse>(userEntity);
+            var userResponse = _mapper.Map<GetUserByEmailResponse>(userEntity);
 
             return userResponse;
         }
 
-        public async Task<UserResponse> GetByCpf(string cpf, string cnpj)
+        public async Task<GetUserByCpfResponse> GetUserByCpf(string cpf, string cnpj)
         {
             var userEntity = await _userRepository.GetByCpf(cpf, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
-            var userResponse = _mapper.Map<UserResponse>(userEntity);
+            var userResponse = _mapper.Map<GetUserByCpfResponse>(userEntity);
 
             return userResponse;
         }
-        public async Task<IEnumerable<UserResponse>> GetAllByCnpj(string cnpj)
+        public async Task<IEnumerable<GetAllUsersByCnpjResponse>> GetAllUsersByCnpj(string cnpj)
         {
             var userEntities = await _userRepository.GetAllByCnpj(cnpj);
 
-            var usersResponse = _mapper.Map<IEnumerable<UserResponse>>(userEntities);
+            var usersResponse = _mapper.Map<IEnumerable<GetAllUsersByCnpjResponse>>(userEntities);
 
             return usersResponse;
         }
 
-        public async Task<bool> UpdateUser(UserRequest userRequest, string email, string cnpj)
+        public async Task<bool> UpdateUser(UpdateUserRequest userRequest, string email, string cnpj)
         {
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);

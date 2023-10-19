@@ -1,0 +1,92 @@
+﻿using FluentValidation;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Utils.Enums;
+using MaisLocacoes.WebApi.Utils.Helpers;
+
+namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
+{
+    public class CreateUserValidator : AbstractValidator<CreateUserRequest>
+    {
+        public CreateUserValidator()
+        {
+            RuleFor(person => person.Cpf)
+                .Must(cpf => !string.IsNullOrEmpty(cpf))
+                .WithMessage("O CPF é obrigatório");
+
+            RuleFor(person => person.Cpf)
+                .Must(cpf => DocumentValidator.IsCpf(cpf))
+                .WithMessage("O CPF informado é inválido")
+                .When(person => !string.IsNullOrEmpty(person.Cpf));
+
+            RuleFor(person => person.Cnpj)
+                .Must(cnpj => !string.IsNullOrEmpty(cnpj))
+                .WithMessage("O CNPJ é obrigatório");
+
+            RuleFor(person => person.Cnpj)
+                .Must(cnpj => DocumentValidator.IsCnpj(cnpj))
+                .WithMessage("O CNPJ informado é inválido")
+                .When(person => !string.IsNullOrEmpty(person.Cnpj));
+
+            RuleFor(person => person.Rg)
+               .Must(rg => long.TryParse(rg, out var result) && result > 0)
+               .WithMessage("RG se informado deve conter somente números")
+               .MaximumLength(18)
+               .WithMessage("RG ultrapassou o limite máximo de caracteres")
+               .When(person => !string.IsNullOrEmpty(person.Rg));
+
+            RuleFor(person => person.Name)
+                .Must(name => !string.IsNullOrEmpty(name))
+                .WithMessage("O Nome é obrigatório")
+                .MaximumLength(255)
+                .WithMessage("O Nome ultrapassou o limite máximo de caracteres");
+
+            RuleFor(person => person.Email)
+                .Must(email => !string.IsNullOrEmpty(email))
+                .WithMessage("Email é obrigatório")
+                .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+                .WithMessage("Email deve ter formato de um e-mail")
+                .MaximumLength(255)
+                .WithMessage("Email ultrapassou o limite máximo de caracteres");
+
+            RuleFor(person => person.Role)
+                .Must(role => !string.IsNullOrEmpty(role))
+                .WithMessage("A Role de autorização é obrigatório")
+                .MaximumLength(255)
+                .WithMessage("A Role de autorização ultrapassou o limite máximo de caracteres");
+
+            RuleFor(person => person.Role)
+                .Must(role => UserRole.PersonRolesEnum.Contains(role.ToLower()))
+                .WithMessage("A Role inserida não existe")
+                .When(person => !string.IsNullOrEmpty(person.Role));
+
+            RuleFor(person => person.BornDate)
+                .Must(bornDate => DateTime.TryParse(bornDate.ToString(), out var result))
+                .WithMessage("A data de nascimento se inserida deve ser uma data válida")
+                .Must(bornDate => bornDate < DateTime.Now)
+                .WithMessage("A data de nascimento se inserida deve ser data passada")
+                .When(person => person.BornDate != null);
+
+            RuleFor(person => person.Cel)
+                .Must(tel => long.TryParse(tel, out var result) && result > 0)
+                .WithMessage("Celular se informado deve conter somente números")
+                .MaximumLength(18)
+                .WithMessage("Celular ultrapassou o limite máximo de caracteres")
+                .When(person => !string.IsNullOrEmpty(person.Cel));
+
+            RuleFor(person => person.CivilStatus)
+                .MaximumLength(255)
+                .WithMessage("Estado civil ultrapassou o limite máximo de caracteres")
+                .When(person => !string.IsNullOrEmpty(person.CivilStatus));
+
+            RuleFor(person => person.ProfileImageUrl)
+               .MaximumLength(2048)
+               .WithMessage("A URL da imagem de perfil ultrapassou o limite máximo de caracteres")
+               .When(person => !string.IsNullOrEmpty(person.ProfileImageUrl));
+
+            RuleFor(person => person.CpfDocumentUrl)
+               .MaximumLength(2048)
+               .WithMessage("A URL do documento ultrapassou o limite máximo de caracteres")
+               .When(person => !string.IsNullOrEmpty(person.CpfDocumentUrl));
+        }
+    }
+}

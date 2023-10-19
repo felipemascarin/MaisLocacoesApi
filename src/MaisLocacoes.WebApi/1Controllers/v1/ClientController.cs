@@ -17,17 +17,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class ClientController : Controller
     {
         private readonly IClientService _clientService;
-        private readonly IValidator<ClientRequest> _clientValidator;
+        private readonly IValidator<CreateClientRequest> _createClientValidator;
+        private readonly IValidator<UpdateClientRequest> _updateClientValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ClientController(IClientService clientService,
-            IValidator<ClientRequest> clientValidator,
+            IValidator<CreateClientRequest> createClientValidator,
+            IValidator<UpdateClientRequest> updateClientValidator,
             ILoggerFactory loggerFactory,
             IHttpContextAccessor httpContextAccessor)
         {
             _clientService = clientService;
-            _clientValidator = clientValidator;
+            _createClientValidator = createClientValidator;
+            _updateClientValidator = updateClientValidator;
             _logger = loggerFactory.CreateLogger<ClientController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -35,13 +38,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateClient([FromBody] ClientRequest clientRequest)
+        public async Task<IActionResult> CreateClient([FromBody] CreateClientRequest clientRequest)
         {
             try
             {
                 _logger.LogInformation("CreateClient {@dateTime} {@clientRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(clientRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
                 
-                var validatedClient = _clientValidator.Validate(clientRequest);
+                var validatedClient = _createClientValidator.Validate(clientRequest);
 
                 if (!validatedClient.IsValid)
                 {
@@ -70,7 +73,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var client = await _clientService.GetById(id);
+                var client = await _clientService.GetClientById(id);
                 return Ok(client);
             }
             catch (HttpRequestException ex)
@@ -89,7 +92,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetByIdDetails {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var client = await _clientService.GetByIdDetails(id);
+                var client = await _clientService.GetClientByIdDetails(id);
                 return Ok(client);
             }
             catch (HttpRequestException ex)
@@ -108,7 +111,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetBycpf {@dateTime} cpf:{@cpf} User:{@email}", System.DateTime.Now, cpf, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var client = await _clientService.GetByCpf(cpf);
+                var client = await _clientService.GetClientByCpf(cpf);
                 return Ok(client);
             }
             catch (HttpRequestException ex)
@@ -127,7 +130,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetBycnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var client = await _clientService.GetByCnpj(cnpj);
+                var client = await _clientService.GetClientByCnpj(cnpj);
                 return Ok(client);
             }
             catch (HttpRequestException ex)
@@ -178,13 +181,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateClient([FromBody] ClientRequest clientRequest, int id)
+        public async Task<IActionResult> UpdateClient([FromBody] UpdateClientRequest clientRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateClient {@dateTime} {@clientRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(clientRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedClient = _clientValidator.Validate(clientRequest);
+                var validatedClient = _updateClientValidator.Validate(clientRequest);
 
                 if (!validatedClient.IsValid)
                 {

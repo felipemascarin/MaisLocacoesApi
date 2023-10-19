@@ -38,7 +38,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<RentResponse> CreateRent(RentRequest rentRequest)
+        public async Task<CreateRentResponse> CreateRent(CreateRentRequest rentRequest)
         {
             var client = await _clientRepository.GetById(rentRequest.ClientId) ??
                 throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
@@ -57,26 +57,26 @@ namespace Service.v1.Services
 
             CreateCarriageBill(rentEntity);
 
-            var rentResponse = _mapper.Map<RentResponse>(rentEntity);
+            var rentResponse = _mapper.Map<CreateRentResponse>(rentEntity);
 
             return rentResponse;
         }
 
-        public async Task<GetRentClientResponse> GetById(int id)
+        public async Task<GetRentByIdResponse> GetRentById(int id)
         {
             var rentEntity = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            var rentResponse = _mapper.Map<GetRentClientResponse>(rentEntity);
+            var rentResponse = _mapper.Map<GetRentByIdResponse>(rentEntity);
 
             return rentResponse;
         }
 
-        public async Task<IEnumerable<RentResponse>> GetAllByClientId(int clientId)
+        public async Task<IEnumerable<GetAllRentsByClientIdResponse>> GetAllRentsByClientId(int clientId)
         {
             var rentsEntityList = await _rentRepository.GetAllByClientId(clientId);
 
-            var rentsResponseList = _mapper.Map<IEnumerable<RentResponse>>(rentsEntityList);
+            var rentsResponseList = _mapper.Map<IEnumerable<GetAllRentsByClientIdResponse>>(rentsEntityList);
 
             return rentsResponseList;
         }
@@ -116,7 +116,7 @@ namespace Service.v1.Services
             return rentsResponseListReturn;
         }
 
-        public async Task<bool> UpdateRent(RentRequest rentRequest, int id)
+        public async Task<bool> UpdateRent(UpdateRentRequest rentRequest, int id)
         {
             var rentForUpdate = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);

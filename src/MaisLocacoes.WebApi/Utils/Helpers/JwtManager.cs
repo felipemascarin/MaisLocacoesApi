@@ -29,7 +29,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             _userRepository = userRepository;
         }
 
-        public static CreateTokenResponse CreateToken(User user)
+        public static LoginResponse CreateToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
@@ -50,7 +50,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new CreateTokenResponse
+            return new LoginResponse
             {
                 Token = tokenHandler.WriteToken(token)
             };

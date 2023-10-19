@@ -77,26 +77,45 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IRentRepository, RentRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
 
-            services.AddScoped<IValidator<LoginRequest>, LoginValidator>();
-            services.AddScoped<IValidator<TokenRequest>, TokenRequestValidator>();
-            services.AddScoped<IValidator<CompanyRequest>, CompanyValidator>();
-            services.AddScoped<IValidator<CompanyAddressRequest>, CompanyAddressValidator>();
-            services.AddScoped<IValidator<UserRequest>, UserValidator>();
-            services.AddScoped<IValidator<AddressRequest>, AddressValidator>();
-            services.AddScoped<IValidator<BillRequest>, BillValidator>();
-            services.AddScoped<IValidator<ClientRequest>, ClientValidator>();
-            services.AddScoped<IValidator<CompanyTuitionRequest>, CompanyTuitionValidator>();
-            services.AddScoped<IValidator<CompanyWasteRequest>, CompanyWasteValidator>();
-            services.AddScoped<IValidator<OsRequest>, OsValidator>();
-            services.AddScoped<IValidator<ProductTuitionRequest>, ProductTuitionValidator>();
-            services.AddScoped<IValidator<ProductTuitionValueRequest>, ProductTuitionValueValidator>();
-            services.AddScoped<IValidator<ProductTypeRequest>, ProductTypeValidator>();
-            services.AddScoped<IValidator<ProductRequest>, ProductValidator>();
-            services.AddScoped<IValidator<ProductWasteRequest>, ProductWasteValidator>();
-            services.AddScoped<IValidator<QgRequest>, QgValidator>();
-            services.AddScoped<IValidator<RentedPlaceRequest>, RentedPlaceValidator>();
-            services.AddScoped<IValidator<RentRequest>, RentValidator>();
-            services.AddScoped<IValidator<SupplierRequest>, SupplierValidator>();
+            services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+            services.AddScoped<IValidator<LogoutRequest>, LogoutRequestValidator>();
+            services.AddScoped<IValidator<CreateCompanyRequest>, CreateCompanyValidator>();
+            services.AddScoped<IValidator<CreateCompanyAddressRequest>, CreateCompanyAddressValidator>();
+            services.AddScoped<IValidator<CreateUserRequest>, CreateUserValidator>();
+            services.AddScoped<IValidator<CreateAddressRequest>, CreateAddressValidator>();
+            services.AddScoped<IValidator<CreateBillRequest>, CreateBillValidator>();
+            services.AddScoped<IValidator<CreateClientRequest>, CreateClientValidator>();
+            services.AddScoped<IValidator<CreateCompanyTuitionRequest>, CreateCompanyTuitionValidator>();
+            services.AddScoped<IValidator<CreateCompanyWasteRequest>, CreateCompanyWasteValidator>();
+            services.AddScoped<IValidator<CreateOsRequest>, CreateOsValidator>();
+            services.AddScoped<IValidator<CreateProductTuitionRequest>, CreateProductTuitionValidator>();
+            services.AddScoped<IValidator<CreateProductTuitionValueRequest>, CreateProductTuitionValueValidator>();
+            services.AddScoped<IValidator<CreateProductTypeRequest>, CreateProductTypeValidator>();
+            services.AddScoped<IValidator<CreateProductRequest>, CreateProductValidator>();
+            services.AddScoped<IValidator<CreateProductWasteRequest>, CreateProductWasteValidator>();
+            services.AddScoped<IValidator<CreateQgRequest>, CreateQgValidator>();
+            services.AddScoped<IValidator<CreateRentedPlaceRequest>, CreateRentedPlaceValidator>();
+            services.AddScoped<IValidator<CreateRentRequest>, CreateRentValidator>();
+            services.AddScoped<IValidator<CreateSupplierRequest>, CreateSupplierValidator>();
+
+            services.AddScoped<IValidator<UpdateCompanyRequest>, UpdateCompanyValidator>();
+            services.AddScoped<IValidator<UpdateCompanyAddressRequest>, UpdateCompanyAddressValidator>();
+            services.AddScoped<IValidator<UpdateUserRequest>, UpdateUserValidator>();
+            services.AddScoped<IValidator<UpdateAddressRequest>, UpdateAddressValidator>();
+            services.AddScoped<IValidator<UpdateBillRequest>, UpdateBillValidator>();
+            services.AddScoped<IValidator<UpdateClientRequest>, UpdateClientValidator>();
+            services.AddScoped<IValidator<UpdateCompanyTuitionRequest>, UpdateCompanyTuitionValidator>();
+            services.AddScoped<IValidator<UpdateCompanyWasteRequest>, UpdateCompanyWasteValidator>();
+            services.AddScoped<IValidator<UpdateOsRequest>, UpdateOsValidator>();
+            services.AddScoped<IValidator<UpdateProductTuitionRequest>, UpdateProductTuitionValidator>();
+            services.AddScoped<IValidator<UpdateProductTuitionValueRequest>, UpdateProductTuitionValueValidator>();
+            services.AddScoped<IValidator<UpdateProductTypeRequest>, UpdateProductTypeValidator>();
+            services.AddScoped<IValidator<UpdateProductRequest>, UpdateProductValidator>();
+            services.AddScoped<IValidator<UpdateProductWasteRequest>, UpdateProductWasteValidator>();
+            services.AddScoped<IValidator<UpdateQgRequest>, UpdateQgValidator>();
+            services.AddScoped<IValidator<UpdateRentedPlaceRequest>, UpdateRentedPlaceValidator>();
+            services.AddScoped<IValidator<UpdateRentRequest>, UpdateRentValidator>();
+            services.AddScoped<IValidator<UpdateSupplierRequest>, UpdateSupplierValidator>();
         }
     }
 }

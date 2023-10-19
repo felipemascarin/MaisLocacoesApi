@@ -15,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class RentedPlaceController : Controller
     {
         private readonly IRentedPlaceService _rentedPlaceService;
-        private readonly IValidator<RentedPlaceRequest> _rentedPlaceValidator;
+        private readonly IValidator<CreateRentedPlaceRequest> _createRentedPlaceValidator;
+        private readonly IValidator<UpdateRentedPlaceRequest> _updateRentedPlaceValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public RentedPlaceController(IRentedPlaceService rentedPlaceService,
-            IValidator<RentedPlaceRequest> rentedPlaceValidator,
+            IValidator<CreateRentedPlaceRequest> createRentedPlaceValidator,
+            IValidator<UpdateRentedPlaceRequest> updateRentedPlaceValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _rentedPlaceService = rentedPlaceService;
-            _rentedPlaceValidator = rentedPlaceValidator;
+            _createRentedPlaceValidator = createRentedPlaceValidator;
+            _updateRentedPlaceValidator = updateRentedPlaceValidator;
             _logger = loggerFactory.CreateLogger<RentedPlaceController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -33,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateRentedPlace([FromBody] RentedPlaceRequest rentedPlaceRequest)
+        public async Task<IActionResult> CreateRentedPlace([FromBody] CreateRentedPlaceRequest rentedPlaceRequest)
         {
             try
             {
                 _logger.LogInformation("CreateRentedPlace {@dateTime} {@rentedPlaceRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentedPlaceRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedRentedPlace = _rentedPlaceValidator.Validate(rentedPlaceRequest);
+                var validatedRentedPlace = _createRentedPlaceValidator.Validate(rentedPlaceRequest);
 
                 if (!validatedRentedPlace.IsValid)
                 {
@@ -68,7 +71,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var rentedPlace = await _rentedPlaceService.GetById(id);
+                var rentedPlace = await _rentedPlaceService.GetRentedPlaceById(id);
                 return Ok(rentedPlace);
             }
             catch (HttpRequestException ex)
@@ -81,13 +84,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRentedPlace([FromBody] RentedPlaceRequest rentedPlaceRequest, int id)
+        public async Task<IActionResult> UpdateRentedPlace([FromBody] UpdateRentedPlaceRequest rentedPlaceRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdaterentedPlace {@dateTime} {@rentedPlaceRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(rentedPlaceRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedRentedPlace = _rentedPlaceValidator.Validate(rentedPlaceRequest);
+                var validatedRentedPlace = _updateRentedPlaceValidator.Validate(rentedPlaceRequest);
 
                 if (!validatedRentedPlace.IsValid)
                 {

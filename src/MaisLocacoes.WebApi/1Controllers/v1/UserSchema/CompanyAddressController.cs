@@ -15,17 +15,20 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
     public class CompanyAddressController : Controller
     {
         private readonly ICompanyAddressService _companyAddressService;
-        private readonly IValidator<CompanyAddressRequest> _companyAddressValidator;
+        private readonly IValidator<CreateCompanyAddressRequest> _createCompanyAddressValidator;
+        private readonly IValidator<UpdateCompanyAddressRequest> _updateCompanyAddressValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CompanyAddressController(ICompanyAddressService companyAddressService,
-        IValidator<CompanyAddressRequest> companyAddressValidator,
+        IValidator<CreateCompanyAddressRequest> createCompanyAddressValidator,
+        IValidator<UpdateCompanyAddressRequest> updateCompanyAddressValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _companyAddressService = companyAddressService;
-            _companyAddressValidator = companyAddressValidator;
+            _createCompanyAddressValidator = createCompanyAddressValidator;
+            _updateCompanyAddressValidator = updateCompanyAddressValidator;
             _logger = loggerFactory.CreateLogger<CompanyAddressController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -33,13 +36,13 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateCompanyAddress([FromBody] CompanyAddressRequest companyAddress)
+        public async Task<IActionResult> CreateCompanyAddress([FromBody] CreateCompanyAddressRequest request)
         {
             try
             {
-                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@companyAddress} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyAddress), JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@request} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(request), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyAddress = _companyAddressValidator.Validate(companyAddress);
+                var validatedCompanyAddress = _createCompanyAddressValidator.Validate(request);
 
                 if (!validatedCompanyAddress.IsValid)
                 {
@@ -48,7 +51,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
                     return BadRequest(companyAddressValidationErros);
                 }
 
-                var companyAddressCreated = await _companyAddressService.CreateCompanyAddress(companyAddress);
+                var companyAddressCreated = await _companyAddressService.CreateCompanyAddress(request);
                 return CreatedAtAction(nameof(GetById), new { id = companyAddressCreated.Id }, companyAddressCreated);
             }
             catch (HttpRequestException ex)
@@ -80,13 +83,13 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompanyAddress([FromBody] CompanyAddressRequest companyAddressRequest, int id)
+        public async Task<IActionResult> UpdateCompanyAddress([FromBody] UpdateCompanyAddressRequest request, int id)
         {
             try
             {
-                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@companyAddressRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyAddressRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
+                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@request} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(request), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyAddress = _companyAddressValidator.Validate(companyAddressRequest);
+                var validatedCompanyAddress = _updateCompanyAddressValidator.Validate(request);
 
                 if (!validatedCompanyAddress.IsValid)
                 {
@@ -95,7 +98,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
                     return BadRequest(companyAddressValidationErros);
                 }
 
-                if (await _companyAddressService.UpdateCompanyAddress(companyAddressRequest, id)) return Ok();
+                if (await _companyAddressService.UpdateCompanyAddress(request, id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o endereço da empresa"));
             }
             catch (HttpRequestException ex)

@@ -6,11 +6,11 @@ namespace Service.v1.IServices
 {
     public interface IProductWasteService
     {
-        Task<ProductWasteResponse> CreateProductWaste(ProductWasteRequest productWasteRequest);
-        Task<ProductWasteResponse> GetById(int id);
-        Task<GetProductWasteProductIdResponse> GetAllByProductId(int productId);
-        Task<IEnumerable<ProductWasteResponse>> GetProductWastesByPage(int items, int page, string query);
-        Task<bool> UpdateProductWaste(ProductWasteRequest productWasteRequest, int id);
+        Task<CreateProductWasteResponse> CreateProductWaste(CreateProductWasteRequest productWasteRequest);
+        Task<GetProductWasteByIdResponse> GetProductWasteById(int id);
+        Task<GetAllProductWastesByProductIdResponse> GetAllProductWastesByProductId(int productId);
+        Task<IEnumerable<GetProductWastesByPageResponse>> GetProductWastesByPage(int items, int page, string query);
+        Task<bool> UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id);
         Task<bool> DeleteById(int id);
     }
 }

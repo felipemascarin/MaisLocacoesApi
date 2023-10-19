@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -16,17 +17,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
     public class CompanyController : Controller
     {
         private readonly ICompanyService _companyService;
-        private readonly IValidator<CompanyRequest> _companyValidator;
+        private readonly IValidator<CreateCompanyRequest> _createCompanyValidator;
+        private readonly IValidator<UpdateCompanyRequest> _updateCompanyValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CompanyController(ICompanyService companyService,
-            IValidator<CompanyRequest> companyValidator,
+            IValidator<CreateCompanyRequest> createCompanyValidator,
+            IValidator<UpdateCompanyRequest> updateCompanyValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _companyService = companyService;
-            _companyValidator = companyValidator;
+            _createCompanyValidator = createCompanyValidator;
+            _updateCompanyValidator = updateCompanyValidator;
             _logger = loggerFactory.CreateLogger<CompanyController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +38,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         //[Authorize]
         //[TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateCompany([FromBody] CompanyRequest companyRequest)
+        public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest companyRequest)
         {
             try
             {
                 _logger.LogInformation("CreateCompany {@dateTime} {@companyRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompany = _companyValidator.Validate(companyRequest);
+                var validatedCompany = _createCompanyValidator.Validate(companyRequest);
 
                 if (!validatedCompany.IsValid)
                 {
@@ -69,7 +73,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetByCnpj {@dateTime} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var company = await _companyService.GetByCnpj(cnpj);
+                var company = await _companyService.GetCompanyByCnpj(cnpj);
                 return Ok(company);
             }
             catch (HttpRequestException ex)
@@ -88,7 +92,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetByToken {@dateTime} User:{@email}", System.DateTime.Now, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var company = await _companyService.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
+                var company = await _companyService.GetCompanyByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
                 return Ok(company);
             }
             catch (HttpRequestException ex)
@@ -101,13 +105,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         //[Authorize]
         //[TokenValidationDataBase]
         [HttpPut("{cnpj}")]
-        public async Task<IActionResult> UpdateCompany([FromBody] CompanyRequest companyRequest, string cnpj)
+        public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyRequest companyRequest, string cnpj)
         {
             try
             {
                 _logger.LogInformation("UpdateCompany {@dateTime} {@companyRequest} cnpj:{@cnpj} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyRequest), cnpj, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompany = _companyValidator.Validate(companyRequest);
+                var validatedCompany = _updateCompanyValidator.Validate(companyRequest);
 
                 if (!validatedCompany.IsValid)
                 {

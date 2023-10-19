@@ -37,7 +37,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<BillResponse> CreateBill(BillRequest billRequest)
+        public async Task<CreateBillResponse> CreateBill(CreateBillRequest billRequest)
         {
             var rentExists = await _rentRepository.RentExists(billRequest.RentId);
             if (!rentExists)
@@ -56,25 +56,25 @@ namespace Service.v1.Services
 
             billEntity = await _billRepository.CreateBill(billEntity);
 
-            var billResponse = _mapper.Map<BillResponse>(billEntity);
+            var billResponse = _mapper.Map<CreateBillResponse>(billEntity);
 
             return billResponse;
         }
 
-        public async Task<BillResponse> GetById(int id)
+        public async Task<GetBillByIdResponse> GetBillById(int id)
         {
             var billEntity = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var billResponse = _mapper.Map<BillResponse>(billEntity);
+            var billResponse = _mapper.Map<GetBillByIdResponse>(billEntity);
 
             return billResponse;
         }
 
-        public async Task<GetBillForTaxInvoiceResponse> GetForTaxInvoice(int billId)
+        public async Task<GetBillForTaxInvoiceResponse> GetBillForTaxInvoice(int billId)
         {
             ProductTuitionEntity productTuitionEntity = null;
-            ProductTypeResponse productType = null;
+            CreateProductTypeResponse productType = null;
             string productCode = null;
             int? productTuitionParts = null;
 
@@ -90,17 +90,17 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Fatura de produto ProducTuition não encontrada", null, HttpStatusCode.NotFound);
                 productCode = productTuitionEntity.ProductCode;
                 productTuitionParts = productTuitionEntity.Parts;
-                productType = _mapper.Map<ProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
+                productType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
             }
 
             var billForTaxInvoiceResponse = _mapper.Map<GetBillForTaxInvoiceResponse>(billEntity);
 
             billForTaxInvoiceResponse.Rent = _mapper.Map<GetRentClientResponse>(billEntity.RentEntity);
-            billForTaxInvoiceResponse.Rent.Address = _mapper.Map<AddressResponse>(billEntity.RentEntity.AddressEntity);
-            billForTaxInvoiceResponse.Rent.Client = _mapper.Map<ClientResponse>(billEntity.RentEntity.ClientEntity);
-            billForTaxInvoiceResponse.Rent.Client.Address = _mapper.Map<AddressResponse>(billEntity.RentEntity.ClientEntity.AddressEntity);
-            billForTaxInvoiceResponse.Company = _mapper.Map<CompanyResponse>(companyEntity);
-            billForTaxInvoiceResponse.Company.CompanyAddress = _mapper.Map<CompanyAddressResponse>(companyEntity.CompanyAddressEntity);
+            billForTaxInvoiceResponse.Rent.Address = _mapper.Map<CreateAddressResponse>(billEntity.RentEntity.AddressEntity);
+            billForTaxInvoiceResponse.Rent.Client = _mapper.Map<CreateClientResponse>(billEntity.RentEntity.ClientEntity);
+            billForTaxInvoiceResponse.Rent.Client.Address = _mapper.Map<CreateAddressResponse>(billEntity.RentEntity.ClientEntity.AddressEntity);
+            billForTaxInvoiceResponse.Company = _mapper.Map<CreateCompanyResponse>(companyEntity);
+            billForTaxInvoiceResponse.Company.CompanyAddress = _mapper.Map<CreateCompanyAddressResponse>(companyEntity.CompanyAddressEntity);
             billForTaxInvoiceResponse.ProductType = productType;
             billForTaxInvoiceResponse.ProductCode = productCode;
             billForTaxInvoiceResponse.ProductTuitionParts = productTuitionParts;
@@ -108,13 +108,13 @@ namespace Service.v1.Services
             return billForTaxInvoiceResponse;
         }
 
-        public async Task<IEnumerable<GetBillProductTypeForRentResponse>> GetByRentId(int rentId)
+        public async Task<IEnumerable<GetBillByRentIdResponse>> GetBillByRentId(int rentId)
         {
             var billsEntityList = await _billRepository.GetByRentId(rentId);
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
-            var billsResponseList = _mapper.Map<IEnumerable<GetBillProductTypeForRentResponse>>(billsEntityList);
+            var billsResponseList = _mapper.Map<IEnumerable<GetBillByRentIdResponse>>(billsEntityList);
 
             foreach (var bill in billsResponseList)
             {
@@ -122,7 +122,7 @@ namespace Service.v1.Services
                 {
                     bill.ProductCode = productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductCode;
                     bill.ProductTuitionParts = productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).Parts;
-                    bill.ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductTypeEntity);
+                    bill.ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductTypeEntity);
                 }
             }
 
@@ -183,12 +183,12 @@ namespace Service.v1.Services
             return billDtoList;
         }
 
-        public async Task<IEnumerable<GetDebtsBillsResponse>> GetAllDebts()
+        public async Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts()
         {
             var billsEntityList = await _billRepository.GetAllDebts() ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var billDtoList = new List<GetDebtsBillsResponse>();
+            var billDtoList = new List<GetAllBillsDebtsResponse>();
 
             foreach (var bill in billsEntityList)
             {
@@ -213,7 +213,7 @@ namespace Service.v1.Services
                     parts = productTuitionEntity.Parts;
                 }
 
-                var billDto = new GetDebtsBillsResponse()
+                var billDto = new GetAllBillsDebtsResponse()
                 {
                     ClientName = bill.RentEntity.ClientEntity.ClientName,
                     DueDate = bill.DueDate,
@@ -236,7 +236,7 @@ namespace Service.v1.Services
             return billDtoList;
         }
 
-        public async Task<bool> UpdateBill(BillRequest billRequest, int id)
+        public async Task<bool> UpdateBill(UpdateBillRequest billRequest, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);

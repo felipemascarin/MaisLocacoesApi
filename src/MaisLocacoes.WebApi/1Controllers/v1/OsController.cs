@@ -17,17 +17,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class OsController : Controller
     {
         private readonly IOsService _osService;
-        private readonly IValidator<OsRequest> _osValidator;
+        private readonly IValidator<CreateOsRequest> _createOsValidator;
+        private readonly IValidator<UpdateOsRequest> _updateOsValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public OsController(IOsService osService,
-            IValidator<OsRequest> osValidator,
+            IValidator<CreateOsRequest> createOsValidator,
+            IValidator<UpdateOsRequest> updateOsValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _osService = osService;
-            _osValidator = osValidator;
+            _createOsValidator = createOsValidator;
+            _updateOsValidator = updateOsValidator;
             _logger = loggerFactory.CreateLogger<OsController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -35,13 +38,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateOs([FromBody] OsRequest osRequest)
+        public async Task<IActionResult> CreateOs([FromBody] CreateOsRequest osRequest)
         {
             try
             {
                 _logger.LogInformation("CreateOs {@dateTime} {@osRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(osRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedOs = _osValidator.Validate(osRequest);
+                var validatedOs = _createOsValidator.Validate(osRequest);
 
                 if (!validatedOs.IsValid)
                 {
@@ -121,7 +124,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost("finish/{id}")]
-        public async Task<IActionResult> FinishOs(int id, [FromBody] CloseOsRequest closeOsRequest)
+        public async Task<IActionResult> FinishOs(int id, [FromBody] FinishOsRequest closeOsRequest)
         {
             try
             {
@@ -146,7 +149,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var os = await _osService.GetById(id);
+                var os = await _osService.GetOsById(id);
                 return Ok(os);
             }
             catch (HttpRequestException ex)
@@ -168,7 +171,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (status != null && !OsStatus.OsStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                var os = await _osService.GetAllByStatus(status);
+                var os = await _osService.GetAllOsByStatus(status);
                 return Ok(os);
             }
             catch (HttpRequestException ex)
@@ -181,13 +184,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> Updateos([FromBody]OsRequest osRequest, int id)
+        public async Task<IActionResult> UpdateOs([FromBody] UpdateOsRequest osRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateOs {@dateTime} {@osRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(osRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedOs = _osValidator.Validate(osRequest);
+                var validatedOs = _updateOsValidator.Validate(osRequest);
 
                 if (!validatedOs.IsValid)
                 {

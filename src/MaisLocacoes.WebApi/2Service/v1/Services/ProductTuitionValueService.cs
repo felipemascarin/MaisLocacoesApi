@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -27,7 +28,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<ProductTuitionValueResponse> CreateProductTuitionValue(ProductTuitionValueRequest productTuitionValueRequest)
+        public async Task<CreateProductTuitionValueResponse> CreateProductTuitionValue(CreateProductTuitionValueRequest productTuitionValueRequest)
         {
             var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionValueRequest.ProductTypeId);
             if (!existsProductType)
@@ -43,31 +44,31 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
 
             productTuitionValueEntity = await _productTuitionValueRepository.CreateProductTuitionValue(productTuitionValueEntity);
 
-            var productTuitionValueResponse = _mapper.Map<ProductTuitionValueResponse>(productTuitionValueEntity);
+            var productTuitionValueResponse = _mapper.Map<CreateProductTuitionValueResponse>(productTuitionValueEntity);
 
             return productTuitionValueResponse;
         }
 
-        public async Task<ProductTuitionValueResponse> GetById(int id)
+        public async Task<GetProductTuitionValueByIdResponse> GetProductTuitionValueById(int id)
         {
             var productTuitionValueEntity = await _productTuitionValueRepository.GetById(id) ??
                throw new HttpRequestException("Regra de valor do tipo de produto não encontrada", null, HttpStatusCode.NotFound);
 
-            var productTuitionValueResponse = _mapper.Map<ProductTuitionValueResponse>(productTuitionValueEntity);
+            var productTuitionValueResponse = _mapper.Map<GetProductTuitionValueByIdResponse>(productTuitionValueEntity);
 
             return productTuitionValueResponse;
         }
 
-        public async Task<IEnumerable<ProductTuitionValueResponse>> GetAllByProductTypeId(int productTypeId)
+        public async Task<IEnumerable<GetAllProductTuitionValueByProductTypeIdResponse>> GetAllProductTuitionValueByProductTypeId(int productTypeId)
         {
             var productTuitionValueEntityList = await _productTuitionValueRepository.GetAllByProductTypeId(productTypeId);
 
-            var productTuitionValuesResponseList = _mapper.Map<IEnumerable<ProductTuitionValueResponse>>(productTuitionValueEntityList);
+            var productTuitionValuesResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionValueByProductTypeIdResponse>>(productTuitionValueEntityList);
 
             return productTuitionValuesResponseList;
         }
 
-        public async Task<bool> UpdateProductTuitionValue(ProductTuitionValueRequest productTuitionValueRequest, int id)
+        public async Task<bool> UpdateProductTuitionValue(UpdateProductTuitionValueRequest productTuitionValueRequest, int id)
         {
             var productTuitionValueForUpdate = await _productTuitionValueRepository.GetById(id) ??
                 throw new HttpRequestException("Regra de valor do tipo de produto não encontrada", null, HttpStatusCode.NotFound);

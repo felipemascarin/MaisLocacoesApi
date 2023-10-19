@@ -24,7 +24,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CompanyAddressResponse> CreateCompanyAddress(CompanyAddressRequest companyAddressRequest)
+        public async Task<CreateCompanyAddressResponse> CreateCompanyAddress(CreateCompanyAddressRequest companyAddressRequest)
         {
             var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressRequest);
 
@@ -32,18 +32,18 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
 
             companyAddressEntity = await _companyAddressRepository.CreateCompanyAddress(companyAddressEntity);
 
-            return _mapper.Map<CompanyAddressResponse>(companyAddressEntity);
+            return _mapper.Map<CreateCompanyAddressResponse>(companyAddressEntity);
         }
 
-        public async Task<CompanyAddressResponse> GetById(int companyAddressId)
+        public async Task<CreateCompanyAddressResponse> GetById(int companyAddressId)
         {
             var CompanyAddressEntity = await _companyAddressRepository.GetById(companyAddressId) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            return _mapper.Map<CompanyAddressResponse>(CompanyAddressEntity);
+            return _mapper.Map<CreateCompanyAddressResponse>(CompanyAddressEntity);
         }
 
-        public async Task<bool> UpdateCompanyAddress(CompanyAddressRequest companyAddressRequest, int id)
+        public async Task<bool> UpdateCompanyAddress(UpdateCompanyAddressRequest companyAddressRequest, int id)
         {
             var companyAddressForUpdate = await _companyAddressRepository.GetById(id) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);

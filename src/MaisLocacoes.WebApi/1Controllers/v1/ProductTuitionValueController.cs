@@ -15,31 +15,34 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
     public class ProductTuitionValueController : Controller
     {
         private readonly IProductTuitionValueService _productTuitionValueService;
-        private readonly IValidator<ProductTuitionValueRequest> _productTuitionValueValidator;
+        private readonly IValidator<CreateProductTuitionValueRequest> _createProductTuitionValueValidator;
+        private readonly IValidator<UpdateProductTuitionValueRequest> _updateProductTuitionValueValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductTuitionValueController(IProductTuitionValueService productTuitionValueService,
-         IValidator<ProductTuitionValueRequest> productTuitionValueValidator,
+         IValidator<CreateProductTuitionValueRequest> createProductTuitionValueValidator,
+         IValidator<UpdateProductTuitionValueRequest> updateProductTuitionValueValidator,
          ILoggerFactory loggerFactory,
          IHttpContextAccessor httpContextAccessor)
         {
             _productTuitionValueService = productTuitionValueService;
-            _productTuitionValueValidator = productTuitionValueValidator;
-            _logger = loggerFactory.CreateLogger<ProductTuitionValueRequest>();
+            _createProductTuitionValueValidator = createProductTuitionValueValidator;
+            _updateProductTuitionValueValidator = updateProductTuitionValueValidator;
+            _logger = loggerFactory.CreateLogger<CreateProductTuitionValueRequest>();
             _httpContextAccessor = httpContextAccessor;
         }
 
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateProductTuitionValue([FromBody] ProductTuitionValueRequest productTuitionValueRequest)
+        public async Task<IActionResult> CreateProductTuitionValue([FromBody] CreateProductTuitionValueRequest productTuitionValueRequest)
         {
             try
             {
                 _logger.LogInformation("CreateProductTuitionValue {@dateTime} {@productTuitionValueRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionValueRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductTuitionValue = _productTuitionValueValidator.Validate(productTuitionValueRequest);
+                var validatedProductTuitionValue = _createProductTuitionValueValidator.Validate(productTuitionValueRequest);
 
                 if (!validatedProductTuitionValue.IsValid)
                 {
@@ -68,7 +71,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var _productTuitionValue = await _productTuitionValueService.GetById(id);
+                var _productTuitionValue = await _productTuitionValueService.GetProductTuitionValueById(id);
                 return Ok(_productTuitionValue);
             }
             catch (HttpRequestException ex)
@@ -87,7 +90,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
             {
                 _logger.LogInformation("GetAllByProductTypeId {@dateTime} rentId:{@rentId} User:{@email}", System.DateTime.Now, productTypeId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productTuitionValue = await _productTuitionValueService.GetAllByProductTypeId(productTypeId);
+                var productTuitionValue = await _productTuitionValueService.GetAllProductTuitionValueByProductTypeId(productTypeId);
                 return Ok(productTuitionValue);
             }
             catch (HttpRequestException ex)
@@ -100,13 +103,13 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProductTuitionValue([FromBody] ProductTuitionValueRequest productTuitionValueRequest, int id)
+        public async Task<IActionResult> UpdateProductTuitionValue([FromBody] UpdateProductTuitionValueRequest productTuitionValueRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateproductTuitionValue {@dateTime} {@productTuitionValueRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productTuitionValueRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductTuitionValue = _productTuitionValueValidator.Validate(productTuitionValueRequest);
+                var validatedProductTuitionValue = _updateProductTuitionValueValidator.Validate(productTuitionValueRequest);
 
                 if (!validatedProductTuitionValue.IsValid)
                 {

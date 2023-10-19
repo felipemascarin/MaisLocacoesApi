@@ -9,14 +9,13 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetOsByStatusResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllOsByStatusResponse;
 
 namespace Service.v1.Services
 {
     public class OsService : IOsService
     {
         private readonly IOsRepository _osRepository;
-        private readonly IRentRepository _rentRepository;
         private readonly IQgRepository _qgRepository;
         private readonly IProductTuitionService _productTuitionService;
         private readonly IProductTuitionRepository _productTuitionRepository;
@@ -26,7 +25,6 @@ namespace Service.v1.Services
         private readonly IMapper _mapper;
 
         public OsService(IOsRepository osRepository,
-            IRentRepository rentRepository,
             IQgRepository qgRepository,
             IProductTuitionService productTuitionService,
             IProductTuitionRepository productTuitionRepository,
@@ -36,7 +34,6 @@ namespace Service.v1.Services
             IMapper mapper)
         {
             _osRepository = osRepository;
-            _rentRepository = rentRepository;
             _qgRepository = qgRepository;
             _productTuitionService = productTuitionService;
             _productTuitionRepository = productTuitionRepository;
@@ -46,7 +43,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<OsResponse> CreateOs(OsRequest osRequest)
+        public async Task<CreateOsResponse> CreateOs(CreateOsRequest osRequest)
         {
             var existsRent = await _productTuitionRepository.ProductTuitionExists(osRequest.ProductTuitionId);
 
@@ -64,7 +61,7 @@ namespace Service.v1.Services
 
             osEntity = await _osRepository.CreateOs(osEntity);
 
-            var osResponse = _mapper.Map<OsResponse>(osEntity);
+            var osResponse = _mapper.Map<CreateOsResponse>(osEntity);
 
             return osResponse;
         }
@@ -131,7 +128,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> FinishOs(int id, CloseOsRequest closeOsRequest)
+        public async Task<bool> FinishOs(int id, FinishOsRequest finishOsRequest)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -139,26 +136,26 @@ namespace Service.v1.Services
             if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
                 throw new HttpRequestException("Não é possível finalizar uma nota de serviço não iniciada", null, HttpStatusCode.NotFound);
 
-            var productTuitionEntity = await _productTuitionRepository.GetById(closeOsRequest.ProductTuitionId) ??
+            var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(2);
             os.FinalDateTime = DateTime.Now;
-            os.DeliveryObservation = closeOsRequest.DeliveryObservation;
+            os.DeliveryObservation = finishOsRequest.DeliveryObservation;
             os.UpdatedAt = DateTime.Now;
             os.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             var rentedPlace = new RentedPlaceEntity();
-            rentedPlace.Latitude = closeOsRequest.Latitude;
-            rentedPlace.Longitude = closeOsRequest.Longitude;
+            rentedPlace.Latitude = finishOsRequest.Latitude;
+            rentedPlace.Longitude = finishOsRequest.Longitude;
             rentedPlace.ArrivalDate = os.FinalDateTime;
             rentedPlace.ProductParts = productTuitionEntity.Parts;
             rentedPlace.CreatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
             if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //entrega
             {
-                if (string.IsNullOrEmpty(closeOsRequest.ProductCode))
+                if (string.IsNullOrEmpty(finishOsRequest.ProductCode))
                     throw new HttpRequestException("Código do produto é obrigatório para finalizar uma nota de entrega", null, HttpStatusCode.NotFound);
 
                 var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
@@ -166,7 +163,7 @@ namespace Service.v1.Services
 
                 await _productTuitionService.RetainProduct(productTuitionEntity, product);
 
-                productTuitionEntity.ProductCode = closeOsRequest.ProductCode;
+                productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
                 productTuitionEntity.UpdatedAt = DateTime.Now;
                 productTuitionEntity.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
@@ -182,10 +179,10 @@ namespace Service.v1.Services
                 var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
                     throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-                if (closeOsRequest.QgId == null)
+                if (finishOsRequest.QgId == null)
                     throw new HttpRequestException("Id do Qg é obrigatório para finalizar uma nota de retirada", null, HttpStatusCode.NotFound);
 
-                var qg = await _qgRepository.GetById(closeOsRequest.QgId.Value) ??
+                var qg = await _qgRepository.GetById(finishOsRequest.QgId.Value) ??
                     throw new HttpRequestException("Qg não encontrado", null, HttpStatusCode.NotFound);
 
                 product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
@@ -210,27 +207,27 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<OsResponse> GetById(int id)
+        public async Task<GetOsByIdResponse> GetOsById(int id)
         {
             var osEntity = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            var osResponse = _mapper.Map<OsResponse>(osEntity);
+            var osResponse = _mapper.Map<GetOsByIdResponse>(osEntity);
 
             return osResponse;
         }
 
-        public async Task<IEnumerable<GetOsByStatusResponse>> GetAllByStatus(string status)
+        public async Task<IEnumerable<GetAllOsByStatusResponse>> GetAllOsByStatus(string status)
         {
             var osEntityList = await _osRepository.GetAllByStatus(status);
 
             var osRelationTuition = _mapper.Map<List<GetOsByStatusRelationTuition>>(osEntityList);
 
-            var productTuitions = new List<GetProductTuitionRentProductTypeClientReponse>();
+            var productTuitions = new List<GetAllProductTuitionByRentIdReponse>();
 
             foreach (var osEntity in osEntityList)
             {
-                productTuitions = (await _productTuitionService.GetAllByRentId(osEntity.ProductTuitionEntity.RentId)).ToList();
+                productTuitions = (await _productTuitionService.GetAllProductTuitionByRentId(osEntity.ProductTuitionEntity.RentId)).ToList();
 
                 foreach (var os in osRelationTuition)
                 {
@@ -241,10 +238,10 @@ namespace Service.v1.Services
                 productTuitions.Clear();
             }
 
-            return _mapper.Map<List<GetOsByStatusResponse>>(osRelationTuition); ;
+            return _mapper.Map<List<GetAllOsByStatusResponse>>(osRelationTuition); ;
         }
 
-        public async Task<bool> UpdateOs(OsRequest osRequest, int id)
+        public async Task<bool> UpdateOs(UpdateOsRequest osRequest, int id)
         {
             var osForUpdate = await _osRepository.GetById(id) ??
                throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);

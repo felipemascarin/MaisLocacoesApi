@@ -1,5 +1,5 @@
 ﻿using Repository.v1.Entity;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductForRentResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductsForRentResponse;
 
 namespace Repository.v1.IRepository
 {

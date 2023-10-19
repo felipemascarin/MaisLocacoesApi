@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Get
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public GetRentClientResponse Rent { get; set; }
-        public ProductTypeResponse? ProductType { get; set; }
-        public CompanyResponse Company { get; set; }
+        public CreateProductTypeResponse? ProductType { get; set; }
+        public CreateCompanyResponse Company { get; set; }
     }
 }

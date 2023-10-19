@@ -3,7 +3,7 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductForRentResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductsForRentResponse;
 
 namespace Repository.v1.Repository
 {

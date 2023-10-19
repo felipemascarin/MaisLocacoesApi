@@ -15,17 +15,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class CompanyWasteController : Controller
     {
         private readonly ICompanyWasteService _companyWasteService;
-        private readonly IValidator<CompanyWasteRequest> _companyWasteValidator;
+        private readonly IValidator<CreateCompanyWasteRequest> _createCompanyWasteValidator;
+        private readonly IValidator<UpdateCompanyWasteRequest> _updateCompanyWasteValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public CompanyWasteController(ICompanyWasteService companyWasteService,
-            IValidator<CompanyWasteRequest> companyWasteValidator,
+            IValidator<CreateCompanyWasteRequest> createCompanyWasteValidator,
+            IValidator<UpdateCompanyWasteRequest> updateCompanyWasteValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _companyWasteService = companyWasteService;
-            _companyWasteValidator = companyWasteValidator;
+            _createCompanyWasteValidator = createCompanyWasteValidator;
+            _updateCompanyWasteValidator = updateCompanyWasteValidator;
             _logger = loggerFactory.CreateLogger<CompanyWasteController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -33,13 +36,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateCompanyWaste([FromBody] CompanyWasteRequest companyWasteRequest)
+        public async Task<IActionResult> CreateCompanyWaste([FromBody] CreateCompanyWasteRequest companyWasteRequest)
         {
             try
             {
                 _logger.LogInformation("CreateCompanyWaste {@dateTime} {@companyWasteRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyWasteRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyWaste = _companyWasteValidator.Validate(companyWasteRequest);
+                var validatedCompanyWaste = _createCompanyWasteValidator.Validate(companyWasteRequest);
 
                 if (!validatedCompanyWaste.IsValid)
                 {
@@ -68,7 +71,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var companyWaste = await _companyWasteService.GetById(id);
+                var companyWaste = await _companyWasteService.GetCompanyWasteById(id);
                 return Ok(companyWaste);
             }
             catch (HttpRequestException ex)
@@ -81,13 +84,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCompanyWaste([FromBody] CompanyWasteRequest companyWasteRequest, int id)
+        public async Task<IActionResult> UpdateCompanyWaste([FromBody] UpdateCompanyWasteRequest companyWasteRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateCompanyWaste {@dateTime} {@companyWasteRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(companyWasteRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedCompanyWaste = _companyWasteValidator.Validate(companyWasteRequest);
+                var validatedCompanyWaste = _updateCompanyWasteValidator.Validate(companyWasteRequest);
 
                 if (!validatedCompanyWaste.IsValid)
                 {

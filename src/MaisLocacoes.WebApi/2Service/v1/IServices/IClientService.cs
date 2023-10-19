@@ -6,14 +6,14 @@ namespace Service.v1.IServices
 {
     public interface IClientService
     {
-        Task<ClientResponse> CreateClient(ClientRequest clientRequest);
-        Task<ClientResponse> GetById(int id);
-        Task<ClientResponse> GetByIdDetails(int id);
-        Task<ClientResponse> GetByCpf(string cpf);
-        Task<ClientResponse> GetByCnpj(string cnpj);
-        Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query);
-        Task<IEnumerable<GetClientForRentResponse>> GetClientsForRent();
-        Task<bool> UpdateClient(ClientRequest clientRequest, int id);
+        Task<CreateClientResponse> CreateClient(CreateClientRequest clientRequest);
+        Task<GetClientByIdResponse> GetClientById(int id);
+        Task<GetClientByIdDetailsResponse> GetClientByIdDetails(int id);
+        Task<GetClientByCpfResponse> GetClientByCpf(string cpf);
+        Task<GetClientByCnpjResponse> GetClientByCnpj(string cnpj);
+        Task<IEnumerable<GetClientsByPageResponse>> GetClientsByPage(int items, int page, string query);
+        Task<IEnumerable<GetClientsForRentResponse>> GetClientsForRent();
+        Task<bool> UpdateClient(UpdateClientRequest clientRequest, int id);
         Task<bool> UpdateStatus(string status, int id);
         Task<bool> DeleteById(int id);
     }

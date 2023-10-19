@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -37,7 +37,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<RentedPlaceResponse> CreateRentedPlace(RentedPlaceRequest rentedPlaceRequest)
+        public async Task<CreateRentedPlaceResponse> CreateRentedPlace(CreateRentedPlaceRequest rentedPlaceRequest)
         {
             var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId);
             if (!existsproduct)
@@ -63,22 +63,22 @@ namespace Service.v1.Services
 
             rentedPlaceEntity = await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
 
-            var rentedPlaceResponse = _mapper.Map<RentedPlaceResponse>(rentedPlaceEntity);
+            var rentedPlaceResponse = _mapper.Map<CreateRentedPlaceResponse>(rentedPlaceEntity);
 
             return rentedPlaceResponse;
         }
 
-        public async Task<RentedPlaceResponse> GetById(int id)
+        public async Task<GetRentedPlaceByIdResponse> GetRentedPlaceById(int id)
         {
             var rentedPlaceEntity = await _rentedPlaceRepository.GetById(id) ??
                 throw new HttpRequestException("Local não encontrado", null, HttpStatusCode.NotFound);
 
-            var rentedPlaceResponse = _mapper.Map<RentedPlaceResponse>(rentedPlaceEntity);
+            var rentedPlaceResponse = _mapper.Map<GetRentedPlaceByIdResponse>(rentedPlaceEntity);
 
             return rentedPlaceResponse;
         }
 
-        public async Task<bool> UpdateRentedPlace(RentedPlaceRequest rentedPlaceRequest, int id)
+        public async Task<bool> UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id)
         {
             var rentedPlaceForUpdate = await _rentedPlaceRepository.GetById(id) ??
                 throw new HttpRequestException("Local não encontrado", null, HttpStatusCode.NotFound);

@@ -1,12 +1,13 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 
 namespace Service.v1.IServices
 {
     public interface IRentedPlaceService
     {
-        Task<RentedPlaceResponse> CreateRentedPlace(RentedPlaceRequest rentedPlaceRequest);
-        Task<RentedPlaceResponse> GetById(int id);
-        Task<bool> UpdateRentedPlace(RentedPlaceRequest rentedPlaceRequest, int id);
+        Task<CreateRentedPlaceResponse> CreateRentedPlace(CreateRentedPlaceRequest rentedPlaceRequest);
+        Task<GetRentedPlaceByIdResponse> GetRentedPlaceById(int id);
+        Task<bool> UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id);
     }
 }

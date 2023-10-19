@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -27,7 +28,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<SupplierResponse> CreateSupplier(SupplierRequest supplierRequest)
+        public async Task<CreateSupplierResponse> CreateSupplier(CreateSupplierRequest supplierRequest)
         {
             var addressResponse = await _addressService.CreateAddress(supplierRequest.Address);
 
@@ -38,31 +39,31 @@ namespace Service.v1.Services
 
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 
-            var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
+            var supplierResponse = _mapper.Map<CreateSupplierResponse>(supplierEntity);
 
             return supplierResponse;
         }
 
-        public async Task<SupplierResponse> GetById(int id)
+        public async Task<GetSupplierByIdResponse> GetSupplierById(int id)
         {
             var supplierEntity = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
-            var supplierResponse = _mapper.Map<SupplierResponse>(supplierEntity);
+            var supplierResponse = _mapper.Map<GetSupplierByIdResponse>(supplierEntity);
 
             return supplierResponse;
         }
 
-        public async Task<IEnumerable<SupplierResponse>> GetAll()
+        public async Task<IEnumerable<GetAllSuppliersResponse>> GetAllSuppliers()
         {
             var suppliersEntityList = await _supplierRepository.GetAll();
 
-            var suppliersResponseList = _mapper.Map<IEnumerable<SupplierResponse>>(suppliersEntityList);
+            var suppliersResponseList = _mapper.Map<IEnumerable<GetAllSuppliersResponse>>(suppliersEntityList);
 
             return suppliersResponseList;
         }
 
-        public async Task<bool> UpdateSupplier(SupplierRequest supplierRequest, int id)
+        public async Task<bool> UpdateSupplier(UpdateSupplierRequest supplierRequest, int id)
         {
             var supplierForUpdate = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);

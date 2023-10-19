@@ -28,7 +28,7 @@ namespace Service.v1.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<ClientResponse> CreateClient(ClientRequest clientRequest)
+        public async Task<CreateClientResponse> CreateClient(CreateClientRequest clientRequest)
         {
             ClientEntity existsClient;
             if (string.IsNullOrEmpty(clientRequest.Cnpj))
@@ -48,73 +48,73 @@ namespace Service.v1.Services
 
             clientEntity = await _clientRepository.CreateClient(clientEntity);
 
-            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<CreateClientResponse>(clientEntity);
 
             return clientResponse;
         }
 
-        public async Task<ClientResponse> GetById(int id)
+        public async Task<GetClientByIdResponse> GetClientById(int id)
         {
             var clientEntity = await _clientRepository.GetById(id) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<GetClientByIdResponse>(clientEntity);
 
             return clientResponse;
         }
 
-        public async Task<ClientResponse> GetByIdDetails(int id)
+        public async Task<GetClientByIdDetailsResponse> GetClientByIdDetails(int id)
         {
             var clientEntity = await _clientRepository.GetByIdDetails(id) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<GetClientByIdDetailsResponse>(clientEntity);
 
             return clientResponse;
         }
 
-        public async Task<ClientResponse> GetByCpf(string cpf)
+        public async Task<GetClientByCpfResponse> GetClientByCpf(string cpf)
         {
             var clientEntity = await _clientRepository.GetByCpf(cpf) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<GetClientByCpfResponse>(clientEntity);
 
             return clientResponse;
         }
 
-        public async Task<ClientResponse> GetByCnpj(string cnpj)
+        public async Task<GetClientByCnpjResponse> GetClientByCnpj(string cnpj)
         {
             var clientEntity = await _clientRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            var clientResponse = _mapper.Map<ClientResponse>(clientEntity);
+            var clientResponse = _mapper.Map<GetClientByCnpjResponse>(clientEntity);
 
             return clientResponse;
         }
 
-        public async Task<IEnumerable<ClientResponse>> GetClientsByPage(int items, int page, string query)
+        public async Task<IEnumerable<GetClientsByPageResponse>> GetClientsByPage(int items, int page, string query)
         {
             if (items <= 0 || page <= 0)
                 throw new HttpRequestException("Informe o valor da página e a quantidade de itens corretamente", null, HttpStatusCode.BadRequest);
 
             var clientsEntityList = await _clientRepository.GetClientsByPage(items, page, query);
 
-            var clientsResponseList = _mapper.Map<IEnumerable<ClientResponse>>(clientsEntityList);
+            var clientsResponseList = _mapper.Map<IEnumerable<GetClientsByPageResponse>>(clientsEntityList);
 
             return clientsResponseList;
         }
 
-        public async Task<IEnumerable<GetClientForRentResponse>> GetClientsForRent()
+        public async Task<IEnumerable<GetClientsForRentResponse>> GetClientsForRent()
         {
             var clientForRentDtoResponse = await _clientRepository.GetClientsForRent();
 
-            var clientForRentResponse = new List<GetClientForRentResponse>();
+            var clientForRentResponse = new List<GetClientsForRentResponse>();
 
             foreach (var item in clientForRentDtoResponse)
             {
                 if (!string.IsNullOrEmpty(item.Cpf) && string.IsNullOrEmpty(item.Cnpj))
-                    clientForRentResponse.Add(new GetClientForRentResponse
+                    clientForRentResponse.Add(new GetClientsForRentResponse
                     {
                         Id = item.Id,
                         Name = item.ClientName,
@@ -122,7 +122,7 @@ namespace Service.v1.Services
                     });
 
                 if (!string.IsNullOrEmpty(item.Cnpj))
-                    clientForRentResponse.Add(new GetClientForRentResponse
+                    clientForRentResponse.Add(new GetClientsForRentResponse
                     {
                         Id = item.Id,
                         Name = item.FantasyName,
@@ -133,7 +133,7 @@ namespace Service.v1.Services
             return clientForRentResponse.OrderBy(c => c.Name);
         }
 
-        public async Task<bool> UpdateClient(ClientRequest clientRequest, int id)
+        public async Task<bool> UpdateClient(UpdateClientRequest clientRequest, int id)
         {
             var clientForUpdate = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);

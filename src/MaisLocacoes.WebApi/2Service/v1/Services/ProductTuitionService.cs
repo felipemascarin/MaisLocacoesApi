@@ -9,7 +9,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductTuitionProductIdResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllProductTuitionByProductIdResponse;
 
 namespace Service.v1.Services
 {
@@ -49,7 +49,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<ProductTuitionResponse> CreateProductTuition(ProductTuitionRequest productTuitionRequest)
+        public async Task<CreateProductTuitionResponse> CreateProductTuition(CreateProductTuitionRequest productTuitionRequest)
         {
             var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
             if (!existsRent)
@@ -83,7 +83,7 @@ namespace Service.v1.Services
             if (module == ProjectModules.Modules.ElementAt(1))
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0));
 
-            var productTuitionResponse = _mapper.Map<ProductTuitionResponse>(productTuitionEntity);
+            var productTuitionResponse = _mapper.Map<CreateProductTuitionResponse>(productTuitionEntity);
 
             return productTuitionResponse;
         }
@@ -186,7 +186,7 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<bool> RenewProduct(int id, RenewProductTuitionRequest renewRequest)
+        public async Task<bool> RenewProductTuition(int id, RenewProductTuitionRequest renewRequest)
         {
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
@@ -211,44 +211,44 @@ namespace Service.v1.Services
             else return false;
         }
 
-        public async Task<GetProductTuitionRentResponse> GetById(int id)
+        public async Task<GetProductTuitionByIdResponse> GetProductTuitionById(int id)
         {
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            var productTuitionResponse = _mapper.Map<GetProductTuitionRentResponse>(productTuitionEntity);
+            var productTuitionResponse = _mapper.Map<GetProductTuitionByIdResponse>(productTuitionEntity);
 
             return productTuitionResponse;
         }
 
-        public async Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllByRentId(int rentId)
+        public async Task<IEnumerable<GetAllProductTuitionByRentIdReponse>> GetAllProductTuitionByRentId(int rentId)
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
             var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
 
-            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentProductTypeClientReponse>>(productTuitionEntityList);
+            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionByRentIdReponse>>(productTuitionEntityList);
 
             for (int i = 0; i < productTuitionEntityListLenght; i++)
             {
                 productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<GetRentClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
-                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<ClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
+                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<CreateClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
             }
 
             return productTuitionsResponseList;
         }
 
-        public async Task<GetProductTuitionProductIdResponse> GetAllByProductId(int productId)
+        public async Task<GetAllProductTuitionByProductIdResponse> GetAllProductTuitionByProductId(int productId)
         {
             var productEntity = await _productRepository.GetById(productId) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllByProductTypeCode(productEntity.ProductTypeId, productEntity.Code);
 
-            var productTuitionsResponse = new GetProductTuitionProductIdResponse
+            var productTuitionsResponse = new GetAllProductTuitionByProductIdResponse
             {
                 ProductTuitionsRentResponse = _mapper.Map<List<ResumedRentDto>>(productTuitionEntityList),
                 TotalBilledValue = 0
@@ -275,27 +275,27 @@ namespace Service.v1.Services
             return productTuitionsResponse;
         }
 
-        public async Task<IEnumerable<GetProductTuitionRentProductTypeClientReponse>> GetAllToRemove()
+        public async Task<IEnumerable<GetAllProductTuitionToRemoveReponse>> GetAllProductTuitionToRemove()
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove();
 
             var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
 
-            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetProductTuitionRentProductTypeClientReponse>>(productTuitionEntityList);
+            var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionToRemoveReponse>>(productTuitionEntityList);
 
             for (int i = 0; i < productTuitionEntityListLenght; i++)
             {
                 productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<GetRentClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
-                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<ProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<ClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<AddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
+                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<CreateClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
+                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
             }
 
             return productTuitionsResponseList;
         }
 
-        public async Task<bool> UpdateProductTuition(ProductTuitionRequest productTuitionRequest, int id)
+        public async Task<bool> UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -560,7 +560,7 @@ namespace Service.v1.Services
             }
         }
 
-        public async void CreateOs(ProductTuitionEntity productTuition, string type)
+        public void CreateOs(ProductTuitionEntity productTuition, string type)
         {
             var os = new OsEntity();
 

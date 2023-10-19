@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -28,7 +29,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<ProductTypeResponse> CreateProductType(ProductTypeRequest productTypeRequest)
+        public async Task<CreateProductTypeResponse> CreateProductType(CreateProductTypeRequest productTypeRequest)
         {
             var existsproductType = await _productTypeRepository.ProductTypeExists(productTypeRequest.Type);
             if (existsproductType)
@@ -40,26 +41,26 @@ namespace Service.v1.Services
 
             productTypeEntity = await _productTypeRepository.CreateProductType(productTypeEntity);
 
-            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productTypeEntity);
+            var productTypeResponse = _mapper.Map<CreateProductTypeResponse>(productTypeEntity);
 
             return productTypeResponse;
         }
 
-        public async Task<ProductTypeResponse> GetById(int id)
+        public async Task<GetProductTypeByIdResponse> GetProductTypeById(int id)
         {
             var productTypeEntity = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
-            var productTypeResponse = _mapper.Map<ProductTypeResponse>(productTypeEntity);
+            var productTypeResponse = _mapper.Map<GetProductTypeByIdResponse>(productTypeEntity);
 
             return productTypeResponse;
         }
 
-        public async Task<IEnumerable<ProductTypeResponse>> GetAll()
+        public async Task<IEnumerable<GetAllProductTypesResponse>> GetAllProductTypes()
         {
             var productsTypeEntityList = await _productTypeRepository.GetAll();
 
-            var productsTypeResponseList = _mapper.Map<IEnumerable<ProductTypeResponse>>(productsTypeEntityList);
+            var productsTypeResponseList = _mapper.Map<IEnumerable<GetAllProductTypesResponse>>(productsTypeEntityList);
 
             foreach (var productType in productsTypeResponseList)
             {
@@ -73,7 +74,7 @@ namespace Service.v1.Services
             return productsTypeResponseList;
         }
 
-        public async Task<bool> UpdateProductType(ProductTypeRequest productTypeRequest, int id)
+        public async Task<bool> UpdateProductType(UpdateProductTypeRequest productTypeRequest, int id)
         {
             var productTypeForUpdate = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);

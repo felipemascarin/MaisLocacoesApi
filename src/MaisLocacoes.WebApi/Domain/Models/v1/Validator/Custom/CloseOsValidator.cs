@@ -3,7 +3,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.Custom
 {
-    public class CloseOsValidator : AbstractValidator<CloseOsRequest>
+    public class CloseOsValidator : AbstractValidator<FinishOsRequest>
     {
         public CloseOsValidator()
         {

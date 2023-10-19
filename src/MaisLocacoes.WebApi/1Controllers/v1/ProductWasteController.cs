@@ -16,17 +16,20 @@ namespace MaisLocacoes.WebApi.Controllers.v1
     public class ProductWasteController : Controller
     {
         private readonly IProductWasteService _productWasteService;
-        private readonly IValidator<ProductWasteRequest> _productWasteValidator;
+        private readonly IValidator<CreateProductWasteRequest> _createProductWasteValidator;
+        private readonly IValidator<UpdateProductWasteRequest> _updateProductWasteValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductWasteController(IProductWasteService productWasteService,
-            IValidator<ProductWasteRequest> productWasteValidator,
+            IValidator<CreateProductWasteRequest> createProductWasteValidator,
+            IValidator<UpdateProductWasteRequest> updateProductWasteValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _productWasteService = productWasteService;
-            _productWasteValidator = productWasteValidator;
+            _createProductWasteValidator = createProductWasteValidator;
+            _updateProductWasteValidator = updateProductWasteValidator;
             _logger = loggerFactory.CreateLogger<ProductWasteController>();
             _httpContextAccessor = httpContextAccessor;
         }
@@ -34,13 +37,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost]
-        public async Task<IActionResult> CreateProductWaste([FromBody] ProductWasteRequest productWasteRequest)
+        public async Task<IActionResult> CreateProductWaste([FromBody] CreateProductWasteRequest productWasteRequest)
         {
             try
             {
                 _logger.LogInformation("CreateProductWaste {@dateTime} {@productWasteRequest} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productWasteRequest), JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductWaste = _productWasteValidator.Validate(productWasteRequest);
+                var validatedProductWaste = _createProductWasteValidator.Validate(productWasteRequest);
 
                 if (!validatedProductWaste.IsValid)
                 {
@@ -69,7 +72,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email}", System.DateTime.Now, id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productWaste = await _productWasteService.GetById(id);
+                var productWaste = await _productWasteService.GetProductWasteById(id);
                 return Ok(productWaste);
             }
             catch (HttpRequestException ex)
@@ -88,7 +91,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email}", System.DateTime.Now, productId, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var productWaste = await _productWasteService.GetAllByProductId(productId);
+                var productWaste = await _productWasteService.GetAllProductWastesByProductId(productId);
                 return Ok(productWaste);
             }
             catch (HttpRequestException ex)
@@ -120,13 +123,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProductWaste([FromBody] ProductWasteRequest productWasteRequest, int id)
+        public async Task<IActionResult> UpdateProductWaste([FromBody] UpdateProductWasteRequest productWasteRequest, int id)
         {
             try
             {
                 _logger.LogInformation("UpdateProductWaste {@dateTime} {@ProductWasteRequest} id:{@id} User:{@email}", System.DateTime.Now, JsonConvert.SerializeObject(productWasteRequest), id, JwtManager.GetEmailByToken(_httpContextAccessor));
 
-                var validatedProductWaste = _productWasteValidator.Validate(productWasteRequest);
+                var validatedProductWaste = _updateProductWasteValidator.Validate(productWasteRequest);
 
                 if (!validatedProductWaste.IsValid)
                 {

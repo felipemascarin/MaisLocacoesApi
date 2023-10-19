@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 
@@ -28,7 +28,7 @@ namespace Service.v1.Services
             _mapper = mapper;
         }
 
-        public async Task<QgResponse> CreateQg(QgRequest qgRequest)
+        public async Task<CreateQgResponse> CreateQg(CreateQgRequest qgRequest)
         {
             var addressResponse = await _addressService.CreateAddress(qgRequest.Address);
 
@@ -39,31 +39,31 @@ namespace Service.v1.Services
 
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 
-            var qgResponse = _mapper.Map<QgResponse>(qgEntity);
+            var qgResponse = _mapper.Map<CreateQgResponse>(qgEntity);
 
             return qgResponse;
         }
 
-        public async Task<QgResponse> GetById(int id)
+        public async Task<GetQgByIdResponse> GetQgById(int id)
         {
             var qgEntity = await _qgRepository.GetById(id) ??
                 throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            var qgResponse = _mapper.Map<QgResponse>(qgEntity);
+            var qgResponse = _mapper.Map<GetQgByIdResponse>(qgEntity);
 
             return qgResponse;
         }
 
-        public async Task<IEnumerable<QgResponse>> GetAll()
+        public async Task<IEnumerable<GetAllQgsResponse>> GetAllQgs()
         {
             var qgEntity = await _qgRepository.GetAll();
 
-            var qgResponse = _mapper.Map<IEnumerable<QgResponse>>(qgEntity);
+            var qgResponse = _mapper.Map<IEnumerable<GetAllQgsResponse>>(qgEntity);
 
             return qgResponse;
         }
 
-        public async Task<bool> UpdateQg(QgRequest qgRequest, int id)
+        public async Task<bool> UpdateQg(UpdateQgRequest qgRequest, int id)
         {
             var qgForUpdate = await _qgRepository.GetById(id) ??
                     throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
