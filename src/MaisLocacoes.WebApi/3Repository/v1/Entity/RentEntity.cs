@@ -30,6 +30,13 @@ namespace Repository.v1.Entity
         public string? Description { get; set; }
 
         [Column(TypeName = "timestamp")]
+        public DateTime? SignedAt { get; set; }
+
+        [StringLength(2048)]
+        [Column(TypeName = "character varying(2048)")]
+        public string? UrlSignature { get; set; }
+
+        [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 
         [Column(TypeName = "timestamp")]

@@ -17,6 +17,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema
         public string? LogoUrl { get; set; }
         public int NotifyDaysBefore { get; set; }
         public string Module { get; set; }
+        public int TimeZone { get; set; }
         public CompanyAddressRequest CompanyAddress { get; set; }
     }
 }

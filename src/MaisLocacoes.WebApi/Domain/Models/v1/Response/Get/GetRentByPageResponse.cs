@@ -11,6 +11,8 @@
         public string Description { get; set; }
         public DateTime InitialDate { get; set; }
         public DateTime FinalDate { get; set; }
+        public DateTime? SignedAt { get; set; }
+        public string? UrlSignature { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }

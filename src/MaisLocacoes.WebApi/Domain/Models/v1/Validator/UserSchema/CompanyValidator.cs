@@ -96,6 +96,12 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .WithMessage("Esse tipo de módulo não existe")
                 .When(company => !string.IsNullOrEmpty(company.Module));
 
+            RuleFor(company => company.TimeZone)
+                .Empty()
+                .WithMessage("TimeZone é obrigatório")
+                .Must(timeZone => int.TryParse(timeZone.ToString(), out var result))
+                .WithMessage("TimeZone deve ser um número inteiro positivo ou negativo");
+
             RuleFor(company => company.CompanyAddress).SetValidator(new CompanyAddressValidator());
         }
     }

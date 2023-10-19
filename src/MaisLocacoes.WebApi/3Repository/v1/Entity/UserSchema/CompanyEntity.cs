@@ -77,6 +77,8 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(255)")]
         public string Module { get; set; }
 
+        public int TimeZone { get; set; }
+
         [Column(TypeName = "timestamp")]
         public DateTime CreatedAt { get; set; }
 

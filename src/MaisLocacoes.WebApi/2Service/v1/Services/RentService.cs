@@ -133,6 +133,8 @@ namespace Service.v1.Services
             rentForUpdate.ClientId = rentRequest.ClientId;
             rentForUpdate.Carriage = rentRequest.Carriage;
             rentForUpdate.Description = rentRequest.Description;
+            rentForUpdate.SignedAt = rentRequest.SignedAt;
+            rentForUpdate.UrlSignature = rentRequest.UrlSignature;
             rentForUpdate.UpdatedAt = System.DateTime.Now;
             rentForUpdate.UpdatedBy = JwtManager.GetEmailByToken(_httpContextAccessor);
 
