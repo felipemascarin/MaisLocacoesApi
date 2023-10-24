@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -16,7 +17,7 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public ClientService(IClientRepository clientRepository,
@@ -28,7 +29,7 @@ namespace Service.v1.Services
             _mapper = mapper;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -45,11 +46,15 @@ namespace Service.v1.Services
 
             var addressResponse = await _addressService.CreateAddress(clientRequest.Address);
 
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            clientRequest = TimeZoneConverter<CreateClientRequest>.ConvertToTimeZoneLocal(clientRequest, _timeZone);
+
             var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
 
             clientEntity.AddressId = addressResponse.Id;
+            clientEntity.BornDate = clientEntity.BornDate.Value.Date;
             clientEntity.CreatedBy = _email;
-            clientEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            clientEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             clientEntity = await _clientRepository.CreateClient(clientEntity);
 
@@ -182,7 +187,7 @@ namespace Service.v1.Services
             clientForUpdate.CnpjDocumentUrl = clientRequest.CnpjDocumentUrl;
             clientForUpdate.AddressDocumentUrl = clientRequest.AddressDocumentUrl;
             clientForUpdate.ClientPictureUrl = clientRequest.ClientPictureUrl;
-            clientForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            clientForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
@@ -198,7 +203,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             clientForUpdate.Status = status;
-            clientForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            clientForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForUpdate.UpdatedBy = _email;
 
             if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
@@ -211,7 +216,7 @@ namespace Service.v1.Services
                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             clientForDelete.Deleted = true;
-            clientForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            clientForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForDelete.UpdatedBy = _email;
 
             if (await _clientRepository.UpdateClient(clientForDelete) > 0) return true;

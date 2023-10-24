@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi._2_Service.v1.Services
 {
@@ -16,7 +17,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public ProductTuitionValueService(IProductTuitionValueRepository productTuitionValueRepository,
@@ -28,7 +29,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -45,7 +46,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             var productTuitionValueEntity = _mapper.Map<ProductTuitionValueEntity>(productTuitionValueRequest);
 
             productTuitionValueEntity.CreatedBy = _email;
-            productTuitionValueEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionValueEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             productTuitionValueEntity = await _productTuitionValueRepository.CreateProductTuitionValue(productTuitionValueEntity);
 
@@ -99,7 +100,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             productTuitionValueForUpdate.TimePeriod = productTuitionValueRequest.TimePeriod;
             productTuitionValueForUpdate.IsDefault = productTuitionValueRequest.IsDefault;
             productTuitionValueForUpdate.Value = productTuitionValueRequest.Value;
-            productTuitionValueForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionValueForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionValueForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate) > 0) return true;

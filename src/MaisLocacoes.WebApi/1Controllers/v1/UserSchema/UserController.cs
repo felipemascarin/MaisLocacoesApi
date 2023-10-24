@@ -4,9 +4,12 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
+using System.Data;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
 {
@@ -19,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         private readonly IValidator<UpdateUserRequest> _updateUserValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -34,19 +37,18 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _updateUserValidator = updateUserValidator;
             _logger = loggerFactory.CreateLogger<UserController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequest userRequest)
         {
             try
             {
-                _logger.LogInformation("CreateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(userRequest), _email, _schema);
+                _logger.LogInformation("CreateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _schema);
 
                 var validatedUser = _createUserValidator.Validate(userRequest);
 
@@ -68,14 +70,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpGet("email/{email}/cnpj/{cnpj}")]
         public async Task<IActionResult> GetByEmail(string email, string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, email, cnpj, _email, _schema);
+                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), email, cnpj, _email, _schema);
 
                 var user = await _userService.GetUserByEmail(email, cnpj);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
@@ -88,14 +89,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpGet("cpf/{cpf}/cnpj/{cnpj}")]
         public async Task<IActionResult> GetByCpf(string cpf, string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cpf, cnpj, _email, _schema);
+                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, cnpj, _email, _schema);
 
                 var user = await _userService.GetUserByCpf(cpf, cnpj);
                 return Ok(user);
@@ -107,14 +107,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpGet("cnpj/{cnpj}")]
         public async Task<IActionResult> GetAllByCnpj(string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cnpj, _email, _schema);
+                _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cnpj, _email, _schema);
 
                 var os = await _userService.GetAllUsersByCnpj(cnpj);
                 return Ok(os);
@@ -126,14 +125,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPut("email/{email}/cnpj/{cnpj}")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest userRequest, string email, string cnpj)
         {
             try
             {
-                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(userRequest), _email, _schema);
+                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _schema);
 
                 var validatedUser = _updateUserValidator.Validate(userRequest);
 
@@ -154,14 +152,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPut("email/{email}/cnpj/{cnpj}/status/{status}")]
         public async Task<IActionResult> UpdateStatus(string status, string email, string cnpj)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, email, cnpj, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, email, cnpj, _email, _schema);
 
                 if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");

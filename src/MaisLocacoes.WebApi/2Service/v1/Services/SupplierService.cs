@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -16,7 +17,7 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public SupplierService(ISupplierRepository supplierRepository,
@@ -28,7 +29,7 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -40,7 +41,7 @@ namespace Service.v1.Services
 
             supplierEntity.AddressId = addressResponse.Id;
             supplierEntity.CreatedBy = _email;
-            supplierEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            supplierEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             supplierEntity = await _supplierRepository.CreateSupplier(supplierEntity);
 
@@ -78,7 +79,7 @@ namespace Service.v1.Services
             supplierForUpdate.Email = supplierRequest.Email;
             supplierForUpdate.Tel = supplierRequest.Tel;
             supplierForUpdate.Cel = supplierRequest.Cel;
-            supplierForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            supplierForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id))
@@ -94,7 +95,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
             supplierForDelete.Deleted = true;
-            supplierForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            supplierForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForDelete.UpdatedBy = _email;
 
             if (await _supplierRepository.UpdateSupplier(supplierForDelete) > 0) return true;

@@ -18,7 +18,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Get
         public string LogoUrl { get; set; }
         public int NotifyDaysBefore { get; set; }
         public string Module { get; set; }
-        public int TimeZone { get; set; }
+        public string TimeZone { get; set; }
         public string Status { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }

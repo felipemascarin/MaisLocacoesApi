@@ -17,10 +17,10 @@ namespace Repository.v1.Entity
 
         public bool IsManyParts { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

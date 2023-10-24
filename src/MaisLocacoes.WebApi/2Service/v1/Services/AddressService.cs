@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -15,7 +16,7 @@ namespace Service.v1.Services
         private readonly IAddressRepository _addressRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public AddressService(IAddressRepository addressRepository,
@@ -25,7 +26,7 @@ namespace Service.v1.Services
             _addressRepository = addressRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -34,7 +35,7 @@ namespace Service.v1.Services
             var addressEntity = _mapper.Map<AddressEntity>(addressRequest);
 
             addressEntity.CreatedBy = _email;
-            addressEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            addressEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             addressEntity = await _addressRepository.CreateAddress(addressEntity);
 
@@ -60,7 +61,7 @@ namespace Service.v1.Services
             addressForUpdate.City = addressRequest.City;
             addressForUpdate.State = addressRequest.State;
             addressForUpdate.Country = addressRequest.Country;
-            addressForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            addressForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             addressForUpdate.UpdatedBy = _email;
 
             if (await _addressRepository.UpdateAddress(addressForUpdate) > 0) return true;

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -19,7 +20,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateSupplierRequest> _updateSupplierValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -34,7 +35,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateSupplierValidator = updateSupplierValidator;
             _logger = loggerFactory.CreateLogger<SupplierController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
@@ -46,7 +47,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateSupplier {@dateTime} {@supplierRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(supplierRequest), _email, _schema);
+                _logger.LogInformation("CreateSupplier {@dateTime} {@supplierRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), _email, _schema);
 
                 var validatedSupplier = _createSupplierValidator.Validate(supplierRequest);
 
@@ -75,7 +76,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var supplier = await _supplierService.GetSupplierById(id);
                 return Ok(supplier);
@@ -94,7 +95,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
 
                 var suppliers = await _supplierService.GetAllSuppliers();
                 return Ok(suppliers);
@@ -113,7 +114,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updatesupplier {@dateTime} {@supplierRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(supplierRequest), id, _email, _schema);
+                _logger.LogInformation("Updatesupplier {@dateTime} {@supplierRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), id, _email, _schema);
 
                 var validatedSupplier = _updateSupplierValidator.Validate(supplierRequest);
 
@@ -141,7 +142,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _supplierService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

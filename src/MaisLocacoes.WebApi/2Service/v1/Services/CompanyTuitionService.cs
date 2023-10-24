@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -15,7 +16,7 @@ namespace Service.v1.Services
         private readonly ICompanyTuitionRepository _companyTuitionRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public CompanyTuitionService(ICompanyTuitionRepository companyTuitionRepository,
@@ -25,7 +26,7 @@ namespace Service.v1.Services
             _companyTuitionRepository = companyTuitionRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -34,7 +35,7 @@ namespace Service.v1.Services
             var companyTuitionEntity = _mapper.Map<CompanyTuitionEntity>(companyTuitionRequest);
 
             companyTuitionEntity.CreatedBy = _email;
-            companyTuitionEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            companyTuitionEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             companyTuitionEntity = await _companyTuitionRepository.CreateCompanyTuition(companyTuitionEntity);
 
@@ -63,7 +64,7 @@ namespace Service.v1.Services
             companyTuitionForUpdate.Value = companyTuitionRequest.Value;
             companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
             companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate;
-            companyTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            companyTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForUpdate.UpdatedBy = _email;
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate) > 0) return true;
@@ -76,7 +77,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
             companyTuitionForDelete.Deleted = true;
-            companyTuitionForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            companyTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForDelete.UpdatedBy = _email;
 
             if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;

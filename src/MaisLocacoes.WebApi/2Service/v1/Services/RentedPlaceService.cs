@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -18,7 +19,7 @@ namespace Service.v1.Services
         private readonly IQgRepository _qgRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public RentedPlaceService(IRentedPlaceRepository rentedPlaceRepository,
@@ -34,7 +35,7 @@ namespace Service.v1.Services
             _qgRepository = qgRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -61,7 +62,7 @@ namespace Service.v1.Services
             var rentedPlaceEntity = _mapper.Map<RentedPlaceEntity>(rentedPlaceRequest);
 
             rentedPlaceEntity.CreatedBy = _email;
-            rentedPlaceEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            rentedPlaceEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             rentedPlaceEntity = await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
 
@@ -114,7 +115,7 @@ namespace Service.v1.Services
             rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
             rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts;
-            rentedPlaceForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            rentedPlaceForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentedPlaceForUpdate.UpdatedBy = _email;
 
             if (await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceForUpdate) > 0) return true;

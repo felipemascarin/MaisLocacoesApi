@@ -15,7 +15,7 @@
         public string? LogoUrl { get; set; }
         public int NotifyDaysBefore { get; set; }
         public string Module { get; set; }
-        public int TimeZone { get; set; }
+        public string TimeZone { get; set; }
         public UpdateCompanyAddressRequest CompanyAddress { get; set; }
     }
 }

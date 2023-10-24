@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -21,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateClientRequest> _updateClientValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -36,7 +37,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateClientValidator = updateClientValidator;
             _logger = loggerFactory.CreateLogger<ClientController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
@@ -48,7 +49,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateClient {@dateTime} {@clientRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(clientRequest), _email, _schema);
+                _logger.LogInformation("CreateClient {@dateTime} {@clientRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(clientRequest), _email, _schema);
                 
                 var validatedClient = _createClientValidator.Validate(clientRequest);
 
@@ -77,7 +78,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var client = await _clientService.GetClientById(id);
                 return Ok(client);
@@ -96,7 +97,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetByIdDetails {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetByIdDetails {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var client = await _clientService.GetClientByIdDetails(id);
                 return Ok(client);
@@ -115,7 +116,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetBycpf {@dateTime} cpf:{@cpf} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cpf, _email, _schema);
+                _logger.LogInformation("GetBycpf {@dateTime} cpf:{@cpf} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, _email, _schema);
 
                 var client = await _clientService.GetClientByCpf(cpf);
                 return Ok(client);
@@ -134,7 +135,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetBycnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cnpj, _email, _schema);
+                _logger.LogInformation("GetBycnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cnpj, _email, _schema);
 
                 var client = await _clientService.GetClientByCnpj(cnpj);
                 return Ok(client);
@@ -153,7 +154,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetClientsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, items, page, query, _email, _schema);
+                _logger.LogInformation("GetClientsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), items, page, query, _email, _schema);
 
                 var clientsList = await _clientService.GetClientsByPage(items, page, query);
                 return Ok(clientsList);
@@ -172,7 +173,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetClientsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("GetClientsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
 
                 var clientsList = await _clientService.GetClientsForRent();
                 return Ok(clientsList);
@@ -191,7 +192,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateClient {@dateTime} {@clientRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(clientRequest), id, _email, _schema);
+                _logger.LogInformation("UpdateClient {@dateTime} {@clientRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(clientRequest), id, _email, _schema);
 
                 var validatedClient = _updateClientValidator.Validate(clientRequest);
 
@@ -219,7 +220,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, id, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _schema);
 
                 if (!ClientStatus.ClientStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -241,7 +242,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _clientService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

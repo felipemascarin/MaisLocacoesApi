@@ -29,17 +29,17 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? Description { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? SignedAt { get; set; }
 
         [StringLength(2048)]
         [Column(TypeName = "character varying(2048)")]
         public string? UrlSignature { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

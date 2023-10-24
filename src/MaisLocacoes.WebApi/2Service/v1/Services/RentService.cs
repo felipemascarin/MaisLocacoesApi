@@ -8,6 +8,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -20,7 +21,7 @@ namespace Service.v1.Services
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public RentService(IRentRepository rentRepository,
@@ -38,7 +39,7 @@ namespace Service.v1.Services
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -52,11 +53,14 @@ namespace Service.v1.Services
 
             var addressResponse = await _addressService.CreateAddress(rentRequest.Address);
 
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            rentRequest = TimeZoneConverter<CreateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
+
             var rentEntity = _mapper.Map<RentEntity>(rentRequest);
 
             rentEntity.AddressId = addressResponse.Id;
             rentEntity.CreatedBy = _email;
-            rentEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            rentEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
 
@@ -140,7 +144,7 @@ namespace Service.v1.Services
             rentForUpdate.Description = rentRequest.Description;
             rentForUpdate.SignedAt = rentRequest.SignedAt;
             rentForUpdate.UrlSignature = rentRequest.UrlSignature;
-            rentForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForUpdate.UpdatedBy = _email;
 
             if (!await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id))
@@ -156,7 +160,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             rentForUpdate.Status = status;
-            rentForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForUpdate.UpdatedBy = _email;
 
             if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
@@ -169,7 +173,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             rentForDelete.Deleted = true;
-            rentForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            rentForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForDelete.UpdatedBy = _email;
 
             if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
@@ -188,7 +192,7 @@ namespace Service.v1.Services
                 bill.Status = BillStatus.BillStatusEnum.ElementAt(2);
                 bill.PaymentMode = null;
                 bill.Description = "Fatura de frete";
-                bill.DueDate = System.DateTime.UtcNow + _timeZone;
+                bill.DueDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 bill.CreatedBy = _email;
 
                 _billRepository.CreateBill(bill);

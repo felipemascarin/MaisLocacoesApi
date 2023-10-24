@@ -3,6 +3,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -10,6 +11,7 @@ using Repository.v1.IRepository;
 using Repository.v1.IRepository.UserSchema;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -21,7 +23,7 @@ namespace Service.v1.Services
         private readonly IRentRepository _rentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public BillService(IBillRepository billRepository,
@@ -37,7 +39,7 @@ namespace Service.v1.Services
             _rentRepository = rentRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -54,10 +56,13 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
             }
 
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            billRequest = TimeZoneConverter<CreateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
+
             var billEntity = _mapper.Map<BillEntity>(billRequest);
 
             billEntity.CreatedBy = _email;
-            billEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            billEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             billEntity = await _billRepository.CreateBill(billEntity);
 
@@ -286,7 +291,7 @@ namespace Service.v1.Services
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
-            billForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -336,7 +341,7 @@ namespace Service.v1.Services
             billForUpdate.PaymentMode = paymentMode;
             billForUpdate.NfIdFireBase = nfIdFireBase;
             billForUpdate.PayDate = payDate;
-            billForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForUpdate.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
@@ -352,7 +357,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura não pode ser deletada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             billForDelete.Deleted = true;
-            billForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            billForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForDelete.UpdatedBy = _email;
 
             if (await _billRepository.UpdateBill(billForDelete) > 0) return true;

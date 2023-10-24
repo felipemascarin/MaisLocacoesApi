@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -21,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateOsRequest> _updateOsValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -36,7 +37,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateOsValidator = updateOsValidator;
             _logger = loggerFactory.CreateLogger<OsController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
@@ -48,7 +49,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateOs {@dateTime} {@osRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(osRequest), _email, _schema);
+                _logger.LogInformation("CreateOs {@dateTime} {@osRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(osRequest), _email, _schema);
 
                 var validatedOs = _createOsValidator.Validate(osRequest);
 
@@ -77,7 +78,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("StartOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id,_email, _schema);
+                _logger.LogInformation("StartOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id,_email, _schema);
 
                 if (await _osService.StartOs(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -96,7 +97,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _osService.ReturnOs(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -115,7 +116,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CancelOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("CancelOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _osService.CancelOs(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -134,7 +135,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("FinishOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, JsonConvert.SerializeObject(closeOsRequest), _email, _schema);
+                _logger.LogInformation("FinishOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, JsonConvert.SerializeObject(closeOsRequest), _email, _schema);
 
                 if (await _osService.FinishOs(id, closeOsRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -153,7 +154,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var os = await _osService.GetOsById(id);
                 return Ok(os);
@@ -172,7 +173,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllByStatus {@dateTime} status:{@status} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, _email, _schema);
+                _logger.LogInformation("GetAllByStatus {@dateTime} status:{@status} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, _email, _schema);
 
                 if (status != null && !OsStatus.OsStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -194,7 +195,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateOs {@dateTime} {@osRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(osRequest), id, _email, _schema);
+                _logger.LogInformation("UpdateOs {@dateTime} {@osRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(osRequest), id, _email, _schema);
 
                 var validatedOs = _updateOsValidator.Validate(osRequest);
 
@@ -222,7 +223,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, id, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _schema);
 
                 if (!OsStatus.OsStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -244,7 +245,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _osService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

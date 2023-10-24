@@ -28,20 +28,20 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string Status { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? InitialDateTime { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? FinalDateTime { get; set; }
 
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]
         public string? DeliveryObservation { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

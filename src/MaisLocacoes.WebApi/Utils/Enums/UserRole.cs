@@ -6,7 +6,8 @@
         {
             "owner",
             "employee",
-            "delivery"
+            "delivery",
+            "adm"
         };
     }
 }

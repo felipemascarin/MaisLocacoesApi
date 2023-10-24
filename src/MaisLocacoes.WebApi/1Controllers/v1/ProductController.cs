@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -20,7 +21,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateProductRequest> _updateProductValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -35,7 +36,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateProductValidator = updateProductValidator;
             _logger = loggerFactory.CreateLogger<ProductController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
@@ -47,7 +48,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateProduct {@dateTime} {@productRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productRequest), _email, _schema);
+                _logger.LogInformation("CreateProduct {@dateTime} {@productRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), _email, _schema);
 
                 var validatedProduct = _createProductValidator.Validate(productRequest);
 
@@ -76,7 +77,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var product = await _productService.GetProductById(id);
                 return Ok(product);
@@ -95,7 +96,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, typeId, code, _email, _schema);
+                _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), typeId, code, _email, _schema);
 
                 var product = await _productService.GetProductByTypeCode(typeId, code);
                 return Ok(product);
@@ -114,7 +115,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetProductsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, items, page, query, _email, _schema);
+                _logger.LogInformation("GetProductsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), items, page, query, _email, _schema);
 
                 var productsList = await _productService.GetProductsByPage(items, page, query);
                 return Ok(productsList);
@@ -133,7 +134,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetProductsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("GetProductsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
 
                 var productsList = await _productService.GetProductsForRent(productTypeId);
                 return Ok(productsList);
@@ -152,7 +153,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productRequest), id, _email, _schema);
+                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), id, _email, _schema);
 
                 var validatedProduct = _updateProductValidator.Validate(productRequest);
 
@@ -180,7 +181,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, id, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _schema);
 
                 if (!ProductStatus.ProductStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -202,7 +203,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _productService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

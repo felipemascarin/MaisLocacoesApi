@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1
 {
@@ -22,7 +23,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<UpdateProductTuitionRequest> _updateProductTuitionValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -37,7 +38,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _updateProductTuitionValidator = updateProductTuitionValidator;
             _logger = loggerFactory.CreateLogger<CreateProductTuitionRequest>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
@@ -49,7 +50,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateProductTuition {@dateTime} {@productTuitionRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productTuitionRequest), _email, _schema);
+                _logger.LogInformation("CreateProductTuition {@dateTime} {@productTuitionRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productTuitionRequest), _email, _schema);
 
                 var validatedProductTuition = _createProductTuitionValidator.Validate(productTuitionRequest);
 
@@ -78,7 +79,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("WithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("WithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _productTuitionService.WithdrawProduct(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -97,7 +98,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CancelWithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("CancelWithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _productTuitionService.CancelWithdrawProduct(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -116,7 +117,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(renewRequest), id, _email, _schema);
+                _logger.LogInformation("RenewProduct {@dateTime} request:{@request} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(renewRequest), id, _email, _schema);
 
                 if (await _productTuitionService.RenewProductTuition(id, renewRequest)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar"));
@@ -135,7 +136,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 var _productTuition = await _productTuitionService.GetProductTuitionById(id);
                 return Ok(_productTuition);
@@ -154,7 +155,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllByRentId {@dateTime} rentId:{@rentId} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, rentId, _email, _schema);
+                _logger.LogInformation("GetAllByRentId {@dateTime} rentId:{@rentId} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), rentId, _email, _schema);
 
                 var productTuition = await _productTuitionService.GetAllProductTuitionByRentId(rentId);
                 return Ok(productTuition);
@@ -173,7 +174,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, productId, _email, _schema);
+                _logger.LogInformation("GetAllByProductId {@dateTime} productId:{@productId} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), productId, _email, _schema);
 
                 var productTuitions = await _productTuitionService.GetAllProductTuitionByProductId(productId);
                 return Ok(productTuitions);
@@ -192,7 +193,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAllToRemove {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("GetAllToRemove {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
 
                 var productTuitions = await _productTuitionService.GetAllProductTuitionToRemove();
                 return Ok(productTuitions);
@@ -211,7 +212,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateproductTuition {@dateTime} {@productTuitionRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(productTuitionRequest), id, _email, _schema);
+                _logger.LogInformation("UpdateproductTuition {@dateTime} {@productTuitionRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productTuitionRequest), id, _email, _schema);
 
                 var validatedProductTuition = _updateProductTuitionValidator.Validate(productTuitionRequest);
 
@@ -239,7 +240,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateCode {@dateTime} productcode:{@productcode} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, productCode, id, _email, _schema);
+                _logger.LogInformation("UpdateCode {@dateTime} productcode:{@productcode} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), productCode, id, _email, _schema);
 
                 if (productCode == null)
                     throw new HttpRequestException("Código do produto é obrigatório", null, HttpStatusCode.BadRequest);
@@ -261,7 +262,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, id, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _schema);
 
                 if (!ProductTuitionStatus.ProductTuitionStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -283,7 +284,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
                 if (await _productTuitionService.DeleteById(id)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível deletar"));

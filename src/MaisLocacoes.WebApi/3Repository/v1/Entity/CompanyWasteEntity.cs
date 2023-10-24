@@ -21,13 +21,13 @@ namespace Repository.v1.Entity
         public decimal Value { get; set; }
 
         [Required]
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime Date { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

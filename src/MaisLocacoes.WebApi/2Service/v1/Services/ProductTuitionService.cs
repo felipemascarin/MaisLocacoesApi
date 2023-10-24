@@ -9,6 +9,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllProductTuitionByProductIdResponse;
 
 namespace Service.v1.Services
@@ -21,11 +22,10 @@ namespace Service.v1.Services
         private readonly IBillService _billService;
         private readonly IOsRepository _osRepository;
         private readonly IProductRepository _productRepository;
-        private readonly IProductService _productService;
         private readonly IProductTypeRepository _productTypeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public ProductTuitionService(IProductTuitionRepository productTuitionRepository,
@@ -34,7 +34,6 @@ namespace Service.v1.Services
             IBillService billService,
             IOsRepository osRepository,
             IProductRepository productRepository,
-            IProductService productService,
             IProductTypeRepository productTypeRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
@@ -45,11 +44,10 @@ namespace Service.v1.Services
             _billService = billService;
             _osRepository = osRepository;
             _productRepository = productRepository;
-            _productService = productService;
             _productTypeRepository = productTypeRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -77,7 +75,7 @@ namespace Service.v1.Services
             }
 
             productTuitionEntity.CreatedBy = _email;
-            productTuitionEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
@@ -109,7 +107,7 @@ namespace Service.v1.Services
                     if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(0) || deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(3))
                     {
                         deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4);
-                        deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                        deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                         deliveryOs.UpdatedBy = _email;
                         await _osRepository.UpdateOs(deliveryOs);
                     }
@@ -149,7 +147,7 @@ namespace Service.v1.Services
                 if (osForDelete != null)
                 {
                     osForDelete.Deleted = true;
-                    osForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                    osForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     osForDelete.UpdatedBy = _email;
 
                     await _osRepository.UpdateOs(osForDelete);
@@ -163,7 +161,7 @@ namespace Service.v1.Services
                 if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(4))
                 {
                     deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0);
-                    deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                    deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     deliveryOs.UpdatedBy = _email;
                     await _osRepository.UpdateOs(deliveryOs);
                 }
@@ -178,13 +176,13 @@ namespace Service.v1.Services
             if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
             {
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
-                rent.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                rent.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);
             }
 
-            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
@@ -207,7 +205,7 @@ namespace Service.v1.Services
             productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
             productTuitionEntity.IsEditable = false;
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
-            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
             CreateBills(productTuitionEntity);
@@ -395,7 +393,7 @@ namespace Service.v1.Services
             productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;
             productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
             productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -425,7 +423,7 @@ namespace Service.v1.Services
             }
 
             productTuitionForUpdate.ProductCode = productCode;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -438,7 +436,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionForUpdate.Status = status;
-            productTuitionForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
@@ -472,7 +470,7 @@ namespace Service.v1.Services
                 if (deliveryOs != null)
                 {
                     deliveryOs.Deleted = true;
-                    deliveryOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                    deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     deliveryOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(deliveryOs);
                 }
@@ -480,14 +478,14 @@ namespace Service.v1.Services
                 if (withdrawOs != null)
                 {
                     withdrawOs.Deleted = true;
-                    withdrawOs.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                    withdrawOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     withdrawOs.UpdatedBy = _email;
                     _ = await _osRepository.UpdateOs(withdrawOs);
                 }
             }
 
             productTuitionForDelete.Deleted = true;
-            productTuitionForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForDelete.UpdatedBy = _email;
 
             if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;
@@ -558,7 +556,7 @@ namespace Service.v1.Services
             {
                 var rent = await _rentRepository.GetById(productTuitionEntity.RentId);
                 rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
-                rent.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                rent.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 rent.UpdatedBy = _email;
 
                 await _rentRepository.UpdateRent(rent);

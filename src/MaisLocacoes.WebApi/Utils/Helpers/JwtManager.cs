@@ -1,10 +1,12 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Repository.v1.IRepository.UserSchema;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Utils.Helpers
 {
@@ -30,7 +32,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             _userRepository = userRepository;
         }
 
-        public static LoginResponse CreateToken(User user)
+        public static LoginResponse CreateToken(User user, double tokenTime)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(secret);
@@ -46,7 +48,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim("cpf", user.Cpf),
                     new Claim("timeZone", user.TimeZone)
                 }),
-                Expires = (System.DateTime.UtcNow + TimeSpan.FromHours(int.Parse(user.TimeZone))).AddHours(15),
+                Expires = System.DateTime.UtcNow.AddHours(tokenTime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 
@@ -95,6 +97,12 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
             return ExtractPropertyByToken(Token, "cpf");
+        }
+
+        public static string GetRoleByToken(IHttpContextAccessor httpContextAccessor)
+        {
+            Token = ExtractTokenByAuthorization(httpContextAccessor);
+            return ExtractPropertyByToken(Token, "role");
         }
 
         public static string ExtractPropertyByToken(string token, string property)

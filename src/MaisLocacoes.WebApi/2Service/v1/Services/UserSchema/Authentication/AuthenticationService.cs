@@ -30,11 +30,13 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             var companyEntity = await _companyRepository.GetByCnpj(loginRequest.Cnpj) ??
                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
+            //Se o status do usuário for Blocked, não permite logar
             if (userEntity.Status == UserStatus.UserStatusEnum.ElementAt(1))
             {
                 throw new HttpRequestException("Usuário bloqueado", null, HttpStatusCode.Forbidden);
             }
 
+            //Se o status da Empresa for diferente de regular, não deixa loggar
             if (companyEntity.Status != CompanyStatus.CompanyStatusEnum.ElementAt(0))
                 throw new HttpRequestException("Empresa sem acesso - Entrar em contato com suporte", null, HttpStatusCode.Forbidden);
 
@@ -49,10 +51,31 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 TimeZone = companyEntity.TimeZone.ToString()
             };
 
-            var tokenResponse = JwtManager.CreateToken(user);
+            var tokenResponse = JwtManager.CreateToken(user, 15);
 
+            //Salva o novo token gerado na propriedade LastToken da tabela Users no banco de dados
             userEntity.LastToken = tokenResponse.Token;
             await _userRepository.UpdateUser(userEntity);
+
+            return tokenResponse;
+        }
+
+        public LoginResponse LoginAdm(LoginRequest loginRequest)
+        {
+            var email = JwtManager.ExtractPropertyByToken(loginRequest.GoogleToken, "email");
+
+            var user = new User()
+            {
+                Name = "adm",
+                Cpf = "adm",
+                Email = email,
+                Role = UserRole.PersonRolesEnum.ElementAt(3), //role adm
+                Schema = "maislocacoes",
+                Module = ProjectModules.Modules.ElementAt(2),
+                TimeZone = "America/Sao_Paulo"
+            };
+
+            var tokenResponse = JwtManager.CreateToken(user, 1);
 
             return tokenResponse;
         }
@@ -66,6 +89,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
+            //Limpa a propriedade LastToken da tabela Users no banco de dados
             userForUpdate.LastToken = string.Empty;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;

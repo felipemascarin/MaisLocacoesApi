@@ -9,6 +9,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllOsByStatusResponse;
 
 namespace Service.v1.Services
@@ -23,7 +24,7 @@ namespace Service.v1.Services
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public OsService(IOsRepository osRepository,
@@ -43,7 +44,7 @@ namespace Service.v1.Services
             _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -62,7 +63,7 @@ namespace Service.v1.Services
             var osEntity = _mapper.Map<OsEntity>(osRequest);
 
             osEntity.CreatedBy = _email;
-            osEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            osEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             osEntity = await _osRepository.CreateOs(osEntity);
 
@@ -83,15 +84,15 @@ namespace Service.v1.Services
                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3);
-            productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(1);
-            os.InitialDateTime = System.DateTime.UtcNow + _timeZone;
-            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            os.InitialDateTime = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+            os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -109,7 +110,7 @@ namespace Service.v1.Services
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(3);
             os.InitialDateTime = null;
-            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -126,7 +127,7 @@ namespace Service.v1.Services
 
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(4);
-            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(os) > 0) return true;
@@ -146,9 +147,9 @@ namespace Service.v1.Services
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(2);
-            os.FinalDateTime = System.DateTime.UtcNow + _timeZone;
+            os.FinalDateTime = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.DeliveryObservation = finishOsRequest.DeliveryObservation;
-            os.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
             var rentedPlace = new RentedPlaceEntity();
@@ -170,7 +171,7 @@ namespace Service.v1.Services
 
                 productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
-                productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = productTuitionEntity.RentId;
@@ -193,7 +194,7 @@ namespace Service.v1.Services
                 product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
-                productTuitionEntity.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+                productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
                 rentedPlace.RentId = null;
@@ -266,7 +267,7 @@ namespace Service.v1.Services
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;
             osForUpdate.Type = osRequest.Type;
             osForUpdate.DeliveryObservation = osRequest.DeliveryObservation;
-            osForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            osForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -279,7 +280,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForUpdate.Status = status;
-            osForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            osForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForUpdate.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
@@ -292,7 +293,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             osForDelete.Deleted = true;
-            osForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            osForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForDelete.UpdatedBy = _email;
 
             if (await _osRepository.UpdateOs(osForDelete) > 0) return true;

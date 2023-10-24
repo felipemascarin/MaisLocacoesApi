@@ -4,20 +4,21 @@ using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
+using TimeZoneConverter;
 
 namespace Repository.v1.Repository
 {
     public class BillRepository : IBillRepository
     {
         private readonly PostgreSqlContext _context;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BillRepository(PostgreSqlContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
         }
 
         public async Task<BillEntity> CreateBill(BillEntity billEntity)
@@ -42,7 +43,7 @@ namespace Repository.v1.Repository
         
         public async Task<IEnumerable<BillEntity>> GetByProductTuitionId(int? productTuitionId) => await _context.Bills.Where(b => b.ProductTuitionId == productTuitionId && b.Deleted == false).ToListAsync();
 
-        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore) => await _context.Bills.Include(b => b.RentEntity).Include(b => b.RentEntity.ClientEntity).Where(b => b.DueDate <= (System.DateTime.UtcNow + _timeZone).AddDays(notifyDaysBefore) && b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.Status != BillStatus.BillStatusEnum.ElementAt(3) && b.Deleted == false).OrderByDescending(b => b.DueDate).ToListAsync();
+        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore) => await _context.Bills.Include(b => b.RentEntity).Include(b => b.RentEntity.ClientEntity).Where(b => b.DueDate <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)).AddDays(notifyDaysBefore) && b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.Status != BillStatus.BillStatusEnum.ElementAt(3) && b.Deleted == false).OrderByDescending(b => b.DueDate).ToListAsync();
 
         public async Task<IEnumerable<BillEntity>> GetAllDebts() => await _context.Bills.Include(b => b.RentEntity).Include(b => b.RentEntity.ClientEntity).Where(b => b.Status != BillStatus.BillStatusEnum.ElementAt(1) && b.ProductTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) && b.Deleted == false).ToListAsync();
 

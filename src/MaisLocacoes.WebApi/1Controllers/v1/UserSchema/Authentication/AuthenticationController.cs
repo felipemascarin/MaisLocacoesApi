@@ -2,7 +2,9 @@
 using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Exceptions;
+using MaisLocacoes.WebApi.Infrastructure;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -19,25 +21,16 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IValidator<LoginRequest> _loginRequestValidator;
         private readonly IValidator<LogoutRequest> _logoutRequestValidator;
         private readonly ILogger _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
-        private readonly string _email;
-        private readonly string _schema;
 
         public AuthenticationController(IAuthenticationService authenticationService,
             IValidator<LoginRequest> loginRequestValidator,
             IValidator<LogoutRequest> logoutRequestValidator,
-            ILoggerFactory loggerFactory,
-            IHttpContextAccessor httpContextAccessor)
+            ILoggerFactory loggerFactory)
         {
             _authenticationService = authenticationService;
             _loginRequestValidator = loginRequestValidator;
             _logoutRequestValidator = logoutRequestValidator;
             _logger = loggerFactory.CreateLogger<AuthenticationController>();
-            _httpContextAccessor = httpContextAccessor;
-            _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         [HttpPost("login")]
@@ -45,7 +38,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Login {@dateTime} {@request}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Login {@dateTime} UTC {@request}", System.DateTime.UtcNow, JsonConvert.SerializeObject(request));
 
                 var validatedLogin = _loginRequestValidator.Validate(request);
 
@@ -60,7 +53,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 //if (!await FireBaseAuthentication.IsFirebaseTokenValid(request.GoogleToken))
                     //return Unauthorized();
 
-                return Ok(await _authenticationService.Login(request));
+                LoginResponse response;
+
+                if (request.Cnpj != "maislocacoes")
+                    response = await _authenticationService.Login(request);
+                else
+                    response = _authenticationService.LoginAdm(request);
+
+                return Ok(response);
             }
             catch (HttpRequestException ex)
             {
@@ -74,7 +74,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Logout {@dateTime} {@request}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(request));
+                _logger.LogInformation("Logout {@dateTime} UTC {@request}", System.DateTime.UtcNow, JsonConvert.SerializeObject(request));
 
                 var validatedLogout = _logoutRequestValidator.Validate(request);
 
@@ -84,6 +84,11 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     validatedLogout.Errors.ForEach(error => logoutValidationErros.Add(error.ErrorMessage));
                     return BadRequest(logoutValidationErros);
                 }
+
+                var schema = JwtManager.ExtractPropertyByToken(request.Token, "role");
+
+                if (schema == "adm")
+                    return Ok("Não é possível deslogar conta ADM, apenas por tempo de token.");
 
                 if (await _authenticationService.Logout(request)) return Ok();
                 else return StatusCode(500, new GenericException("Não foi possível alterar o usuário para deslogado"));
@@ -102,7 +107,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("IsValidToken {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("IsValidToken {@dateTime} UTC", System.DateTime.UtcNow);
 
                 return Ok();
             }

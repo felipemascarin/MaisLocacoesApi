@@ -7,6 +7,7 @@ using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services
 {
@@ -15,7 +16,7 @@ namespace Service.v1.Services
         private readonly ICompanyWasteRepository _companyWasteRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public CompanyWasteService(ICompanyWasteRepository companyWasteRepository,
@@ -25,7 +26,7 @@ namespace Service.v1.Services
             _companyWasteRepository = companyWasteRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -34,7 +35,7 @@ namespace Service.v1.Services
             var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
 
             companyWasteEntity.CreatedBy = _email;
-            companyWasteEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            companyWasteEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             companyWasteEntity = await _companyWasteRepository.CreateCompanyWaste(companyWasteEntity);
 
@@ -61,7 +62,7 @@ namespace Service.v1.Services
             companyWasteForUpdate.Description = companyWasteRequest.Description;
             companyWasteForUpdate.Value = companyWasteRequest.Value;
             companyWasteForUpdate.Date = companyWasteRequest.Date;
-            companyWasteForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            companyWasteForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForUpdate.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
@@ -74,7 +75,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
             companyWasteForDelete.Deleted = true;
-            companyWasteForDelete.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            companyWasteForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForDelete.UpdatedBy = _email;
 
             if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;

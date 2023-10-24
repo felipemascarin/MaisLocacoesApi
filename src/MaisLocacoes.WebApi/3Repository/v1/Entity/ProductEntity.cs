@@ -25,7 +25,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? Description { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? DateBought { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
@@ -42,10 +42,10 @@ namespace Repository.v1.Entity
 
         public int RentedParts { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

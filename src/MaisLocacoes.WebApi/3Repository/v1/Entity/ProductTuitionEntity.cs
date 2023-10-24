@@ -26,11 +26,11 @@ namespace Repository.v1.Entity
         public decimal Value { get; set; }
 
         [Required]
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime InitialDateTime { get; set; }
 
         [Required]
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime FinalDateTime { get; set; }
 
         [DefaultValue(1)]
@@ -41,7 +41,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string? Status { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? FirstDueDate { get; set; }
 
         public int QuantityPeriod { get; set; }
@@ -51,10 +51,10 @@ namespace Repository.v1.Entity
         public string TimePeriod { get; set; }
         public bool IsEditable { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

@@ -2,7 +2,6 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Exceptions;
-using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -21,7 +20,6 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         private readonly IValidator<UpdateCompanyRequest> _updateCompanyValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
         private readonly string _email;
         private readonly string _schema;
 
@@ -36,19 +34,17 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _updateCompanyValidator = updateCompanyValidator;
             _logger = loggerFactory.CreateLogger<CompanyController>();
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
             _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPost]
         public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest companyRequest)
         {
             try
             {
-                _logger.LogInformation("CreateCompany {@dateTime} {@companyRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyRequest), _email, _schema);
+                _logger.LogInformation("CreateCompany {@dateTime} UTC {@companyRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), _email, _schema);
 
                 var validatedCompany = _createCompanyValidator.Validate(companyRequest);
 
@@ -70,14 +66,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpGet("{cnpj}")]
         public async Task<IActionResult> GetByCnpj(string cnpj)
         {
             try
             {
-                _logger.LogInformation("GetByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, cnpj, _email, _schema);
+                _logger.LogInformation("GetByCnpj {@dateTime} UTC cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, cnpj, _email, _schema);
 
                 var company = await _companyService.GetCompanyByCnpj(cnpj);
                 return Ok(company);
@@ -89,14 +84,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        [Authorize]
-        [TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpGet("bytoken")]
         public async Task<IActionResult> GetByToken()
         {
             try
             {
-                _logger.LogInformation("GetByToken {@dateTime} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, _email, _schema);
+                _logger.LogInformation("GetByToken {@dateTime} UTC User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, _email, _schema);
 
                 var company = await _companyService.GetCompanyByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
                 return Ok(company);
@@ -108,14 +102,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPut("{cnpj}")]
         public async Task<IActionResult> UpdateCompany([FromBody] UpdateCompanyRequest companyRequest, string cnpj)
         {
             try
             {
-                _logger.LogInformation("UpdateCompany {@dateTime} {@companyRequest} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, JsonConvert.SerializeObject(companyRequest), cnpj, _email, _schema);
+                _logger.LogInformation("UpdateCompany {@dateTime} UTC {@companyRequest} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), cnpj, _email, _schema);
 
                 var validatedCompany = _updateCompanyValidator.Validate(companyRequest);
 
@@ -136,14 +129,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
         }
 
-        //[Authorize]
-        //[TokenValidationDataBase]
+        [Authorize(Roles = "adm")]
         [HttpPut("cnpj/{cnpj}/status/{status}")]
         public async Task<IActionResult> UpdateStatus(string status, string cnpj)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow + _timeZone, status, cnpj, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, status, cnpj, _email, _schema);
 
                 if (!CompanyStatus.CompanyStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");

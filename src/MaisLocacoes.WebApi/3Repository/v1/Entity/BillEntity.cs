@@ -21,14 +21,14 @@ namespace Repository.v1.Entity
         [Column(TypeName = "decimal(18,2)")]
         public decimal Value { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? PayDate { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         [Required]
         public DateTime DueDate { get; set; }
         
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? InvoiceEmittedDate { get; set; }
 
         [Required]
@@ -48,10 +48,10 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(1000)")]
         public string? Description { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
-        [Column(TypeName = "timestamp")]
+        [Column(TypeName = "timestamp without time zone")]
         public DateTime? UpdatedAt { get; set; }
 
         [StringLength(255)]

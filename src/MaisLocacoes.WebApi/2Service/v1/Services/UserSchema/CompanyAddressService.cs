@@ -5,30 +5,27 @@ using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.IRepository.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Repository.v1.IRepository.UserSchema;
 using System.Net;
+using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
 {
     public class CompanyAddressService : ICompanyAddressService
     {
         private readonly ICompanyAddressRepository _companyAddressRepository;
-        private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public CompanyAddressService(ICompanyAddressRepository companyAddressRepository,
-            ICompanyRepository companyRepository,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
         {
             _companyAddressRepository = companyAddressRepository;
-            _companyRepository = companyRepository;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -37,7 +34,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressRequest);
 
             companyAddressEntity.CreatedBy = _email;
-            companyAddressEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            companyAddressEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             companyAddressEntity = await _companyAddressRepository.CreateCompanyAddress(companyAddressEntity);
 
@@ -65,20 +62,11 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             companyAddressForUpdate.City = companyAddressRequest.City;
             companyAddressForUpdate.State = companyAddressRequest.State;
             companyAddressForUpdate.Country = companyAddressRequest.Country;
-            companyAddressForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            companyAddressForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyAddressForUpdate.UpdatedBy = _email;
 
             if (await _companyAddressRepository.UpdateCompanyAddress(companyAddressForUpdate) > 0) return true;
             else return false;
-        }
-
-        public async Task<CompanyAddressEntity> TimeZoneConverter(CompanyAddressEntity companyAddressEntity)
-        {
-            var timeZoneConverter = new TimeZoneConverter<CompanyAddressEntity>(_companyRepository, _httpContextAccessor);
-
-            companyAddressEntity = await timeZoneConverter.ConvertToTimeZoneLocal(companyAddressEntity);
-
-            return companyAddressEntity;
         }
     }
 }

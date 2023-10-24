@@ -4,10 +4,12 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
 using Service.v1.IServices.UserSchema;
 using System.Net;
+using TimeZoneConverter;
 
 namespace Service.v1.Services.UserSchema
 {
@@ -17,7 +19,7 @@ namespace Service.v1.Services.UserSchema
         private readonly ICompanyRepository _companyRepository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly TimeSpan _timeZone;
+        private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public UserService(IUserRepository userRepository,
@@ -29,7 +31,7 @@ namespace Service.v1.Services.UserSchema
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _companyRepository = companyRepository;
-            _timeZone = TimeSpan.FromHours(int.Parse(JwtManager.GetTimeZoneByToken(_httpContextAccessor)));
+            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
         }
 
@@ -45,8 +47,9 @@ namespace Service.v1.Services.UserSchema
 
             var userEntity = _mapper.Map<UserEntity>(userRequest);
 
+            userEntity.BornDate = userEntity.BornDate.Value.Date;
             userEntity.CreatedBy = _email;
-            userEntity.CreatedAt = System.DateTime.UtcNow + _timeZone;
+            userEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             userEntity = await _userRepository.CreateUser(userEntity);
 
@@ -72,6 +75,7 @@ namespace Service.v1.Services.UserSchema
 
             return userResponse;
         }
+
         public async Task<IEnumerable<GetAllUsersByCnpjResponse>> GetAllUsersByCnpj(string cnpj)
         {
             var userEntities = await _userRepository.GetAllByCnpj(cnpj);
@@ -118,7 +122,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.Cel = userRequest.Cel;
             userForUpdate.CivilStatus = userRequest.CivilStatus;
             userForUpdate.CpfDocumentUrl = userRequest.CpfDocumentUrl;
-            userForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            userForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
@@ -131,7 +135,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             userForUpdate.Status = status;
-            userForUpdate.UpdatedAt = System.DateTime.UtcNow + _timeZone;
+            userForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             userForUpdate.UpdatedBy = _email;
 
             if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
