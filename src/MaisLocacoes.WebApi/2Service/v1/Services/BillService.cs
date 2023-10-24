@@ -3,7 +3,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
-using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;

@@ -4,7 +4,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Exceptions;
-using MaisLocacoes.WebApi.Infrastructure;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
@@ -55,6 +54,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 LoginResponse response;
 
+                //Alterar a lógica para verificar o e-mail do maislocacoes no token
                 if (request.Cnpj != "maislocacoes")
                     response = await _authenticationService.Login(request);
                 else

@@ -27,7 +27,8 @@ namespace Configuration
                 config.CreateMap<AddressEntity, GetAddressByIdResponse>();
 
                 config.CreateMap<CreateCompanyRequest, CompanyEntity>();
-                config.CreateMap<CompanyEntity, GetCompanyByCnpjResponse>();
+                config.CreateMap<CompanyEntity, GetCompanyByCnpjResponse>()
+                .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
                 config.CreateMap<CompanyEntity, CreateCompanyResponse>()
                 .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
 
@@ -38,11 +39,16 @@ namespace Configuration
                 config.CreateMap<UserEntity, CreateUserResponse>();
 
                 config.CreateMap<CreateClientRequest, ClientEntity>();
-                config.CreateMap<ClientEntity, GetClientByIdResponse>();
-                config.CreateMap<ClientEntity, GetClientByIdDetailsResponse>();
-                config.CreateMap<ClientEntity, GetClientByCpfResponse>();
-                config.CreateMap<ClientEntity, GetClientByCnpjResponse>();
-                config.CreateMap<ClientEntity, GetClientsByPageResponse>();
+                config.CreateMap<ClientEntity, GetClientByIdResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
+                config.CreateMap<ClientEntity, GetClientByIdDetailsResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
+                config.CreateMap<ClientEntity, GetClientByCpfResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
+                config.CreateMap<ClientEntity, GetClientByCnpjResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
+                config.CreateMap<ClientEntity, GetClientsByPageResponse>()
+                .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
                 config.CreateMap<ClientEntity, CreateClientResponse>()
                 .ForMember(ClientResponse => ClientResponse.Address, opt => opt.MapFrom(ClientEntity => ClientEntity.AddressEntity));
 
@@ -107,8 +113,12 @@ namespace Configuration
                 config.CreateMap<RentedPlaceEntity, CreateRentedPlaceResponse>();
 
                 config.CreateMap<CreateRentRequest, RentEntity>();
-                config.CreateMap<RentEntity, GetRentByIdResponse>();
-                config.CreateMap<RentEntity, GetAllRentsByClientIdResponse>();
+                config.CreateMap<RentEntity, GetRentByIdResponse>()
+                .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity))
+                .ForMember(RentResponse => RentResponse.Client, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity))
+                .ForPath(RentResponse => RentResponse.Client.Address, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity.AddressEntity));
+                config.CreateMap<RentEntity, GetAllRentsByClientIdResponse>()
+                .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity));
                 config.CreateMap<RentEntity, CreateRentResponse>()
                 .ForMember(RentResponse => RentResponse.Address, opt => opt.MapFrom(RentEntity => RentEntity.AddressEntity));
                 config.CreateMap<RentEntity, GetRentClientResponse>()
@@ -121,8 +131,10 @@ namespace Configuration
                 .ForPath(RentResponse => RentResponse.Client.Address, opt => opt.MapFrom(RentEntity => RentEntity.ClientEntity.AddressEntity));
 
                 config.CreateMap<CreateSupplierRequest, SupplierEntity>();
-                config.CreateMap<SupplierEntity, GetSupplierByIdResponse>();
-                config.CreateMap<SupplierEntity, GetAllSuppliersResponse>();
+                config.CreateMap<SupplierEntity, GetSupplierByIdResponse>()
+                .ForMember(SupplierResponse => SupplierResponse.Address, opt => opt.MapFrom(SupplierEntity => SupplierEntity.AddressEntity));
+                config.CreateMap<SupplierEntity, GetAllSuppliersResponse>()
+                .ForMember(SupplierResponse => SupplierResponse.Address, opt => opt.MapFrom(SupplierEntity => SupplierEntity.AddressEntity));
                 config.CreateMap<SupplierEntity, CreateSupplierResponse>()
                 .ForMember(SupplierResponse => SupplierResponse.Address, opt => opt.MapFrom(SupplierEntity => SupplierEntity.AddressEntity));
             });
