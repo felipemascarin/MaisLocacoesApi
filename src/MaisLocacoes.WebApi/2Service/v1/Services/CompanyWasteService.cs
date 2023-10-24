@@ -32,6 +32,9 @@ namespace Service.v1.Services
 
         public async Task<CreateCompanyWasteResponse> CreateCompanyWaste(CreateCompanyWasteRequest companyWasteRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            companyWasteRequest = TimeZoneConverter<CreateCompanyWasteRequest>.ConvertToTimeZoneLocal(companyWasteRequest, _timeZone);
+
             var companyWasteEntity = _mapper.Map<CompanyWasteEntity>(companyWasteRequest);
 
             companyWasteEntity.CreatedBy = _email;
@@ -56,6 +59,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            companyWasteRequest = TimeZoneConverter<UpdateCompanyWasteRequest>.ConvertToTimeZoneLocal(companyWasteRequest, _timeZone);
+
             var companyWasteForUpdate = await _companyWasteRepository.GetById(id) ??
                throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 

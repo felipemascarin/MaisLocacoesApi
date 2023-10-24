@@ -118,7 +118,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.Email = userRequest.Email;
             userForUpdate.Role = userRequest.Role;
             userForUpdate.ProfileImageUrl = userRequest.ProfileImageUrl;
-            userForUpdate.BornDate = userRequest.BornDate;
+            userForUpdate.BornDate = userRequest.BornDate.Value.Date;
             userForUpdate.Cel = userRequest.Cel;
             userForUpdate.CivilStatus = userRequest.CivilStatus;
             userForUpdate.CpfDocumentUrl = userRequest.CpfDocumentUrl;

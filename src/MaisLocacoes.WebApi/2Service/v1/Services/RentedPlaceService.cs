@@ -41,6 +41,9 @@ namespace Service.v1.Services
 
         public async Task<CreateRentedPlaceResponse> CreateRentedPlace(CreateRentedPlaceRequest rentedPlaceRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            rentedPlaceRequest = TimeZoneConverter<CreateRentedPlaceRequest>.ConvertToTimeZoneLocal(rentedPlaceRequest, _timeZone);
+
             var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId);
             if (!existsproduct)
                 throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
@@ -83,6 +86,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            rentedPlaceRequest = TimeZoneConverter<UpdateRentedPlaceRequest>.ConvertToTimeZoneLocal(rentedPlaceRequest, _timeZone);
+
             var rentedPlaceForUpdate = await _rentedPlaceRepository.GetById(id) ??
                 throw new HttpRequestException("Local não encontrado", null, HttpStatusCode.NotFound);
 

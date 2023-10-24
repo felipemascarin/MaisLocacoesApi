@@ -179,7 +179,7 @@ namespace Service.v1.Services
             clientForUpdate.Cel = clientRequest.Cel;
             clientForUpdate.Tel = clientRequest.Tel;
             clientForUpdate.Email = clientRequest.Email;
-            clientForUpdate.BornDate = clientRequest.BornDate;
+            clientForUpdate.BornDate = clientRequest.BornDate.Value.Date;
             clientForUpdate.Career = clientRequest.Career;
             clientForUpdate.CivilStatus = clientRequest.CivilStatus;
             clientForUpdate.Segment = clientRequest.Segment;

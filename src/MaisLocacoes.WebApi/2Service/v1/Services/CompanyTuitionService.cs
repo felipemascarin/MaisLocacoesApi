@@ -32,6 +32,9 @@ namespace Service.v1.Services
 
         public async Task<CreateCompanyTuitionResponse> CreateCompanyTuition(CreateCompanyTuitionRequest companyTuitionRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            companyTuitionRequest = TimeZoneConverter<CreateCompanyTuitionRequest>.ConvertToTimeZoneLocal(companyTuitionRequest, _timeZone);
+
             var companyTuitionEntity = _mapper.Map<CompanyTuitionEntity>(companyTuitionRequest);
 
             companyTuitionEntity.CreatedBy = _email;
@@ -56,6 +59,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            companyTuitionRequest = TimeZoneConverter<UpdateCompanyTuitionRequest>.ConvertToTimeZoneLocal(companyTuitionRequest, _timeZone);
+
             var companyTuitionForUpdate = await _companyTuitionRepository.GetById(id) ??
                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 

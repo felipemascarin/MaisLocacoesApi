@@ -45,6 +45,9 @@ namespace Service.v1.Services
 
         public async Task<CreateBillResponse> CreateBill(CreateBillRequest billRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            billRequest = TimeZoneConverter<CreateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
+
             var rentExists = await _rentRepository.RentExists(billRequest.RentId);
             if (!rentExists)
                 throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
@@ -55,9 +58,6 @@ namespace Service.v1.Services
                 if (!existsProductTuition)
                     throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
             }
-
-            //Converte todas as propridades que forem data (utc) para o timezone da empresa
-            billRequest = TimeZoneConverter<CreateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
 
             var billEntity = _mapper.Map<BillEntity>(billRequest);
 
@@ -248,6 +248,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateBill(UpdateBillRequest billRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            billRequest = TimeZoneConverter<UpdateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
+
             var billForUpdate = await _billRepository.GetById(id) ??
                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 

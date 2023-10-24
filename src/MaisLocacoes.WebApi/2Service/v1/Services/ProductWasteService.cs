@@ -35,6 +35,9 @@ namespace Service.v1.Services
 
         public async Task<CreateProductWasteResponse> CreateProductWaste(CreateProductWasteRequest productWasteRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productWasteRequest = TimeZoneConverter<CreateProductWasteRequest>.ConvertToTimeZoneLocal(productWasteRequest, _timeZone);
+
             var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId);
             if (!existsproduct)
             {
@@ -94,6 +97,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productWasteRequest = TimeZoneConverter<UpdateProductWasteRequest>.ConvertToTimeZoneLocal(productWasteRequest, _timeZone);
+
             var productWasteForUpdate = await _productWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
 

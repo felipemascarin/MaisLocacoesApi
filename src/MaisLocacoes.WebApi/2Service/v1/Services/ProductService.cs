@@ -36,6 +36,9 @@ namespace Service.v1.Services
 
         public async Task<CreateProductResponse> CreateProduct(CreateProductRequest productRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productRequest = TimeZoneConverter<CreateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
+
             var existsProductType = await _productTypeRepository.GetById(productRequest.ProductTypeId) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
@@ -131,6 +134,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateProduct(UpdateProductRequest productRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productRequest = TimeZoneConverter<UpdateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
+
             var productForUpdate = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.BadRequest);
 

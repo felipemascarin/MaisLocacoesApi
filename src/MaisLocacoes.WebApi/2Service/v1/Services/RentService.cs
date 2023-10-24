@@ -45,6 +45,9 @@ namespace Service.v1.Services
 
         public async Task<CreateRentResponse> CreateRent(CreateRentRequest rentRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            rentRequest = TimeZoneConverter<CreateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
+
             var client = await _clientRepository.GetById(rentRequest.ClientId) ??
                 throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
 
@@ -52,9 +55,6 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Esse cliente não pode realizar locação", null, HttpStatusCode.BadRequest);
 
             var addressResponse = await _addressService.CreateAddress(rentRequest.Address);
-
-            //Converte todas as propridades que forem data (utc) para o timezone da empresa
-            rentRequest = TimeZoneConverter<CreateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
 
             var rentEntity = _mapper.Map<RentEntity>(rentRequest);
 
@@ -127,6 +127,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateRent(UpdateRentRequest rentRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            rentRequest = TimeZoneConverter<UpdateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
+
             var rentForUpdate = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 

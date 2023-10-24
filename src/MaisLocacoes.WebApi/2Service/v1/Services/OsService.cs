@@ -50,6 +50,9 @@ namespace Service.v1.Services
 
         public async Task<CreateOsResponse> CreateOs(CreateOsRequest osRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            osRequest = TimeZoneConverter<CreateOsRequest>.ConvertToTimeZoneLocal(osRequest, _timeZone);
+
             var existsRent = await _productTuitionRepository.ProductTuitionExists(osRequest.ProductTuitionId);
 
             if (!existsRent)
@@ -249,6 +252,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateOs(UpdateOsRequest osRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            osRequest = TimeZoneConverter<UpdateOsRequest>.ConvertToTimeZoneLocal(osRequest, _timeZone);
+
             var osForUpdate = await _osRepository.GetById(id) ??
                throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 

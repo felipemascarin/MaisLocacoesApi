@@ -53,6 +53,9 @@ namespace Service.v1.Services
 
         public async Task<CreateProductTuitionResponse> CreateProductTuition(CreateProductTuitionRequest productTuitionRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productTuitionRequest = TimeZoneConverter<CreateProductTuitionRequest>.ConvertToTimeZoneLocal(productTuitionRequest, _timeZone);
+
             var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
             if (!existsRent)
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
@@ -191,6 +194,9 @@ namespace Service.v1.Services
 
         public async Task<bool> RenewProductTuition(int id, RenewProductTuitionRequest renewRequest)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            renewRequest = TimeZoneConverter<RenewProductTuitionRequest>.ConvertToTimeZoneLocal(renewRequest, _timeZone);
+
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
@@ -300,6 +306,9 @@ namespace Service.v1.Services
 
         public async Task<bool> UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id)
         {
+            //Converte todas as propridades que forem data (utc) para o timezone da empresa
+            productTuitionRequest = TimeZoneConverter<UpdateProductTuitionRequest>.ConvertToTimeZoneLocal(productTuitionRequest, _timeZone);
+
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
