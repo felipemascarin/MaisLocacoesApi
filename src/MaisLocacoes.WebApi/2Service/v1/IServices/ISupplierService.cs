@@ -9,7 +9,7 @@ namespace Service.v1.IServices
         Task<CreateSupplierResponse> CreateSupplier(CreateSupplierRequest supplierRequest);
         Task<GetSupplierByIdResponse> GetSupplierById(int id);
         Task<IEnumerable<GetAllSuppliersResponse>> GetAllSuppliers();
-        Task<bool> UpdateSupplier(UpdateSupplierRequest supplierRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateSupplier(UpdateSupplierRequest supplierRequest, int id);
+        Task DeleteById(int id);
     }
 }

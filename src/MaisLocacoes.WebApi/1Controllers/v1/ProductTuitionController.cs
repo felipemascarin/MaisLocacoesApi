@@ -81,8 +81,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("WithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                if (await _productTuitionService.WithdrawProduct(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.WithdrawProduct(id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -100,8 +101,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("CancelWithdrawProduct {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                if (await _productTuitionService.CancelWithdrawProduct(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.CancelWithdrawProduct(id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -119,8 +121,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("RenewProduct {@dateTime} request:{@request} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(renewRequest), id, _email, _schema);
 
-                if (await _productTuitionService.RenewProductTuition(id, renewRequest)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.RenewProductTuition(id, renewRequest);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -223,8 +226,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(productTuitionValidationErros);
                 }
 
-                if (await _productTuitionService.UpdateProductTuition(productTuitionRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.UpdateProductTuition(productTuitionRequest, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -245,8 +249,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (productCode == null)
                     throw new HttpRequestException("Código do produto é obrigatório", null, HttpStatusCode.BadRequest);
 
-                if (await _productTuitionService.UpdateProductCode(productCode, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.UpdateProductCode(productCode, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -267,8 +272,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (!ProductTuitionStatus.ProductTuitionStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _productTuitionService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productTuitionService.UpdateStatus(status, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -286,8 +292,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                if (await _productTuitionService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar"));
+                await _productTuitionService.DeleteById(id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

@@ -75,7 +75,7 @@ namespace Service.v1.Services
             return osResponse;
         }
 
-        public async Task<bool> StartOs(int id)
+        public async Task StartOs(int id)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -98,11 +98,10 @@ namespace Service.v1.Services
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(os) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(os);
         }
 
-        public async Task<bool> ReturnOs(int id)
+        public async Task ReturnOs(int id)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -116,11 +115,10 @@ namespace Service.v1.Services
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(os) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(os);
         }
 
-        public async Task<bool> CancelOs(int id)
+        public async Task CancelOs(int id)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -133,11 +131,10 @@ namespace Service.v1.Services
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(os) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(os);
         }
 
-        public async Task<bool> FinishOs(int id, FinishOsRequest finishOsRequest)
+        public async Task FinishOs(int id, FinishOsRequest finishOsRequest)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -212,8 +209,7 @@ namespace Service.v1.Services
 
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
-            if (await _osRepository.UpdateOs(os) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(os);
         }
 
         public async Task<GetOsByIdResponse> GetOsById(int id)
@@ -250,7 +246,7 @@ namespace Service.v1.Services
             return _mapper.Map<List<GetAllOsByStatusResponse>>(osRelationTuition); ;
         }
 
-        public async Task<bool> UpdateOs(UpdateOsRequest osRequest, int id)
+        public async Task UpdateOs(UpdateOsRequest osRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             osRequest = TimeZoneConverter<UpdateOsRequest>.ConvertToTimeZoneLocal(osRequest, _timeZone);
@@ -276,11 +272,10 @@ namespace Service.v1.Services
             osForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForUpdate.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(osForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, int id)
+        public async Task UpdateStatus(string status, int id)
         {
             var osForUpdate = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -289,11 +284,10 @@ namespace Service.v1.Services
             osForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForUpdate.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(osForUpdate) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(osForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var osForDelete = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -302,8 +296,7 @@ namespace Service.v1.Services
             osForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             osForDelete.UpdatedBy = _email;
 
-            if (await _osRepository.UpdateOs(osForDelete) > 0) return true;
-            else return false;
+            await _osRepository.UpdateOs(osForDelete);
         }
     }
 }

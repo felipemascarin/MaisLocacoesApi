@@ -106,8 +106,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(rentedPlaceValidationErros);
                 }
 
-                if (await _rentedPlaceService.UpdateRentedPlace(rentedPlaceRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _rentedPlaceService.UpdateRentedPlace(rentedPlaceRequest, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

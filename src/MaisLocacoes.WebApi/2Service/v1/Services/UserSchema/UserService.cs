@@ -85,7 +85,7 @@ namespace Service.v1.Services.UserSchema
             return usersResponse;
         }
 
-        public async Task<bool> UpdateUser(UpdateUserRequest userRequest, string email, string cnpj)
+        public async Task UpdateUser(UpdateUserRequest userRequest, string email, string cnpj)
         {
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
@@ -125,11 +125,10 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             userForUpdate.UpdatedBy = _email;
 
-            if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
-            else return false;
+            await _userRepository.UpdateUser(userForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, string email, string cnpj)
+        public async Task UpdateStatus(string status, string email, string cnpj)
         {
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
@@ -138,8 +137,7 @@ namespace Service.v1.Services.UserSchema
             userForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             userForUpdate.UpdatedBy = _email;
 
-            if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
-            else return false;
+            await _userRepository.UpdateUser(userForUpdate);
         }
     }
 }

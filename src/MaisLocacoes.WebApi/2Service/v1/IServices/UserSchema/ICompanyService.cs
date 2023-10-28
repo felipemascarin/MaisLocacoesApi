@@ -9,7 +9,7 @@ namespace Service.v1.IServices.UserSchema
     {
         Task<CreateCompanyResponse> CreateCompany(CreateCompanyRequest companyRequest);
         Task<GetCompanyByCnpjResponse> GetCompanyByCnpj(string cnpj);
-        Task<bool> UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj);
-        Task<bool> UpdateStatus(string status, string cnpj);
+        Task UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj);
+        Task UpdateStatus(string status, string cnpj);
     }
 }

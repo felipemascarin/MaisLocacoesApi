@@ -24,20 +24,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                  result >= 0)
                 .WithMessage("Valor da fatura inválido");
 
-            RuleFor(bill => bill.PayDate)
-                .Must(payDate => DateTime.TryParse(payDate.ToString(), out var result))
-                .WithMessage("A data de pagamento se inserida deve ser uma data válida")
-                .When(bill => bill.PayDate != null);
-
-            RuleFor(bill => bill.DueDate)
-                .Must(dueDate => DateTime.TryParse(dueDate.ToString(), out var result))
-                .WithMessage("A Data de vencimento é obrigatória");
-
-            RuleFor(bill => bill.InvoiceEmittedDate)
-                .Must(invoiceEmittedDate => DateTime.TryParse(invoiceEmittedDate.ToString(), out var result))
-                .WithMessage("A Data de emissão da nota fiscal se inserida deve ser uma data válida")
-                .When(bill => bill.InvoiceEmittedDate != null);
-
             RuleFor(bill => bill.NfIdFireBase)
                 .Must(nfIdFireBase => int.TryParse(nfIdFireBase.ToString(), out var result) &&
                  result > 0)

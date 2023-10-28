@@ -8,7 +8,7 @@ namespace Service.v1.IServices
     {
         Task<CreateCompanyTuitionResponse> CreateCompanyTuition(CreateCompanyTuitionRequest companyTuitionRequest);
         Task<GetCompanyTuitionByIdResponse> GetCompanyTuitionById(int id);
-        Task<bool> UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id);
+        Task DeleteById(int id);
     }
 }

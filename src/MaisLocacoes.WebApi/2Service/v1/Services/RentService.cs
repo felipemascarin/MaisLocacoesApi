@@ -125,7 +125,7 @@ namespace Service.v1.Services
             return rentsResponseListReturn;
         }
 
-        public async Task<bool> UpdateRent(UpdateRentRequest rentRequest, int id)
+        public async Task UpdateRent(UpdateRentRequest rentRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             rentRequest = TimeZoneConverter<UpdateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
@@ -145,19 +145,15 @@ namespace Service.v1.Services
             rentForUpdate.ClientId = rentRequest.ClientId;
             rentForUpdate.Carriage = rentRequest.Carriage;
             rentForUpdate.Description = rentRequest.Description;
-            rentForUpdate.SignedAt = rentRequest.SignedAt;
-            rentForUpdate.UrlSignature = rentRequest.UrlSignature;
             rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForUpdate.UpdatedBy = _email;
 
-            if (!await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a locação", null, HttpStatusCode.InternalServerError);
+            await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id);
 
-            if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
-            else return false;
+            await _rentRepository.UpdateRent(rentForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, int id)
+        public async Task UpdateStatus(string status, int id)
         {
             var rentForUpdate = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
@@ -166,11 +162,10 @@ namespace Service.v1.Services
             rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForUpdate.UpdatedBy = _email;
 
-            if (await _rentRepository.UpdateRent(rentForUpdate) > 0) return true;
-            else return false;
+            await _rentRepository.UpdateRent(rentForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var rentForDelete = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
@@ -179,8 +174,7 @@ namespace Service.v1.Services
             rentForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForDelete.UpdatedBy = _email;
 
-            if (await _rentRepository.UpdateRent(rentForDelete) > 0) return true;
-            else return false;
+            await _rentRepository.UpdateRent(rentForDelete);
         }
 
         public void CreateCarriageBill(RentEntity rentEntity)

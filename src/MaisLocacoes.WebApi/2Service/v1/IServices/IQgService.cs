@@ -9,7 +9,7 @@ namespace Service.v1.IServices
         Task<CreateQgResponse> CreateQg(CreateQgRequest qgRequest);
         Task<GetQgByIdResponse> GetQgById(int id);
         Task<IEnumerable<GetAllQgsResponse>> GetAllQgs();
-        Task<bool> UpdateQg(UpdateQgRequest qgRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateQg(UpdateQgRequest qgRequest, int id);
+        Task DeleteById(int id);
     }
 }

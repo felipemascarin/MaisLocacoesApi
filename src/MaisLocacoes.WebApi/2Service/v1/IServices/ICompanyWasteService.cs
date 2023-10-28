@@ -8,7 +8,7 @@ namespace Service.v1.IServices
     {
         Task<CreateCompanyWasteResponse> CreateCompanyWaste(CreateCompanyWasteRequest companyWasteRequest);
         Task<GetCompanyWasteByIdResponse> GetCompanyWasteById(int id);
-        Task<bool> UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id);
+        Task DeleteById(int id);
     }
 }

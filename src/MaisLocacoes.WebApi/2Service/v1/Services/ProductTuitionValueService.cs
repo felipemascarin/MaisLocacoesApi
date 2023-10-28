@@ -74,7 +74,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             return productTuitionValuesResponseList;
         }
 
-        public async Task<bool> UpdateProductTuitionValue(UpdateProductTuitionValueRequest productTuitionValueRequest, int id)
+        public async Task UpdateProductTuitionValue(UpdateProductTuitionValueRequest productTuitionValueRequest, int id)
         {
             var productTuitionValueForUpdate = await _productTuitionValueRepository.GetById(id) ??
                 throw new HttpRequestException("Regra de valor do tipo de produto não encontrada", null, HttpStatusCode.NotFound);
@@ -103,17 +103,15 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             productTuitionValueForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionValueForUpdate.UpdatedBy = _email;
 
-            if (await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate) > 0) return true;
-            else return false;
+            await _productTuitionValueRepository.UpdateProductTuitionValue(productTuitionValueForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var productTuitionValueForDelete = await _productTuitionValueRepository.GetById(id) ??
                 throw new HttpRequestException("Regra de valor do tipo de produto não encontrada", null, HttpStatusCode.NotFound);
 
-            if (await _productTuitionValueRepository.DeleteProductTuitionValue(productTuitionValueForDelete) > 0) return true;
-            else return false;
+            await _productTuitionValueRepository.DeleteProductTuitionValue(productTuitionValueForDelete);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Service.v1.Services
             return companyWasteResponse;
         }
 
-        public async Task<bool> UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id)
+        public async Task UpdateCompanyWaste(UpdateCompanyWasteRequest companyWasteRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             companyWasteRequest = TimeZoneConverter<UpdateCompanyWasteRequest>.ConvertToTimeZoneLocal(companyWasteRequest, _timeZone);
@@ -71,11 +71,10 @@ namespace Service.v1.Services
             companyWasteForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForUpdate.UpdatedBy = _email;
 
-            if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate) > 0) return true;
-            else return false;
+            await _companyWasteRepository.UpdateCompanyWaste(companyWasteForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
@@ -84,8 +83,7 @@ namespace Service.v1.Services
             companyWasteForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForDelete.UpdatedBy = _email;
 
-            if (await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete) > 0) return true;
-            else return false;
+            await _companyWasteRepository.UpdateCompanyWaste(companyWasteForDelete);
         }
     }
 }

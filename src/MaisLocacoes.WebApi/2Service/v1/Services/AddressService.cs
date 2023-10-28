@@ -48,7 +48,7 @@ namespace Service.v1.Services
             return _mapper.Map<GetAddressByIdResponse>(addressEntity);
         }
 
-        public async Task<bool> UpdateAddress(UpdateAddressRequest addressRequest, int id)
+        public async Task UpdateAddress(UpdateAddressRequest addressRequest, int id)
         {
             var addressForUpdate = await _addressRepository.GetById(id) ??
                 throw new HttpRequestException("Endereço não encontrado", null, HttpStatusCode.NotFound);
@@ -64,8 +64,7 @@ namespace Service.v1.Services
             addressForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             addressForUpdate.UpdatedBy = _email;
 
-            if (await _addressRepository.UpdateAddress(addressForUpdate) > 0) return true;
-            else return false;
+            await _addressRepository.UpdateAddress(addressForUpdate);
         }
     }
 }

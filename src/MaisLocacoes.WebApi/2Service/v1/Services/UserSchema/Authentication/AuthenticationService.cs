@@ -80,7 +80,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             return tokenResponse;
         }
 
-        public async Task<bool> Logout(LogoutRequest tokenRequest)
+        public async Task Logout(LogoutRequest tokenRequest)
         {
             var email = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "email");
 
@@ -92,8 +92,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             //Limpa a propriedade LastToken da tabela Users no banco de dados
             userForUpdate.LastToken = string.Empty;
 
-            if (await _userRepository.UpdateUser(userForUpdate) > 0) return true;
-            else return false;
+            await _userRepository.UpdateUser(userForUpdate);
         }
     }
 }

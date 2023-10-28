@@ -142,8 +142,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                     return BadRequest(userValidationErros);
                 }
 
-                if (await _userService.UpdateUser(userRequest, email, cnpj)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
+                await _userService.UpdateUser(userRequest, email, cnpj);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -163,8 +164,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                 if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _userService.UpdateStatus(status, email, cnpj)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário"));
+                await _userService.UpdateStatus(status, email, cnpj);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

@@ -9,7 +9,7 @@ namespace Service.v1.IServices
         Task<CreateProductTypeResponse> CreateProductType(CreateProductTypeRequest productTypeRequest);
         Task<GetProductTypeByIdResponse> GetProductTypeById(int id);
         Task<IEnumerable<GetAllProductTypesResponse>> GetAllProductTypes();
-        Task<bool> UpdateProductType(UpdateProductTypeRequest productTypeRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateProductType(UpdateProductTypeRequest productTypeRequest, int id);
+        Task DeleteById(int id);
     }
 }

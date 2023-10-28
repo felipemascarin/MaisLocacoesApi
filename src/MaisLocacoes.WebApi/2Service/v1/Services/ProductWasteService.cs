@@ -95,7 +95,7 @@ namespace Service.v1.Services
             return productWastesResponseList;
         }
 
-        public async Task<bool> UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id)
+        public async Task UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productWasteRequest = TimeZoneConverter<UpdateProductWasteRequest>.ConvertToTimeZoneLocal(productWasteRequest, _timeZone);
@@ -119,11 +119,10 @@ namespace Service.v1.Services
             productWasteForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productWasteForUpdate.UpdatedBy = _email;
 
-            if (await _productWasteRepository.UpdateProductWaste(productWasteForUpdate) > 0) return true;
-            else return false;
+            await _productWasteRepository.UpdateProductWaste(productWasteForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var productWasteForDelete = await _productWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
@@ -132,8 +131,7 @@ namespace Service.v1.Services
             productWasteForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productWasteForDelete.UpdatedBy = _email;
 
-            if (await _productWasteRepository.UpdateProductWaste(productWasteForDelete) > 0) return true;
-            else return false;
+            await _productWasteRepository.UpdateProductWaste(productWasteForDelete);
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Service.v1.Services
             return qgResponse;
         }
 
-        public async Task<bool> UpdateQg(UpdateQgRequest qgRequest, int id)
+        public async Task UpdateQg(UpdateQgRequest qgRequest, int id)
         {
             var qgForUpdate = await _qgRepository.GetById(id) ??
                     throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
@@ -80,14 +80,12 @@ namespace Service.v1.Services
             qgForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             qgForUpdate.UpdatedBy = _email;
 
-            if (!await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o QG", null, HttpStatusCode.InternalServerError);
+            await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id);
 
-            if (await _qgRepository.UpdateQg(qgForUpdate) > 0) return true;
-            else return false;
+            await _qgRepository.UpdateQg(qgForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var qgForDelete = await _qgRepository.GetById(id) ??
                 throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
@@ -96,8 +94,7 @@ namespace Service.v1.Services
             qgForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             qgForDelete.UpdatedBy = _email;
 
-            if (await _qgRepository.UpdateQg(qgForDelete) > 0) return true;
-            else return false;
+            await _qgRepository.UpdateQg(qgForDelete);
         }
     }
 }

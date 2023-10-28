@@ -13,8 +13,8 @@ namespace Service.v1.IServices
         Task<GetClientByCnpjResponse> GetClientByCnpj(string cnpj);
         Task<IEnumerable<GetClientsByPageResponse>> GetClientsByPage(int items, int page, string query);
         Task<IEnumerable<GetClientsForRentResponse>> GetClientsForRent();
-        Task<bool> UpdateClient(UpdateClientRequest clientRequest, int id);
-        Task<bool> UpdateStatus(string status, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateClient(UpdateClientRequest clientRequest, int id);
+        Task UpdateStatus(string status, int id);
+        Task DeleteById(int id);
     }
 }

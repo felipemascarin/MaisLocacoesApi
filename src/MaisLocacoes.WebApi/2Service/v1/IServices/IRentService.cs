@@ -10,8 +10,8 @@ namespace Service.v1.IServices
         Task<GetRentByIdResponse> GetRentById(int id);
         Task<IEnumerable<GetAllRentsByClientIdResponse>> GetAllRentsByClientId(int clientId);
         Task<IEnumerable<GetRentByPageResponse>> GetRentsByPage(int items, int page, string query, string status);
-        Task<bool> UpdateRent(UpdateRentRequest rentRequest, int id);
-        Task<bool> UpdateStatus(string status, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateRent(UpdateRentRequest rentRequest, int id);
+        Task UpdateStatus(string status, int id);
+        Task DeleteById(int id);
     }
 }

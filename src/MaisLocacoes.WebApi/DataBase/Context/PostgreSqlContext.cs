@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.DataBase;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi.DataBase;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -29,6 +30,7 @@ namespace MaisLocacoes.WebApi.Context
         public DbSet<CompanyAddressEntity> CompaniesAddresses { get; set; }
         public DbSet<CompanyTuitionEntity> CompanyTuitions { get; set; }
         public DbSet<CompanyWasteEntity> CompanyWastes { get; set; }
+        public DbSet<ContractEntity> Contracts { get; set; }
         public DbSet<OsEntity> Oss { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<ProductEntity> Products { get; set; }
@@ -77,6 +79,10 @@ namespace MaisLocacoes.WebApi.Context
             //Definindo valores Unique com Fluent API:
             modelBuilder.Entity<CompanyEntity>()
                 .HasIndex(e => e.Email)
+                .IsUnique();
+
+            modelBuilder.Entity<ContractEntity>()
+                .HasIndex(e => e.GuidId)
                 .IsUnique();
 
             //Definindo valor Default NotifyDaysBefore de CompanyEntity:
@@ -367,6 +373,12 @@ namespace MaisLocacoes.WebApi.Context
             .WithMany(one => one.Suppliers)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Suppliers, TableNameEnum.Addresses));
+
+            modelBuilder.Entity<ContractEntity>()
+            .HasOne<RentEntity>(many => many.RentEntity)
+            .WithMany(one => one.Contracts)
+            .HasForeignKey(many => new { many.RentId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Contracts, TableNameEnum.Rents));
 
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)

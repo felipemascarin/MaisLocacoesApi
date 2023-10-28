@@ -10,6 +10,7 @@
         public const string Clients = "Clients";
         public const string CompanyTuitions = "CompanyTuitions";
         public const string CompanyWastes = "CompanyWastes";
+        public const string Contracts = "Contracts";
         public const string Oss = "Oss";
         public const string Products = "Products";
         public const string ProductTuitions = "ProductTuitions";

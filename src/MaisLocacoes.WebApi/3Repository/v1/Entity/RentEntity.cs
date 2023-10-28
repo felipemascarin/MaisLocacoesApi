@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi.Context;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -30,13 +31,6 @@ namespace Repository.v1.Entity
         public string? Description { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
-        public DateTime? SignedAt { get; set; }
-
-        [StringLength(2048)]
-        [Column(TypeName = "character varying(2048)")]
-        public string? UrlSignature { get; set; }
-
-        [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
@@ -54,5 +48,6 @@ namespace Repository.v1.Entity
 
         public ICollection<BillEntity> Bills { get; set; }
         public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }
+        public ICollection<ContractEntity> Contracts { get; set; }
     }
 }

@@ -57,7 +57,7 @@ namespace Service.v1.Services
             return companyTuitionResponse;
         }
 
-        public async Task<bool> UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id)
+        public async Task UpdateCompanyTuition(UpdateCompanyTuitionRequest companyTuitionRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             companyTuitionRequest = TimeZoneConverter<UpdateCompanyTuitionRequest>.ConvertToTimeZoneLocal(companyTuitionRequest, _timeZone);
@@ -73,11 +73,10 @@ namespace Service.v1.Services
             companyTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForUpdate.UpdatedBy = _email;
 
-            if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate) > 0) return true;
-            else return false;
+            await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var companyTuitionForDelete = await _companyTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
@@ -86,8 +85,7 @@ namespace Service.v1.Services
             companyTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForDelete.UpdatedBy = _email;
 
-            if (await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete) > 0) return true;
-            else return false;
+            await _companyTuitionRepository.UpdateCompanyTuition(companyTuitionForDelete);
         }
     }
 }

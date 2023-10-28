@@ -105,8 +105,9 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
                     return BadRequest(companyAddressValidationErros);
                 }
 
-                if (await _companyAddressService.UpdateCompanyAddress(request, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o endereço da empresa"));
+                await _companyAddressService.UpdateCompanyAddress(request, id);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

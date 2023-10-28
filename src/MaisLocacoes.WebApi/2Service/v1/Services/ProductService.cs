@@ -132,7 +132,7 @@ namespace Service.v1.Services
             return productForRentResponse.OrderBy(p => p.Code);
         }
 
-        public async Task<bool> UpdateProduct(UpdateProductRequest productRequest, int id)
+        public async Task UpdateProduct(UpdateProductRequest productRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productRequest = TimeZoneConverter<UpdateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
@@ -169,11 +169,10 @@ namespace Service.v1.Services
             productForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productForUpdate.UpdatedBy = _email;
 
-            if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
-            else return false;
+            await _productRepository.UpdateProduct(productForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, int id)
+        public async Task UpdateStatus(string status, int id)
         {
             var productForUpdate = await _productRepository.GetById(id) ??
                     throw new HttpRequestException("produto não encontrado", null, HttpStatusCode.NotFound);
@@ -182,11 +181,10 @@ namespace Service.v1.Services
             productForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productForUpdate.UpdatedBy = _email;
 
-            if (await _productRepository.UpdateProduct(productForUpdate) > 0) return true;
-            else return false;
+            await _productRepository.UpdateProduct(productForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var productForDelete = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
@@ -195,8 +193,7 @@ namespace Service.v1.Services
             productForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productForDelete.UpdatedBy = _email;
 
-            if (await _productRepository.UpdateProduct(productForDelete) > 0) return true;
-            else return false;
+            await _productRepository.UpdateProduct(productForDelete);
         }
     }
 }

@@ -8,6 +8,6 @@ namespace Service.v1.IServices
     {
         Task<CreateRentedPlaceResponse> CreateRentedPlace(CreateRentedPlaceRequest rentedPlaceRequest);
         Task<GetRentedPlaceByIdResponse> GetRentedPlaceById(int id);
-        Task<bool> UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id);
+        Task UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id);
     }
 }

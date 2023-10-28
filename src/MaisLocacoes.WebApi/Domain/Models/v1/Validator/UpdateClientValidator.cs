@@ -78,8 +78,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .When(client => !string.IsNullOrEmpty(client.Email));
 
             RuleFor(client => client.BornDate)
-                .Must(bornDate => DateTime.TryParse(bornDate.ToString(), out var result))
-                .WithMessage("A Data de nascimento se inserida deve ser uma data válida")
                 .Must(bornDate => bornDate < DateTime.Now.Date)
                 .WithMessage("A Data de nascimento se inserida deve ser data passada")
                 .When(client => client.BornDate != null);

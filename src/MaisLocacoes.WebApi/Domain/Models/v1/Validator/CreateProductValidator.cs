@@ -29,11 +29,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
                 .When(product => !string.IsNullOrEmpty(product.Description));
 
-            RuleFor(product => product.DateBought)
-                .Must(dateBought => DateTime.TryParse(dateBought.ToString(), out var result))
-                .WithMessage("A Data de compra se inserida deve ser uma data válida")
-                .When(product => product.DateBought != null);
-
             RuleFor(product => product.BoughtValue)
                 .Must(boughtValue => decimal.TryParse(boughtValue.ToString(), out var result) &&
                  result >= 0)

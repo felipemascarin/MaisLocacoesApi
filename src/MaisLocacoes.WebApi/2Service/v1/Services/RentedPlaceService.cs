@@ -84,7 +84,7 @@ namespace Service.v1.Services
             return rentedPlaceResponse;
         }
 
-        public async Task<bool> UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id)
+        public async Task UpdateRentedPlace(UpdateRentedPlaceRequest rentedPlaceRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             rentedPlaceRequest = TimeZoneConverter<UpdateRentedPlaceRequest>.ConvertToTimeZoneLocal(rentedPlaceRequest, _timeZone);
@@ -124,8 +124,7 @@ namespace Service.v1.Services
             rentedPlaceForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentedPlaceForUpdate.UpdatedBy = _email;
 
-            if (await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceForUpdate) > 0) return true;
-            else return false;
+            await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceForUpdate);
         }
     }
 }

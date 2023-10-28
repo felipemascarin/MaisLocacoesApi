@@ -44,11 +44,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Valor de Longitude se inserido deve ser válido ")
                 .When(rentedPlace => rentedPlace.Longitude != null);
 
-            RuleFor(rentedPlace => rentedPlace.ArrivalDate)
-                .Must(arrivalDate => DateTime.TryParse(arrivalDate.ToString(), out var result))
-                .WithMessage("A Data de partida se inserida deve ser uma data válida")
-                .When(client => client.ArrivalDate != null);
-
             RuleFor(rentedPlace => rentedPlace.ProductParts)
                .Must(productParts => int.TryParse(productParts.ToString(), out var result) &&
                 result > 0)

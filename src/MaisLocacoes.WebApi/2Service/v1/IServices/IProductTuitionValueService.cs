@@ -9,7 +9,7 @@ namespace Service.v1.IServices
         Task<CreateProductTuitionValueResponse> CreateProductTuitionValue(CreateProductTuitionValueRequest productTuitionValueRequest);
         Task<GetProductTuitionValueByIdResponse> GetProductTuitionValueById(int id);
         Task<IEnumerable<GetAllProductTuitionValueByProductTypeIdResponse>> GetAllProductTuitionValueByProductTypeId(int productTypeId);
-        Task<bool> UpdateProductTuitionValue(UpdateProductTuitionValueRequest productTuitionValueRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateProductTuitionValue(UpdateProductTuitionValueRequest productTuitionValueRequest, int id);
+        Task DeleteById(int id);
     }
 }

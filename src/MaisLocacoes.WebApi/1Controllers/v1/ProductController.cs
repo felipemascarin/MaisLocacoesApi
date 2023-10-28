@@ -164,8 +164,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(productValidationErros);
                 }
 
-                if (await _productService.UpdateProduct(productRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productService.UpdateProduct(productRequest, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -186,8 +187,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (!ProductStatus.ProductStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _productService.UpdateStatus(status, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _productService.UpdateStatus(status, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -205,8 +207,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                if (await _productService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar"));
+                await _productService.DeleteById(id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

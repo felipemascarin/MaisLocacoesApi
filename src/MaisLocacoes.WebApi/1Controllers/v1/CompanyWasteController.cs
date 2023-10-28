@@ -106,8 +106,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(companyWasteValidationErros);
                 }
 
-                if (await _companyWasteService.UpdateCompanyWaste(companyWasteRequest, id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar"));
+                await _companyWasteService.UpdateCompanyWaste(companyWasteRequest, id);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -125,8 +126,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             {
                 _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                if (await _companyWasteService.DeleteById(id)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível deletar"));
+                await _companyWasteService.DeleteById(id);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

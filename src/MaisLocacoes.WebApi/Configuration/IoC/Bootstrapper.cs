@@ -2,7 +2,11 @@
 using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._2_Service.v1.Services;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
+using MaisLocacoes.WebApi._2Service.v1.IServices;
+using MaisLocacoes.WebApi._2Service.v1.Services;
 using MaisLocacoes.WebApi._3_Repository.v1.Repository;
+using MaisLocacoes.WebApi._3Repository.v1.IRepository;
+using MaisLocacoes.WebApi._3Repository.v1.Repository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -47,6 +51,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IClientService, ClientService>();
             services.AddScoped<ICompanyTuitionService, CompanyTuitionService>();
             services.AddScoped<ICompanyWasteService, CompanyWasteService>();
+            services.AddScoped<IContractService, ContractService>();
             services.AddScoped<IOsService, OsService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductTuitionService, ProductTuitionService>();
@@ -66,6 +71,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<ICompanyTuitionRepository, CompanyTuitionRepository>();
             services.AddScoped<ICompanyWasteRepository, CompanyWasteRepository>();
+            services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<IOsRepository, OsRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IProductTuitionRepository, ProductTuitionRepository>();
@@ -87,6 +93,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<CreateClientRequest>, CreateClientValidator>();
             services.AddScoped<IValidator<CreateCompanyTuitionRequest>, CreateCompanyTuitionValidator>();
             services.AddScoped<IValidator<CreateCompanyWasteRequest>, CreateCompanyWasteValidator>();
+            services.AddScoped<IValidator<CreateContractRequest>, CreateContractValidator>();
             services.AddScoped<IValidator<CreateOsRequest>, CreateOsValidator>();
             services.AddScoped<IValidator<CreateProductTuitionRequest>, CreateProductTuitionValidator>();
             services.AddScoped<IValidator<CreateProductTuitionValueRequest>, CreateProductTuitionValueValidator>();
@@ -106,6 +113,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<UpdateClientRequest>, UpdateClientValidator>();
             services.AddScoped<IValidator<UpdateCompanyTuitionRequest>, UpdateCompanyTuitionValidator>();
             services.AddScoped<IValidator<UpdateCompanyWasteRequest>, UpdateCompanyWasteValidator>();
+            services.AddScoped<IValidator<UpdateContractRequest>, UpdateContractValidator>();
             services.AddScoped<IValidator<UpdateOsRequest>, UpdateOsValidator>();
             services.AddScoped<IValidator<UpdateProductTuitionRequest>, UpdateProductTuitionValidator>();
             services.AddScoped<IValidator<UpdateProductTuitionValueRequest>, UpdateProductTuitionValueValidator>();

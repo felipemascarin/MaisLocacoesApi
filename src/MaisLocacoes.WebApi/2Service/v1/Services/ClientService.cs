@@ -143,7 +143,7 @@ namespace Service.v1.Services
             return clientForRentResponse.OrderBy(c => c.Name);
         }
 
-        public async Task<bool> UpdateClient(UpdateClientRequest clientRequest, int id)
+        public async Task UpdateClient(UpdateClientRequest clientRequest, int id)
         {
             var clientForUpdate = await _clientRepository.GetById(id) ??
                     throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
@@ -190,14 +190,12 @@ namespace Service.v1.Services
             clientForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForUpdate.UpdatedBy = _email;
 
-            if (!await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o cliente", null, HttpStatusCode.InternalServerError);
+            await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id);
 
-            if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
-            else return false;
+            await _clientRepository.UpdateClient(clientForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, int id)
+        public async Task UpdateStatus(string status, int id)
         {
             var clientForUpdate = await _clientRepository.GetById(id) ??
                 throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
@@ -206,11 +204,10 @@ namespace Service.v1.Services
             clientForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForUpdate.UpdatedBy = _email;
 
-            if (await _clientRepository.UpdateClient(clientForUpdate) > 0) return true;
-            else return false;
+            await _clientRepository.UpdateClient(clientForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var clientForDelete = await _clientRepository.GetById(id) ??
                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
@@ -219,8 +216,7 @@ namespace Service.v1.Services
             clientForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForDelete.UpdatedBy = _email;
 
-            if (await _clientRepository.UpdateClient(clientForDelete) > 0) return true;
-            else return false;
+            await _clientRepository.UpdateClient(clientForDelete);
         }
     }
 }

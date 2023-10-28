@@ -119,8 +119,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                     return BadRequest(companyValidationErros);
                 }
 
-                if (await _companyService.UpdateCompany(companyRequest, cnpj)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+                await _companyService.UpdateCompany(companyRequest, cnpj);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {
@@ -140,8 +141,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                 if (!CompanyStatus.CompanyStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                if (await _companyService.UpdateStatus(status, cnpj)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar a empresa"));
+                await _companyService.UpdateStatus(status, cnpj);
+
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

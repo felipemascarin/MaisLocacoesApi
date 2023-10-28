@@ -23,15 +23,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .Must(value => decimal.TryParse(value.ToString(), out var result) &&
                  result >= 0)
                 .WithMessage("Valor da fatura inválido");
-
-            RuleFor(companyTuition => companyTuition.PayDate)
-                .Must(payDate => DateTime.TryParse(payDate.ToString(), out var result))
-                .WithMessage("A data de pagamento se inserida deve ser uma data válida")
-                .When(companyTuition => companyTuition.PayDate != null);
-
-            RuleFor(companyTuition => companyTuition.DueDate)
-                .Must(dueDate => DateTime.TryParse(dueDate.ToString(), out var result))
-                .WithMessage("A Data de vencimento é obrigatória");
         }
     }
 }

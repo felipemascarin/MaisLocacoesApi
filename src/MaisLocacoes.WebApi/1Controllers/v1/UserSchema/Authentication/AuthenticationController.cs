@@ -90,8 +90,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                 if (schema == "adm")
                     return Ok("Não é possível deslogar conta ADM, apenas por tempo de token.");
 
-                if (await _authenticationService.Logout(request)) return Ok();
-                else return StatusCode(500, new GenericException("Não foi possível alterar o usuário para deslogado"));
+                await _authenticationService.Logout(request);
+                
+                return Ok();
             }
             catch (HttpRequestException ex)
             {

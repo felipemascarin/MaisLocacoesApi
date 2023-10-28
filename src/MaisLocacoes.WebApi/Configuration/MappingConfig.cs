@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi._3Repository.v1.Entity;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
@@ -66,6 +67,19 @@ namespace Configuration
                 config.CreateMap<CompanyWasteEntity, GetCompanyWasteByIdResponse>();
                 config.CreateMap<CompanyWasteEntity, CreateCompanyWasteResponse>();
 
+                config.CreateMap<CreateContractRequest, ContractEntity>();
+                config.CreateMap<ContractEntity, CreateContractResponse>();
+                config.CreateMap<ContractEntity, GetContractByIdResponse>()
+                .ForMember(ContractResponse => ContractResponse.Rent, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.AddressEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Client, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Client.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity.AddressEntity));
+                config.CreateMap<ContractEntity, GetAllContractsResponse>()
+                .ForMember(ContractResponse => ContractResponse.Rent, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.AddressEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Client, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity))
+                .ForPath(ContractResponse => ContractResponse.Rent.Client.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity.AddressEntity));
+
                 config.CreateMap<CreateOsRequest, OsEntity>();
                 config.CreateMap<OsEntity, GetOsByIdResponse>();
                 config.CreateMap<OsEntity, CreateOsResponse>();
@@ -84,8 +98,8 @@ namespace Configuration
                 config.CreateMap<ProductTuitionEntity, ResumedRentDto>();
                 config.CreateMap<ProductTuitionEntity, GetAllProductTuitionByRentIdReponse>();
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionByIdResponse>()
-               .ForMember(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity))
-               .ForPath(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent.Address, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity.AddressEntity));
+                .ForMember(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity))
+                .ForPath(GetProductTuitionRentResponse => GetProductTuitionRentResponse.Rent.Address, opt => opt.MapFrom(ProductTuitionEntity => ProductTuitionEntity.RentEntity.AddressEntity));
 
                 config.CreateMap<CreateProductTuitionValueRequest, ProductTuitionValueEntity>();
                 config.CreateMap<ProductTuitionValueEntity, GetAllProductTuitionToRemoveReponse>();

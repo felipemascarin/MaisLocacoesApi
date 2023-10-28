@@ -94,7 +94,7 @@ namespace Service.v1.Services
             return productTuitionResponse;
         }
 
-        public async Task<bool> WithdrawProduct(int id)
+        public async Task WithdrawProduct(int id)
         {
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
@@ -132,11 +132,10 @@ namespace Service.v1.Services
                 FinishRentIfTheLast(productTuitionEntity);
             }
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
         }
 
-        public async Task<bool> CancelWithdrawProduct(int id)
+        public async Task CancelWithdrawProduct(int id)
         {
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
@@ -188,11 +187,10 @@ namespace Service.v1.Services
             productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
         }
 
-        public async Task<bool> RenewProductTuition(int id, RenewProductTuitionRequest renewRequest)
+        public async Task RenewProductTuition(int id, RenewProductTuitionRequest renewRequest)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             renewRequest = TimeZoneConverter<RenewProductTuitionRequest>.ConvertToTimeZoneLocal(renewRequest, _timeZone);
@@ -216,8 +214,7 @@ namespace Service.v1.Services
 
             CreateBills(productTuitionEntity);
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionEntity) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
         }
 
         public async Task<GetProductTuitionByIdResponse> GetProductTuitionById(int id)
@@ -304,7 +301,7 @@ namespace Service.v1.Services
             return productTuitionsResponseList;
         }
 
-        public async Task<bool> UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id)
+        public async Task UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productTuitionRequest = TimeZoneConverter<UpdateProductTuitionRequest>.ConvertToTimeZoneLocal(productTuitionRequest, _timeZone);
@@ -405,11 +402,10 @@ namespace Service.v1.Services
             productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
         }
 
-        public async Task<bool> UpdateProductCode(string productCode, int id)
+        public async Task UpdateProductCode(string productCode, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -435,11 +431,10 @@ namespace Service.v1.Services
             productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, int id)
+        public async Task UpdateStatus(string status, int id)
         {
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
@@ -448,11 +443,10 @@ namespace Service.v1.Services
             productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var productTuitionForDelete = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
@@ -468,7 +462,7 @@ namespace Service.v1.Services
 
             foreach (var bill in bills)
             {
-                _ = await _billService.DeleteById(bill.Id);
+                await _billService.DeleteById(bill.Id);
             }
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
@@ -497,8 +491,7 @@ namespace Service.v1.Services
             productTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForDelete.UpdatedBy = _email;
 
-            if (await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete) > 0) return true;
-            else return false;
+            await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete);
         }
 
         public IEnumerable<BillEntity> CreateBills(ProductTuitionEntity productTuition)

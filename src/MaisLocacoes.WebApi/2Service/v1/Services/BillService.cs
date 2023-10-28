@@ -245,7 +245,7 @@ namespace Service.v1.Services
             return billDtoList;
         }
 
-        public async Task<bool> UpdateBill(UpdateBillRequest billRequest, int id)
+        public async Task UpdateBill(UpdateBillRequest billRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             billRequest = TimeZoneConverter<UpdateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
@@ -296,11 +296,10 @@ namespace Service.v1.Services
             billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForUpdate.UpdatedBy = _email;
 
-            if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
-            else return false;
+            await _billRepository.UpdateBill(billForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id)
+        public async Task UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -346,11 +345,10 @@ namespace Service.v1.Services
             billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForUpdate.UpdatedBy = _email;
 
-            if (await _billRepository.UpdateBill(billForUpdate) > 0) return true;
-            else return false;
+            await _billRepository.UpdateBill(billForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var billForDelete = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -362,8 +360,7 @@ namespace Service.v1.Services
             billForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForDelete.UpdatedBy = _email;
 
-            if (await _billRepository.UpdateBill(billForDelete) > 0) return true;
-            else return false;
+            await _billRepository.UpdateBill(billForDelete);
         }
     }
 }

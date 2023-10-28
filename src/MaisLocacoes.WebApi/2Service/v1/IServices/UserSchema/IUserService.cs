@@ -11,7 +11,7 @@ namespace Service.v1.IServices.UserSchema
         Task<GetUserByEmailResponse> GetUserByEmail(string email, string cnpj);
         Task<GetUserByCpfResponse> GetUserByCpf(string cpf, string cnpj);
         Task<IEnumerable<GetAllUsersByCnpjResponse>> GetAllUsersByCnpj(string cnpj);
-        Task<bool> UpdateUser(UpdateUserRequest userRequest, string email, string cnpj);
-        Task<bool> UpdateStatus(string status, string email, string cnpj);
+        Task UpdateUser(UpdateUserRequest userRequest, string email, string cnpj);
+        Task UpdateStatus(string status, string email, string cnpj);
     }
 }

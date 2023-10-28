@@ -32,7 +32,7 @@ namespace Repository.v1.Repository
         
         public async Task<ClientEntity> GetByCnpj(string cnpj) => await _context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
 
-        public async Task<bool> ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id && c.Deleted == false);
+        public async Task ClientExists(int id) => await _context.Clients.AnyAsync(c => c.Id == id && c.Deleted == false);
 
         public async Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query)
         {

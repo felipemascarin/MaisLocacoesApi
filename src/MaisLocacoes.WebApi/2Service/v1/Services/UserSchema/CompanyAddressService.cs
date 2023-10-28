@@ -49,7 +49,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             return _mapper.Map<CreateCompanyAddressResponse>(CompanyAddressEntity);
         }
 
-        public async Task<bool> UpdateCompanyAddress(UpdateCompanyAddressRequest companyAddressRequest, int id)
+        public async Task UpdateCompanyAddress(UpdateCompanyAddressRequest companyAddressRequest, int id)
         {
             var companyAddressForUpdate = await _companyAddressRepository.GetById(id) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);
@@ -65,8 +65,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             companyAddressForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyAddressForUpdate.UpdatedBy = _email;
 
-            if (await _companyAddressRepository.UpdateCompanyAddress(companyAddressForUpdate) > 0) return true;
-            else return false;
+            await _companyAddressRepository.UpdateCompanyAddress(companyAddressForUpdate);
         }
     }
 }

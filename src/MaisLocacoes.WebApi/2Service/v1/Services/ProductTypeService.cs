@@ -80,7 +80,7 @@ namespace Service.v1.Services
             return productsTypeResponseList;
         }
 
-        public async Task<bool> UpdateProductType(UpdateProductTypeRequest productTypeRequest, int id)
+        public async Task UpdateProductType(UpdateProductTypeRequest productTypeRequest, int id)
         {
             var productTypeForUpdate = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
@@ -99,11 +99,10 @@ namespace Service.v1.Services
             productTypeForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTypeForUpdate.UpdatedBy = _email;
 
-            if (await _productTypeRepository.UpdateProductType(productTypeForUpdate) > 0) return true;
-            else return false;
+            await _productTypeRepository.UpdateProductType(productTypeForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var productTypeForDelete = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
@@ -112,8 +111,7 @@ namespace Service.v1.Services
             productTypeForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTypeForDelete.UpdatedBy = _email;
 
-            if (await _productTypeRepository.UpdateProductType(productTypeForDelete) > 0) return true;
-            else return false;
+            await _productTypeRepository.UpdateProductType(productTypeForDelete);
         }
     }
 }

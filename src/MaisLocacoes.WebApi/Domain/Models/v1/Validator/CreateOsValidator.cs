@@ -30,16 +30,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                  result > 0)
                 .WithMessage("Id do ProductTuition deve ser um número inteiro maior que 0");
 
-            RuleFor(os => os.InitialDateTime)
-                 .Must(inicialDateTime => DateTime.TryParse(inicialDateTime.ToString(), out var result))
-                 .WithMessage("A Data de início se inserida deve ser uma data válida")
-                 .When(os => os.InitialDateTime != null);
-
-            RuleFor(os => os.FinalDateTime)
-                .Must(finalDateTime => DateTime.TryParse(finalDateTime.ToString(), out var result))
-                .WithMessage("A data final se inserida deve ser uma data válida e maior que a Data de início")
-                .When(os => os.FinalDateTime != null);
-
             RuleFor(os => os.FinalDateTime)
                 .Null()
                 .WithMessage("A data final se inserida deve ser maior que a Data de início")

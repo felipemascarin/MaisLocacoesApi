@@ -8,6 +8,6 @@ namespace Service.v1.IServices
     {
         Task<CreateAddressResponse> CreateAddress(CreateAddressRequest addressRequest);
         Task<GetAddressByIdResponse> GetAddressById(int addressId);
-        Task<bool> UpdateAddress(UpdateAddressRequest addressRequest, int id);
+        Task UpdateAddress(UpdateAddressRequest addressRequest, int id);
     }
 }

@@ -71,7 +71,7 @@ namespace Service.v1.Services.UserSchema
             return companyResponse;
         }
 
-        public async Task<bool> UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj)
+        public async Task UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj)
         {
             var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
@@ -102,14 +102,12 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyForUpdate.UpdatedBy = _email;
 
-            if (!await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar a empresa", null, HttpStatusCode.InternalServerError);
+            await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id);
 
-            if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;
-            else return false;
+            await _companyRepository.UpdateCompany(companyForUpdate);
         }
 
-        public async Task<bool> UpdateStatus(string status, string cnpj)
+        public async Task UpdateStatus(string status, string cnpj)
         {
             var companyForUpdate = await _companyRepository.GetByCnpj(cnpj) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
@@ -118,8 +116,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyForUpdate.UpdatedBy = _email;
 
-            if (await _companyRepository.UpdateCompany(companyForUpdate) > 0) return true;
-            else return false;
+            await _companyRepository.UpdateCompany(companyForUpdate);
         }
     }
 }

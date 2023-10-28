@@ -28,14 +28,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                  result >= 0)
                 .WithMessage("O Valor de locação do produto inserido não é válido");
 
-            RuleFor(product => product.InitialDateTime)
-                 .Must(initialDateTime => DateTime.TryParse(initialDateTime.ToString(), out var result))
-                 .WithMessage("A Data de início da locação deve ser uma data válida");
-
-            RuleFor(product => product.FinalDateTime)
-                 .Must(finalDateTime => DateTime.TryParse(finalDateTime.ToString(), out var result))
-                 .WithMessage("A Data de entrega da locação deve ser uma data válida");
-
             RuleFor(product => product.FinalDateTime)
                 .Null()
                 .WithMessage("A Data de entrega deve ser maior que a Data de início")
@@ -49,11 +41,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             RuleFor(product => product.Status)
                 .Must(status => ProductTuitionStatus.ProductTuitionStatusEnum.Contains(status.ToLower()))
                 .WithMessage("Esse status não existe");
-
-            RuleFor(product => product.FirstDueDate)
-                .Must(firstDueDate => DateTime.TryParse(firstDueDate.ToString(), out var result))
-                .WithMessage("A Data de primeiro vencimento se inserida deve ser uma data válida")
-                .When(client => client.FirstDueDate != null);
 
             RuleFor(product => product.QuantityPeriod)
                 .Must(quantityPeriod => int.TryParse(quantityPeriod.ToString(), out var result) &&

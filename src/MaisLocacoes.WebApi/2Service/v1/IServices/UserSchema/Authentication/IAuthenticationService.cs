@@ -8,6 +8,6 @@ namespace MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication
     {
         Task<LoginResponse> Login(LoginRequest loginRequest);
         LoginResponse LoginAdm(LoginRequest loginRequest);
-        Task<bool> Logout(LogoutRequest tokenRequest);
+        Task Logout(LogoutRequest tokenRequest);
     }
 }

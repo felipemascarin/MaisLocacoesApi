@@ -25,11 +25,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
                 .When(rent => !string.IsNullOrEmpty(rent.Description));
 
-            RuleFor(rent => rent.UrlSignature)
-                .MaximumLength(2048)
-                .WithMessage("UrlSignature ultrapassou o limite máximo de caracteres")
-                .When(rent => !string.IsNullOrEmpty(rent.UrlSignature));
-
             RuleFor(rent => rent.Address).SetValidator(new CreateAddressValidator());
         }
     }

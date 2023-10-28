@@ -22,10 +22,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .Must(value => decimal.TryParse(value.ToString(), out var result) &&
                  result >= 0)
                 .WithMessage("Valor do gasto inválido");
-
-            RuleFor(productWaste => productWaste.Date)
-                .Must(dueDate => DateTime.TryParse(dueDate.ToString(), out var result))
-                .WithMessage("A Data do gasto é obrigatória");
         }
     }
 }

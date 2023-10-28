@@ -69,7 +69,7 @@ namespace Service.v1.Services
             return suppliersResponseList;
         }
 
-        public async Task<bool> UpdateSupplier(UpdateSupplierRequest supplierRequest, int id)
+        public async Task UpdateSupplier(UpdateSupplierRequest supplierRequest, int id)
         {
             var supplierForUpdate = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
@@ -82,14 +82,12 @@ namespace Service.v1.Services
             supplierForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForUpdate.UpdatedBy = _email;
 
-            if (!await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id))
-                throw new HttpRequestException("Não foi possível salvar endereço antes de salvar o fornecedor", null, HttpStatusCode.InternalServerError);
+            await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id);
 
-            if (await _supplierRepository.UpdateSupplier(supplierForUpdate) > 0) return true;
-            else return false;
+            await _supplierRepository.UpdateSupplier(supplierForUpdate);
         }
 
-        public async Task<bool> DeleteById(int id)
+        public async Task DeleteById(int id)
         {
             var supplierForDelete = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
@@ -98,8 +96,7 @@ namespace Service.v1.Services
             supplierForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForDelete.UpdatedBy = _email;
 
-            if (await _supplierRepository.UpdateSupplier(supplierForDelete) > 0) return true;
-            else return false;
+            await _supplierRepository.UpdateSupplier(supplierForDelete);
         }
     }
 }

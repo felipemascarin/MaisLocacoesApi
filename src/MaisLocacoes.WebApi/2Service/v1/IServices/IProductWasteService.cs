@@ -10,7 +10,7 @@ namespace Service.v1.IServices
         Task<GetProductWasteByIdResponse> GetProductWasteById(int id);
         Task<GetAllProductWastesByProductIdResponse> GetAllProductWastesByProductId(int productId);
         Task<IEnumerable<GetProductWastesByPageResponse>> GetProductWastesByPage(int items, int page, string query);
-        Task<bool> UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id);
-        Task<bool> DeleteById(int id);
+        Task UpdateProductWaste(UpdateProductWasteRequest productWasteRequest, int id);
+        Task DeleteById(int id);
     }
 }
