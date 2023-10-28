@@ -67,7 +67,7 @@ namespace Service.v1.Services
 
             companyWasteForUpdate.Description = companyWasteRequest.Description;
             companyWasteForUpdate.Value = companyWasteRequest.Value;
-            companyWasteForUpdate.Date = companyWasteRequest.Date;
+            companyWasteForUpdate.Date = companyWasteRequest.Date.Value;
             companyWasteForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForUpdate.UpdatedBy = _email;
 

@@ -288,7 +288,7 @@ namespace Service.v1.Services
             billForUpdate.Value = billRequest.Value;
             billForUpdate.Order = billRequest.Order;
             billForUpdate.PayDate = billRequest.PayDate;
-            billForUpdate.DueDate = billRequest.DueDate;
+            billForUpdate.DueDate = billRequest.DueDate.Value;
             billForUpdate.InvoiceEmittedDate = billRequest.InvoiceEmittedDate;
             billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
             billForUpdate.PaymentMode = billRequest.PaymentMode;

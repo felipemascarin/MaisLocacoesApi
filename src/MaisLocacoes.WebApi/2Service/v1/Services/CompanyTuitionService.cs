@@ -69,7 +69,7 @@ namespace Service.v1.Services
             companyTuitionForUpdate.TuitionNumber = companyTuitionRequest.TuitionNumber;
             companyTuitionForUpdate.Value = companyTuitionRequest.Value;
             companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
-            companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate;
+            companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate.Value;
             companyTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForUpdate.UpdatedBy = _email;
 

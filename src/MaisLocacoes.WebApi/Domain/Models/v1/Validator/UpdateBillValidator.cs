@@ -47,6 +47,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .MaximumLength(1000)
                 .WithMessage("Descrição ultrapassou o limite máximo de caracteres")
                 .When(bill => !string.IsNullOrEmpty(bill.Description));
+
+            RuleFor(bill => bill.DueDate)
+                .NotEmpty()
+                .WithMessage("Data de vencimento é obrigatória");
         }
     }
 }

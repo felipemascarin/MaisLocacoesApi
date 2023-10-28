@@ -4,14 +4,14 @@
     {
         public string Cpf { get; set; }
         public string Cnpj { get; set; }
-        public string? Rg { get; set; }
+        public string Rg { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
-        public string? ProfileImageUrl { get; set; }
+        public string ProfileImageUrl { get; set; }
         public DateTime? BornDate { get; set; }
-        public string? Cel { get; set; }
-        public string? CivilStatus { get; set; }
-        public string? CpfDocumentUrl { get; set; }
+        public string Cel { get; set; }
+        public string CivilStatus { get; set; }
+        public string CpfDocumentUrl { get; set; }
     }
 }

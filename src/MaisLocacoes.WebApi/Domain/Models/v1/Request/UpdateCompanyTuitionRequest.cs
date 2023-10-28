@@ -6,7 +6,7 @@
         public int? TuitionNumber { get; set; }
         public decimal Value { get; set; }
         public DateTime? PayDate { get; set; }
-        public DateTime DueDate { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 }
 

@@ -32,6 +32,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.Custom
                 .WithMessage("O tipo de período deve ser informado corretamente")
                 .MaximumLength(255)
                 .WithMessage("O tipo de período ultrapassou o limite máximo de caracteres");
+
+            RuleFor(product => product.FinalDateTime)
+                .NotEmpty()
+                .WithMessage("Data final é obrigatória.");
         }
     }
 }

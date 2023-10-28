@@ -115,7 +115,7 @@ namespace Service.v1.Services
             productWasteForUpdate.ProductId = productWasteRequest.ProductId;
             productWasteForUpdate.Description = productWasteRequest.Description;
             productWasteForUpdate.Value = productWasteRequest.Value;
-            productWasteForUpdate.Date = productWasteRequest.Date;
+            productWasteForUpdate.Date = productWasteRequest.Date.Value;
             productWasteForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productWasteForUpdate.UpdatedBy = _email;
 

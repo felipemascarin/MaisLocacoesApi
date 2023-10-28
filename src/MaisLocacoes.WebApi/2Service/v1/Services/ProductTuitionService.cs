@@ -392,8 +392,8 @@ namespace Service.v1.Services
             productTuitionForUpdate.ProductTypeId = productTuitionRequest.ProductTypeId;
             productTuitionForUpdate.ProductCode = productTuitionRequest.ProductCode;
             productTuitionForUpdate.Value = productTuitionRequest.Value;
-            productTuitionForUpdate.InitialDateTime = productTuitionRequest.InitialDateTime;
-            productTuitionForUpdate.FinalDateTime = productTuitionRequest.FinalDateTime;
+            productTuitionForUpdate.InitialDateTime = productTuitionRequest.InitialDateTime.Value;
+            productTuitionForUpdate.FinalDateTime = productTuitionRequest.FinalDateTime.Value;
             productTuitionForUpdate.Parts = productTuitionRequest.Parts;
             productTuitionForUpdate.Status = productTuitionRequest.Status;
             productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;

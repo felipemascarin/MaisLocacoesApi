@@ -17,6 +17,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .Must(value => decimal.TryParse(value.ToString(), out var result) &&
                  result >= 0)
                 .WithMessage("Valor do gasto inválido");
+
+            RuleFor(companyWaste => companyWaste.Date)
+                .NotEmpty()
+                .WithMessage("Data é obrigatória.");
         }
     }
 }
