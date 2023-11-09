@@ -77,7 +77,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
             {
                 _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
 
-                var companyAddress = await _companyAddressService.GetById(id);
+                var companyAddress = await _companyAddressService.GetCompanyAddressById(id);
                 return Ok(companyAddress);
             }
             catch (HttpRequestException ex)

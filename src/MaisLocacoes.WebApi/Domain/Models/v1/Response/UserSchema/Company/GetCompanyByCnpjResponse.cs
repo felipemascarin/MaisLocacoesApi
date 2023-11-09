@@ -1,6 +1,4 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
-
-namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company
+﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company
 {
     public class GetCompanyByCnpjResponse
     {
@@ -24,6 +22,23 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public CreateCompanyAddressResponse CompanyAddress { get; set; }
+        public CompanyAddressResponse CompanyAddress { get; set; }
+
+        public class CompanyAddressResponse
+        {
+            public int Id { get; set; }
+            public string Cep { get; set; }
+            public string Street { get; set; }
+            public string Number { get; set; }
+            public string Complement { get; set; }
+            public string District { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string Country { get; set; }
+            public string CreatedBy { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+        }
     }
 }

@@ -41,12 +41,12 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             return _mapper.Map<CreateCompanyAddressResponse>(companyAddressEntity);
         }
 
-        public async Task<CreateCompanyAddressResponse> GetById(int companyAddressId) 
+        public async Task<GetCompanyAddressByIdResponse> GetCompanyAddressById(int companyAddressId) 
         {
             var CompanyAddressEntity = await _companyAddressRepository.GetById(companyAddressId) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            return _mapper.Map<CreateCompanyAddressResponse>(CompanyAddressEntity);
+            return _mapper.Map<GetCompanyAddressByIdResponse>(CompanyAddressEntity);
         }
 
         public async Task UpdateCompanyAddress(UpdateCompanyAddressRequest companyAddressRequest, int id)

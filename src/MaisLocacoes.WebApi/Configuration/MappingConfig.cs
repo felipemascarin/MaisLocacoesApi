@@ -39,11 +39,7 @@ namespace Configuration
                 //CompanyAddress
                 config.CreateMap<CreateCompanyAddressRequest, CompanyAddressEntity>();
                 config.CreateMap<CompanyAddressEntity, CreateCompanyAddressResponse>();
-
-                //Address
-                config.CreateMap<CreateAddressRequest, AddressEntity>();
-                config.CreateMap<AddressEntity, CreateAddressResponse>();
-                config.CreateMap<AddressEntity, GetAddressByIdResponse>();
+                config.CreateMap<CompanyAddressEntity, GetCompanyAddressByIdResponse>();
 
                 //Company
                 config.CreateMap<CreateCompanyRequest, CompanyEntity>();
@@ -51,6 +47,11 @@ namespace Configuration
                 .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
                 config.CreateMap<CompanyEntity, CreateCompanyResponse>()
                 .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
+
+                //Address
+                config.CreateMap<CreateAddressRequest, AddressEntity>();
+                config.CreateMap<AddressEntity, CreateAddressResponse>();
+                config.CreateMap<AddressEntity, GetAddressByIdResponse>();
 
                 //User
                 config.CreateMap<CreateUserRequest, UserEntity>();

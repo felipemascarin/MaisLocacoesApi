@@ -41,9 +41,9 @@ namespace Service.v1.Services.UserSchema
             if (existsCompany != null)
                 throw new HttpRequestException("Empresa já cadastrada", null, HttpStatusCode.BadRequest);
 
-            existsCompany = await _companyRepository.GetByEmail(companyRequest.Email);
-            if (existsCompany != null)
-                throw new HttpRequestException("Email já cadastrado", null, HttpStatusCode.BadRequest);
+            var existsEmailCompany = await _companyRepository.GetByEmail(companyRequest.Email);
+            if (existsEmailCompany != null)
+                throw new HttpRequestException("Email de empresa já cadastrado", null, HttpStatusCode.BadRequest);
 
             var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
 
