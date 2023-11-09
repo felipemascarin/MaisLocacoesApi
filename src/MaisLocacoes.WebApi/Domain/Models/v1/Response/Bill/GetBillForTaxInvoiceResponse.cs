@@ -19,11 +19,11 @@
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public RentClientResponse Rent { get; set; }
-        public ProductTypeResponse ProductType { get; set; }
-        public CompanyResponse Company { get; set; }
+        public RentResponse Rent { get; set; }
+        public ProductTypeResponse ProductType { get; set; } //billentity n tem
+        public CompanyResponse Company { get; set; } //billentity n tem
 
-        public class RentClientResponse
+        public class RentResponse
         {
             public int Id { get; set; }
             public ClientResponse Client { get; set; }
@@ -93,6 +93,7 @@
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
         }
+
         public class CompanyResponse
         {
             public string Cnpj { get; set; }

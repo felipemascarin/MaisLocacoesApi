@@ -45,10 +45,12 @@ namespace Service.v1.Services.UserSchema
             if (existsEmailCompany != null)
                 throw new HttpRequestException("Email de empresa já cadastrado", null, HttpStatusCode.BadRequest);
 
+            //Cria o endereço da empresa
             var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
 
             var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
 
+            //Atribui na company o id do endereço criado no BD
             companyEntity.CompanyAddressId = companyAddressResponse.Id;
             companyEntity.CreatedBy = _email;
             companyEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);

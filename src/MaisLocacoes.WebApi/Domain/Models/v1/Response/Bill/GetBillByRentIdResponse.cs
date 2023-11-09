@@ -5,16 +5,16 @@
         public int Id { get; set; }
         public int RentId { get; set; }
         public int? ProductTuitionId { get; set; }
-        public string ProductCode { get; set; }
-        public int? ProductTuitionParts { get; set; }
+        public string ProductCode { get; set; } //n tem na billentity
+        public int? ProductTuitionParts { get; set; } //n tem na billentity
         public ProductTypeResponse ProductType { get; set; }
         public decimal Value { get; set; }
-        public int? Order { get; set; }
         public DateTime? PayDate { get; set; }
         public DateTime DueDate { get; set; }
         public DateTime? InvoiceEmittedDate { get; set; }
         public string Status { get; set; }
         public int? NfIdFireBase { get; set; }
+        public int? Order { get; set; }
         public string PaymentMode { get; set; }
         public string Description { get; set; }
         public string CreatedBy { get; set; }

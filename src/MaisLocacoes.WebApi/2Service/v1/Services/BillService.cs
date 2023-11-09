@@ -1,12 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Address;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Bill;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -86,34 +80,28 @@ namespace Service.v1.Services
 
         public async Task<GetBillForTaxInvoiceResponse> GetBillForTaxInvoice(int billId)
         {
-            ProductTuitionEntity productTuitionEntity = null;
-            CreateProductTypeResponse productType = null;
-            string productCode = null;
-            int? productTuitionParts = null;
-
             var billEntity = await _billRepository.GetForTaxInvoice(billId) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor)) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
+            string productCode = null;
+            int? productTuitionParts = null;
+            GetBillForTaxInvoiceResponse.ProductTypeResponse productType = null;
+
             if (billEntity.ProductTuitionId != null)
             {
-                productTuitionEntity = await _productTuitionRepository.GetById(billEntity.ProductTuitionId.Value) ??
+                var productTuitionEntity = await _productTuitionRepository.GetById(billEntity.ProductTuitionId.Value) ??
                     throw new HttpRequestException("Fatura de produto ProducTuition não encontrada", null, HttpStatusCode.NotFound);
                 productCode = productTuitionEntity.ProductCode;
                 productTuitionParts = productTuitionEntity.Parts;
-                productType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
+                productType = _mapper.Map<GetBillForTaxInvoiceResponse.ProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
             }
 
             var billForTaxInvoiceResponse = _mapper.Map<GetBillForTaxInvoiceResponse>(billEntity);
 
-            billForTaxInvoiceResponse.Rent = _mapper.Map<GetRentClientResponse>(billEntity.RentEntity);
-            billForTaxInvoiceResponse.Rent.Address = _mapper.Map<CreateAddressResponse>(billEntity.RentEntity.AddressEntity);
-            billForTaxInvoiceResponse.Rent.Client = _mapper.Map<CreateClientResponse>(billEntity.RentEntity.ClientEntity);
-            billForTaxInvoiceResponse.Rent.Client.Address = _mapper.Map<CreateAddressResponse>(billEntity.RentEntity.ClientEntity.AddressEntity);
-            billForTaxInvoiceResponse.Company = _mapper.Map<CreateCompanyResponse>(companyEntity);
-            billForTaxInvoiceResponse.Company.CompanyAddress = _mapper.Map<CreateCompanyAddressResponse>(companyEntity.CompanyAddressEntity);
+            billForTaxInvoiceResponse.Company = _mapper.Map<GetBillForTaxInvoiceResponse.CompanyResponse>(companyEntity);
             billForTaxInvoiceResponse.ProductType = productType;
             billForTaxInvoiceResponse.ProductCode = productCode;
             billForTaxInvoiceResponse.ProductTuitionParts = productTuitionParts;
@@ -125,17 +113,14 @@ namespace Service.v1.Services
         {
             var billsEntityList = await _billRepository.GetByRentId(rentId);
 
-            var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
-
             var billsResponseList = _mapper.Map<IEnumerable<GetBillByRentIdResponse>>(billsEntityList);
 
             foreach (var bill in billsResponseList)
             {
                 if (bill.ProductTuitionId != null)
                 {
-                    bill.ProductCode = productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductCode;
-                    bill.ProductTuitionParts = productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).Parts;
-                    bill.ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.FirstOrDefault(p => p.Id == bill.ProductTuitionId).ProductTypeEntity);
+                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuitionEntity.Id == bill.ProductTuitionId).ProductTuitionEntity.ProductCode;
+                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuitionEntity.Id == bill.ProductTuitionId).ProductTuitionEntity.Parts;
                 }
             }
 
@@ -166,11 +151,10 @@ namespace Service.v1.Services
                 }
                 else
                 {
-                    var productTuitionEntity = await _productTuitionRepository.GetById(bill.ProductTuitionId.Value);
-                    productTypeName = productTuitionEntity.ProductTypeEntity.Type;
-                    isManyParts = productTuitionEntity.ProductTypeEntity.IsManyParts;
-                    productCode = productTuitionEntity.ProductCode;
-                    parts = productTuitionEntity.Parts;
+                    productTypeName = bill.ProductTuitionEntity.ProductTypeEntity.Type;
+                    isManyParts = bill.ProductTuitionEntity.ProductTypeEntity.IsManyParts;
+                    productCode = bill.ProductTuitionEntity.ProductCode;
+                    parts = bill.ProductTuitionEntity.Parts;
                 }
 
                 var billDto = new GetDuedsBillsResponse()

@@ -78,9 +78,17 @@ namespace Configuration
                 //Bill
                 config.CreateMap<CreateBillRequest, BillEntity>();
                 config.CreateMap<BillEntity, CreateBillResponse>();
-                config.CreateMap<BillEntity, GetBillByRentIdResponse>();
-                config.CreateMap<BillEntity, GetBillForTaxInvoiceResponse>();
+                config.CreateMap<BillEntity, GetBillByRentIdResponse>()
+                .ForMember(BillResponse => BillResponse.ProductType, opt => opt.MapFrom(BillEntity => BillEntity.ProductTuitionEntity.ProductTypeEntity));
                 config.CreateMap<BillEntity, GetBillByIdResponse>();
+                config.CreateMap<ProductTypeEntity, GetBillForTaxInvoiceResponse.ProductTypeResponse>();
+                config.CreateMap<BillEntity, GetBillForTaxInvoiceResponse>()
+                .ForMember(BillResponse => BillResponse.Rent, opt => opt.MapFrom(BillEntity => BillEntity.RentEntity))
+                .ForPath(BillResponse => BillResponse.Rent.Address, opt => opt.MapFrom(BillEntity => BillEntity.RentEntity.AddressEntity))
+                .ForPath(BillResponse => BillResponse.Rent.Client, opt => opt.MapFrom(BillEntity => BillEntity.RentEntity.ClientEntity))
+                .ForPath(BillResponse => BillResponse.Rent.Client.Address, opt => opt.MapFrom(BillEntity => BillEntity.RentEntity.ClientEntity.AddressEntity));
+                config.CreateMap<CompanyEntity, GetBillForTaxInvoiceResponse.CompanyResponse>()
+                .ForMember(CompanyResponse => CompanyResponse.CompanyAddress, opt => opt.MapFrom(CompanyEntity => CompanyEntity.CompanyAddressEntity));
 
                 //CompanyTuition
                 config.CreateMap<CreateCompanyTuitionRequest, CompanyTuitionEntity>();

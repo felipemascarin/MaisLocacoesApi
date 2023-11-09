@@ -44,6 +44,7 @@ namespace Service.v1.Services
         public async Task<GetAddressByIdResponse> GetAddressById(int addressId)
         {
             var addressEntity = await _addressRepository.GetById(addressId);
+
             return _mapper.Map<GetAddressByIdResponse>(addressEntity);
         }
 
