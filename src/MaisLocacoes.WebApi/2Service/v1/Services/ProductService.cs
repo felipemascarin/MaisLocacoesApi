@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Product;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -39,10 +39,10 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productRequest = TimeZoneConverter<CreateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
 
-            var existsProductType = await _productTypeRepository.GetById(productRequest.ProductTypeId) ??
+            var existsProductType = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
-            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId, productRequest.Code);
+            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId.Value, productRequest.Code);
             if (existsProduct != null)
                 throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
 
@@ -144,12 +144,12 @@ namespace Service.v1.Services
             {
                 if (productRequest.ProductTypeId != productForUpdate.ProductTypeId)
                 {
-                    var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId);
+                    var existsProductType = await _productTypeRepository.ProductTypeExists(productRequest.ProductTypeId.Value);
                     if (!existsProductType)
                         throw new HttpRequestException("Esse tipo de produto não existe", null, HttpStatusCode.BadRequest);
                 }
 
-                var existsTypeCode = await _productRepository.ProductExists(productRequest.ProductTypeId, productRequest.Code);
+                var existsTypeCode = await _productRepository.ProductExists(productRequest.ProductTypeId.Value, productRequest.Code);
                 if (existsTypeCode)
                     throw new HttpRequestException("O código para esse tipo do produto já existe", null, HttpStatusCode.BadRequest);
             }
@@ -157,15 +157,15 @@ namespace Service.v1.Services
             if (productRequest.RentedParts > productRequest.Parts)
                 throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
 
-            productForUpdate.ProductTypeId = productRequest.ProductTypeId;
+            productForUpdate.ProductTypeId = productRequest.ProductTypeId.Value;
             productForUpdate.Code = productRequest.Code;
             productForUpdate.SupplierId = productRequest.SupplierId;
             productForUpdate.Description = productRequest.Description;
             productForUpdate.DateBought = productRequest.DateBought;
             productForUpdate.BoughtValue = productRequest.BoughtValue;
             productForUpdate.CurrentRentedPlaceId = productRequest.CurrentRentedPlaceId;
-            productForUpdate.Parts = productRequest.Parts;
-            productForUpdate.RentedParts = productRequest.RentedParts;
+            productForUpdate.Parts = productRequest.Parts.Value;
+            productForUpdate.RentedParts = productRequest.RentedParts.Value;
             productForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productForUpdate.UpdatedBy = _email;
 

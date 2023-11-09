@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductWaste;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -38,7 +37,7 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productWasteRequest = TimeZoneConverter<CreateProductWasteRequest>.ConvertToTimeZoneLocal(productWasteRequest, _timeZone);
 
-            var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId);
+            var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId.Value);
             if (!existsproduct)
             {
                 throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
@@ -105,14 +104,14 @@ namespace Service.v1.Services
 
             if (productWasteRequest.ProductId != productWasteForUpdate.ProductId)
             {
-                var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId);
+                var existsproduct = await _productRepository.ProductExists(productWasteRequest.ProductId.Value);
                 if (!existsproduct)
                 {
                     throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
                 }
             }
 
-            productWasteForUpdate.ProductId = productWasteRequest.ProductId;
+            productWasteForUpdate.ProductId = productWasteRequest.ProductId.Value;
             productWasteForUpdate.Description = productWasteRequest.Description;
             productWasteForUpdate.Value = productWasteRequest.Value;
             productWasteForUpdate.Date = productWasteRequest.Date.Value;

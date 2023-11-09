@@ -20,6 +20,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IOsService _osService;
         private readonly IValidator<CreateOsRequest> _createOsValidator;
         private readonly IValidator<UpdateOsRequest> _updateOsValidator;
+        private readonly IValidator<FinishOsRequest> _finishOsValidator;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
@@ -29,12 +30,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         public OsController(IOsService osService,
             IValidator<CreateOsRequest> createOsValidator,
             IValidator<UpdateOsRequest> updateOsValidator,
+            IValidator<FinishOsRequest> finishOsValidator,
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor)
         {
             _osService = osService;
             _createOsValidator = createOsValidator;
             _updateOsValidator = updateOsValidator;
+            _finishOsValidator = finishOsValidator;
             _logger = loggerFactory.CreateLogger<OsController>();
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
@@ -139,6 +142,15 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             try
             {
                 _logger.LogInformation("FinishOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, JsonConvert.SerializeObject(closeOsRequest), _email, _schema);
+
+                var validatedOs = _finishOsValidator.Validate(closeOsRequest);
+
+                if (!validatedOs.IsValid)
+                {
+                    var osValidationErros = new List<string>();
+                    validatedOs.Errors.ForEach(error => osValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(osValidationErros);
+                }
 
                 await _osService.FinishOs(id, closeOsRequest);
 

@@ -1,10 +1,9 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetClientsForRentResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Client.GetClientsForRentResponse;
 
 namespace Repository.v1.Repository
 {

@@ -1,5 +1,5 @@
 ﻿using Repository.v1.Entity;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductsForRentResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Product.GetProductsForRentResponse;
 
 namespace Repository.v1.IRepository
 {
@@ -12,6 +12,7 @@ namespace Repository.v1.IRepository
         Task<bool> ProductExists(int id);
         Task<IEnumerable<ProductEntity>> GetProductsByPage(int items, int page, string query);
         Task<IEnumerable<GetProductForRentDtoResponse>> GetProductsForRent(int productTypeId);
+        Task<IEnumerable<ProductEntity>> GetProductsByProductCodeList(List<string> productCodeList);
         Task<ProductEntity> GetTheLastsCreated(int productTypeId);
         Task<int> UpdateProduct(ProductEntity productForUpdate);
     }

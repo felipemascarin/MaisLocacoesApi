@@ -60,5 +60,6 @@ namespace Repository.v1.Entity
 
         public ICollection<RentedPlaceEntity> RentedPlaces { get; set; }
         public ICollection<ProductWasteEntity> ProductWastes { get; set; }
+        public ICollection<ProductTuitionEntity> ProductTuitions { get; set; }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuitionValue;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -35,11 +34,11 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
 
         public async Task<CreateProductTuitionValueResponse> CreateProductTuitionValue(CreateProductTuitionValueRequest productTuitionValueRequest)
         {
-            var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionValueRequest.ProductTypeId);
+            var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionValueRequest.ProductTypeId.Value);
             if (!existsProductType)
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
-            var existsProductTuitionValue = await _productTuitionValueRepository.ProductTuitionValueExists(productTuitionValueRequest.ProductTypeId, productTuitionValueRequest.QuantityPeriod, productTuitionValueRequest.TimePeriod);
+            var existsProductTuitionValue = await _productTuitionValueRepository.ProductTuitionValueExists(productTuitionValueRequest.ProductTypeId.Value, productTuitionValueRequest.QuantityPeriod.Value, productTuitionValueRequest.TimePeriod);
             if (existsProductTuitionValue)
                 throw new HttpRequestException("Já existe essa regra de valor para esse tipo de produto", null, HttpStatusCode.BadRequest);
 
@@ -83,20 +82,20 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services
             {
                 if (productTuitionValueRequest.ProductTypeId != productTuitionValueForUpdate.ProductTypeId)
                 {
-                    var existsRent = await _productTypeRepository.ProductTypeExists(productTuitionValueRequest.ProductTypeId);
+                    var existsRent = await _productTypeRepository.ProductTypeExists(productTuitionValueRequest.ProductTypeId.Value);
                     if (!existsRent)
                     {
                         throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
                     }
                 }
 
-                var existsProductTuitionValue = await _productTuitionValueRepository.ProductTuitionValueExists(productTuitionValueRequest.ProductTypeId, productTuitionValueRequest.QuantityPeriod, productTuitionValueRequest.TimePeriod);
+                var existsProductTuitionValue = await _productTuitionValueRepository.ProductTuitionValueExists(productTuitionValueRequest.ProductTypeId.Value, productTuitionValueRequest.QuantityPeriod.Value, productTuitionValueRequest.TimePeriod);
                 if (existsProductTuitionValue)
                     throw new HttpRequestException("Já existe essa regra de valor para esse tipo de produto", null, HttpStatusCode.BadRequest);
             }
 
-            productTuitionValueForUpdate.ProductTypeId = productTuitionValueRequest.ProductTypeId;
-            productTuitionValueForUpdate.QuantityPeriod = productTuitionValueRequest.QuantityPeriod;
+            productTuitionValueForUpdate.ProductTypeId = productTuitionValueRequest.ProductTypeId.Value;
+            productTuitionValueForUpdate.QuantityPeriod = productTuitionValueRequest.QuantityPeriod.Value;
             productTuitionValueForUpdate.TimePeriod = productTuitionValueRequest.TimePeriod;
             productTuitionValueForUpdate.IsDefault = productTuitionValueRequest.IsDefault;
             productTuitionValueForUpdate.Value = productTuitionValueRequest.Value;

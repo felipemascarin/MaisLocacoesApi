@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.IRepository.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
@@ -41,7 +41,7 @@ namespace MaisLocacoes.WebApi.Service.v1.Services.UserSchema
             return _mapper.Map<CreateCompanyAddressResponse>(companyAddressEntity);
         }
 
-        public async Task<CreateCompanyAddressResponse> GetById(int companyAddressId)
+        public async Task<CreateCompanyAddressResponse> GetById(int companyAddressId) 
         {
             var CompanyAddressEntity = await _companyAddressRepository.GetById(companyAddressId) ??
                 throw new HttpRequestException("Endereço da empresa não encontrado", null, HttpStatusCode.NotFound);

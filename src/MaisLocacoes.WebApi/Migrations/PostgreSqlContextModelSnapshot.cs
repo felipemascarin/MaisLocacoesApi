@@ -38,7 +38,9 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("character varying(255)");
 
                     b.Property<bool?>("Deleted")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<Guid>("GuidId")
                         .HasColumnType("uuid");
@@ -676,6 +678,9 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ProductTypeId")
                         .HasColumnType("integer");
 
@@ -707,6 +712,8 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("numeric(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.HasIndex("ProductTypeId");
 
@@ -1327,6 +1334,11 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.ProductTuitionEntity", b =>
                 {
+                    b.HasOne("Repository.v1.Entity.ProductEntity", "ProductEntity")
+                        .WithMany("ProductTuitions")
+                        .HasForeignKey("ProductId")
+                        .HasConstraintName("FK_ProductTuitions_Products");
+
                     b.HasOne("Repository.v1.Entity.ProductTypeEntity", "ProductTypeEntity")
                         .WithMany("ProductTuitions")
                         .HasForeignKey("ProductTypeId")
@@ -1340,6 +1352,8 @@ namespace MaisLocacoes.WebApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("FK_ProductTuitions_Rents");
+
+                    b.Navigation("ProductEntity");
 
                     b.Navigation("ProductTypeEntity");
 
@@ -1472,6 +1486,8 @@ namespace MaisLocacoes.WebApi.Migrations
 
             modelBuilder.Entity("Repository.v1.Entity.ProductEntity", b =>
                 {
+                    b.Navigation("ProductTuitions");
+
                     b.Navigation("ProductWastes");
 
                     b.Navigation("RentedPlaces");

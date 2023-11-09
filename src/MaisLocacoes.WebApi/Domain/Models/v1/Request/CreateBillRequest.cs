@@ -2,7 +2,7 @@
 {
     public class CreateBillRequest
     {
-        public int RentId { get; set; }
+        public int? RentId { get; set; }
         public int? ProductTuitionId { get; set; }
         public int? Order { get; set; }
         public decimal Value { get; set; }

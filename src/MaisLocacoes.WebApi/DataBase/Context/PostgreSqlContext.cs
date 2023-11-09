@@ -207,6 +207,10 @@ namespace MaisLocacoes.WebApi.Context
                 .Property(x => x.Deleted)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<ContractEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
             modelBuilder.Entity<OsEntity>()
                .Property(x => x.Deleted)
                 .HasDefaultValue(false);
@@ -325,6 +329,12 @@ namespace MaisLocacoes.WebApi.Context
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.ProductTypes));
+
+            modelBuilder.Entity<ProductTuitionEntity>()
+            .HasOne<ProductEntity>(many => many.ProductEntity)
+            .WithMany(one => one.ProductTuitions)
+            .HasForeignKey(many => new { many.ProductId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne<RentEntity>(many => many.RentEntity)

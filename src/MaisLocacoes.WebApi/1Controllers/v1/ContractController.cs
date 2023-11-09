@@ -109,6 +109,25 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("info/rent/{rentId}")]
+        public async Task<IActionResult> GetContractInfoByRentId(int rentId)
+        {
+            try
+            {
+                _logger.LogInformation("GetContractInfoByRentId {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+
+                var contracts = await _contractService.GetContractInfoByRentId(rentId);
+                return Ok(contracts);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateContract([FromBody] UpdateContractRequest contractRequest, int id)
         {

@@ -1,0 +1,18 @@
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
+
+namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract
+{
+    public class GetAllContractsResponse
+    {
+        public int Id { get; set; }
+        public Guid GuidId { get; set; }
+        public GetRentByIdResponse Rent { get; set; }
+        public int? ProductQuantity { get; set; }
+        public string UrlSignature { get; set; }
+        public DateTime SignedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
+    }
+}

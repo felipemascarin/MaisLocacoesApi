@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.RentedPlace;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -44,7 +43,7 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             rentedPlaceRequest = TimeZoneConverter<CreateRentedPlaceRequest>.ConvertToTimeZoneLocal(rentedPlaceRequest, _timeZone);
 
-            var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId);
+            var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId.Value);
             if (!existsproduct)
                 throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
 
@@ -94,7 +93,7 @@ namespace Service.v1.Services
 
             if (rentedPlaceRequest.ProductId != rentedPlaceForUpdate.ProductId)
             {
-                var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId);
+                var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId.Value);
                 if (!existsproduct)
                 {
                     throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
@@ -115,12 +114,12 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Não existe esse QG", null, HttpStatusCode.BadRequest);
             }
 
-            rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId;
+            rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId.Value;
             rentedPlaceForUpdate.RentId = rentedPlaceRequest.RentId;
             rentedPlaceForUpdate.QgId = rentedPlaceRequest.QgId;
             rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
-            rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts;
+            rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts.Value;
             rentedPlaceForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentedPlaceForUpdate.UpdatedBy = _email;
 

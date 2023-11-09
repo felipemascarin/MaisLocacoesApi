@@ -3,7 +3,7 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetProductsForRentResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Product.GetProductsForRentResponse;
 
 namespace Repository.v1.Repository
 {
@@ -52,6 +52,8 @@ namespace Repository.v1.Repository
                     Parts = p.Parts,
                     RentedParts = p.RentedParts
                 }).ToListAsync();
+
+        public async Task<IEnumerable<ProductEntity>> GetProductsByProductCodeList(List<string> productCodeList) => await _context.Products.Include(p => p.ProductTypeEntity).Where(p => productCodeList.Contains(p.Code)).ToListAsync();
 
         public async Task<ProductEntity> GetTheLastsCreated(int productTypeId) => await _context.Products.OrderByDescending(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductTypeEntity.Id == productTypeId && p.Deleted == false);
 

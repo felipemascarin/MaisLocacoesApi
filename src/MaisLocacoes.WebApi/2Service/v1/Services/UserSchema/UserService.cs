@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;

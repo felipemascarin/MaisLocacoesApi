@@ -1,5 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
 
 namespace MaisLocacoes.WebApi.Service.v1.IServices.UserSchema
 {

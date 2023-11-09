@@ -13,7 +13,7 @@
         public string PjDocumentUrl { get; set; }
         public string AddressDocumentUrl { get; set; }
         public string LogoUrl { get; set; }
-        public int NotifyDaysBefore { get; set; }
+        public int? NotifyDaysBefore { get; set; }
         public string Module { get; set; }
         public string TimeZone { get; set; }
         public UpdateCompanyAddressRequest CompanyAddress { get; set; }

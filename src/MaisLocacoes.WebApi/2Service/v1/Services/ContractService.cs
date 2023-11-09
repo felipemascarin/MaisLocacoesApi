@@ -3,8 +3,7 @@ using MaisLocacoes.WebApi._2Service.v1.IServices;
 using MaisLocacoes.WebApi._3Repository.v1.Entity;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
 using System.Net;
@@ -16,6 +15,8 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
     {
         private readonly IContractRepository _contractRepository;
         private readonly IRentRepository _rentRepository;
+        private readonly IProductTuitionRepository _productTuitionRepository;
+        private readonly IProductRepository _productRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
@@ -23,11 +24,15 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
 
         public ContractService(IContractRepository contractRepository,
             IRentRepository rentRepository,
+            IProductTuitionRepository productTuitionRepository,
+            IProductRepository productRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _contractRepository = contractRepository;
             _rentRepository = rentRepository;
+            _productTuitionRepository = productTuitionRepository;
+            _productRepository = productRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
@@ -39,7 +44,7 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             contractRequest = TimeZoneConverter<CreateContractRequest>.ConvertToTimeZoneLocal(contractRequest, _timeZone);
 
-            if (!await _rentRepository.RentExists(contractRequest.RentId))
+            if (!await _rentRepository.RentExists(contractRequest.RentId.Value))
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
             var contractEntity = _mapper.Map<ContractEntity>(contractRequest);
@@ -73,6 +78,37 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             return contractsResponseList;
         }
 
+        public async Task<GetContractInfoByRentIdResponse> GetContractInfoByRentId(int rentId)
+        {
+            var contractEntity = await _contractRepository.GetContractInfoByRentId(rentId);
+
+            var contractInfoResponse = _mapper.Map<GetContractInfoByRentIdResponse>(contractEntity);
+
+            contractInfoResponse.ProductTuitions = _mapper.Map<IEnumerable<GetContractInfoByRentIdResponse.ContractProductTuition>>(contractEntity.RentEntity.ProductTuitions);
+
+            contractInfoResponse.Rent.InitialRentDate = contractInfoResponse.ProductTuitions.OrderBy(p => p.InitialDateTime).First().InitialDateTime;
+            contractInfoResponse.Rent.FinalRentDate = contractInfoResponse.ProductTuitions.OrderByDescending(p => p.FinalDateTime).First().FinalDateTime;
+
+            var productCodesList = new List<string>();
+
+            foreach (var productTuition in contractInfoResponse.ProductTuitions)
+            {
+                if (productTuition.ProductCode != null)
+                    productCodesList.Add(productTuition.ProductCode);
+            }
+
+            var productsEntities = await _productRepository.GetProductsByProductCodeList(productCodesList);
+
+            foreach (var productTuition in contractInfoResponse.ProductTuitions)
+            {
+                var product = productsEntities.Where(p => p.Code == productTuition.ProductCode && p.ProductTypeId == productTuition.ProductTypeId).FirstOrDefault();
+
+                productTuition.Product = _mapper.Map<GetContractInfoByRentIdResponse.ContractProduct>(product);
+            }
+
+            return contractInfoResponse;
+        }
+
         public async Task UpdateContract(UpdateContractRequest contractRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
@@ -83,11 +119,11 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
 
             if (contractRequest.RentId != contractForUpdate.RentId)
             {
-                if (!await _rentRepository.RentExists(contractRequest.RentId))
+                if (!await _rentRepository.RentExists(contractRequest.RentId.Value))
                     throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
             }
 
-            contractForUpdate.RentId = contractRequest.RentId;
+            contractForUpdate.RentId = contractRequest.RentId.Value;
             contractForUpdate.ProductQuantity = contractRequest.ProductQuantity;
             contractForUpdate.UrlSignature = contractRequest.UrlSignature;
             contractForUpdate.SignedAt = contractRequest.SignedAt;

@@ -1,6 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract;
 
 namespace MaisLocacoes.WebApi._2Service.v1.IServices
 {
@@ -9,6 +8,7 @@ namespace MaisLocacoes.WebApi._2Service.v1.IServices
         Task<CreateContractResponse> CreateContract(CreateContractRequest contractRequest);
         Task<GetContractByIdResponse> GetContractById(int id);
         Task<IEnumerable<GetAllContractsResponse>> GetAllContracts();
+        Task<GetContractInfoByRentIdResponse> GetContractInfoByRentId(int rentId);
         Task UpdateContract(UpdateContractRequest contractRequest, int id);
         Task DeleteById(int id);
     }

@@ -18,7 +18,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                  result >= 0)
                 .WithMessage("Valor do gasto inválido");
 
-            RuleFor(companyTuition => companyTuition.DueDate)
+            RuleFor(companyWaste => companyWaste.Date)
                 .NotEmpty()
                 .WithMessage("Data de vencimento é obrigatória.");
         }

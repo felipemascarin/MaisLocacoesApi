@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Os;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -10,7 +11,7 @@ using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllOsByStatusResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Os.GetAllOsByStatusResponse;
 
 namespace Service.v1.Services
 {
@@ -58,7 +59,7 @@ namespace Service.v1.Services
             if (!existsRent)
                 throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
 
-            var os = await _osRepository.GetByProductTuitionIdForCreate(osRequest.ProductTuitionId, osRequest.Type);
+            var os = await _osRepository.GetByProductTuitionIdForCreate(osRequest.ProductTuitionId.Value, osRequest.Type);
 
             if (os != null)
                 throw new HttpRequestException("Uma nota de serviço desse tipo já existe para esse produto.", null, HttpStatusCode.BadRequest);
@@ -142,7 +143,7 @@ namespace Service.v1.Services
             if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
                 throw new HttpRequestException("Não é possível finalizar uma nota de serviço não iniciada", null, HttpStatusCode.NotFound);
 
-            var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId) ??
+            var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId.Value) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
@@ -263,7 +264,7 @@ namespace Service.v1.Services
                 }
             }
 
-            osForUpdate.ProductTuitionId = osRequest.ProductTuitionId;
+            osForUpdate.ProductTuitionId = osRequest.ProductTuitionId.Value;
             osForUpdate.DeliveryCpf = osRequest.DeliveryCpf;
             osForUpdate.InitialDateTime = osRequest.InitialDateTime;
             osForUpdate.FinalDateTime = osRequest.FinalDateTime;

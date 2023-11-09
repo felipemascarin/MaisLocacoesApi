@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity.UserSchema;
@@ -96,7 +95,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.PjDocumentUrl = companyRequest.PjDocumentUrl;
             companyForUpdate.AddressDocumentUrl = companyRequest.AddressDocumentUrl;
             companyForUpdate.LogoUrl = companyRequest.LogoUrl;
-            companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore;
+            companyForUpdate.NotifyDaysBefore = companyRequest.NotifyDaysBefore.Value;
             companyForUpdate.Module = companyRequest.Module;
             companyForUpdate.TimeZone = companyRequest.TimeZone;
             companyForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);

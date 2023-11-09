@@ -18,6 +18,9 @@ namespace Repository.v1.Entity
         public int ProductTypeId { get; set; }
         public virtual ProductTypeEntity ProductTypeEntity { get; set; }
 
+        public int? ProductId { get; set; }
+        public virtual ProductEntity ProductEntity { get; set; }
+
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string? ProductCode { get; set; }

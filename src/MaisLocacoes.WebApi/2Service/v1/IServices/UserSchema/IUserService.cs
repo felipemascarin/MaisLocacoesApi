@@ -1,7 +1,6 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User;
 
 namespace Service.v1.IServices.UserSchema
 {

@@ -1,16 +1,21 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Address;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Get.GetAllProductTuitionByProductIdResponse;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition.GetAllProductTuitionByProductIdResponse;
 
 namespace Service.v1.Services
 {
@@ -56,27 +61,31 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productTuitionRequest = TimeZoneConverter<CreateProductTuitionRequest>.ConvertToTimeZoneLocal(productTuitionRequest, _timeZone);
 
-            var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
+            var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId.Value);
             if (!existsRent)
                 throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
 
-            var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionRequest.ProductTypeId);
+            var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionRequest.ProductTypeId.Value);
             if (!existsProductType)
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
+            var productEntity = new ProductEntity();
+
+            //Se estiver já sendo cadastrado um produto, verifica se já existe esse produto nessa locação e retém o produto no estoque
             if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
             {
-                var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId, productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode);
+                var existsproductTuition = await _productTuitionRepository.ProductTuitionExists(productTuitionRequest.RentId.Value, productTuitionRequest.ProductTypeId.Value, productTuitionRequest.ProductCode);
                 if (existsproductTuition)
                     throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
 
-                var productEntity = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId, productTuitionRequest.ProductCode) ??
+                productEntity = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId.Value, productTuitionRequest.ProductCode) ??
                                 throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
                 await RetainProduct(productTuitionEntity, productEntity);
             }
 
+            productTuitionEntity.ProductId = productEntity.Id;
             productTuitionEntity.CreatedBy = _email;
             productTuitionEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
@@ -87,7 +96,7 @@ namespace Service.v1.Services
             var module = JwtManager.GetModuleByToken(_httpContextAccessor);
 
             if (module == ProjectModules.Modules.ElementAt(1))
-                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0));
+                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
 
             var productTuitionResponse = _mapper.Map<CreateProductTuitionResponse>(productTuitionEntity);
 
@@ -104,20 +113,20 @@ namespace Service.v1.Services
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
             {
-                var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0));
+                var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
                 if (deliveryOs != null)
                 {
-                    if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(0) || deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(3))
+                    if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)
                     {
-                        deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4);
+                        deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(4); //canceled
                         deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                         deliveryOs.UpdatedBy = _email;
                         await _osRepository.UpdateOs(deliveryOs);
                     }
                 }
 
-                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1));
-                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1)); //withdraw
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4); //withdraw
                 productTuitionEntity.IsEditable = false;
             }
 
@@ -125,7 +134,7 @@ namespace Service.v1.Services
             {
                 var productEntity = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode);
 
-                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4);
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4); //withdraw
                 productTuitionEntity.IsEditable = false;
                 await ReleaseProduct(productTuitionEntity, productEntity);
 
@@ -144,7 +153,7 @@ namespace Service.v1.Services
 
             do
             {
-                osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1));
+                osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)); //withdraw
 
                 if (osForDelete != null)
                 {
@@ -157,27 +166,27 @@ namespace Service.v1.Services
 
             } while (osForDelete != null);
 
-            var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0));
+            var deliveryOs = await _osRepository.GetByProductTuitionId(productTuitionEntity.Id, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
             if (deliveryOs != null)
             {
-                if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(4))
+                if (deliveryOs.Status == OsStatus.OsStatusEnum.ElementAt(4)) //canceled
                 {
-                    deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0);
+                    deliveryOs.Status = OsStatus.OsStatusEnum.ElementAt(0); //waiting
                     deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     deliveryOs.UpdatedBy = _email;
                     await _osRepository.UpdateOs(deliveryOs);
                 }
             }
 
-            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2); //delivered
             productTuitionEntity.IsEditable = true;
 
             var rent = await _rentRepository.GetById(productTuitionEntity.RentId) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0))
+            if (rent.Status != RentStatus.RentStatusEnum.ElementAt(0)) //activated
             {
-                rent.Status = RentStatus.RentStatusEnum.ElementAt(0);
+                rent.Status = RentStatus.RentStatusEnum.ElementAt(0); //activated
                 rent.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 rent.UpdatedBy = _email;
 
@@ -198,17 +207,17 @@ namespace Service.v1.Services
             var productTuitionEntity = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4))
+            if (productTuitionEntity.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4)) //withdraw
                 throw new HttpRequestException("Não é possível renovar um produto em retirada", null, HttpStatusCode.BadRequest);
 
-            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
-            productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod;
+            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime.Value;
+            productTuitionEntity.QuantityPeriod = renewRequest.QuantityPeriod.Value;
             productTuitionEntity.TimePeriod = renewRequest.TimePeriod;
             productTuitionEntity.Value = renewRequest.Value;
             productTuitionEntity.FirstDueDate = renewRequest.FirstDueDate;
-            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime;
+            productTuitionEntity.FinalDateTime = renewRequest.FinalDateTime.Value;
             productTuitionEntity.IsEditable = false;
-            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2); //delivered
             productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
@@ -266,7 +275,7 @@ namespace Service.v1.Services
 
                 foreach (var bill in bills)
                 {
-                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1))
+                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)) //payed
                     {
                         productTuitionsResponse.TotalBilledValue += bill.Value;
                         productTuition.BilledValue += bill.Value;
@@ -281,6 +290,7 @@ namespace Service.v1.Services
             return productTuitionsResponse;
         }
 
+        //Refatorar
         public async Task<IEnumerable<GetAllProductTuitionToRemoveReponse>> GetAllProductTuitionToRemove()
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove();
@@ -312,34 +322,41 @@ namespace Service.v1.Services
             if (productTuitionForUpdate.IsEditable == false)
                 throw new HttpRequestException("Essa fatura de produto não é editável", null, HttpStatusCode.NotFound);
 
+            //Não é possível alterar o período da locação (mês, dia, semana)
             if (productTuitionRequest.TimePeriod != productTuitionForUpdate.TimePeriod)
                 throw new HttpRequestException("Não é possível alterar o período TimePeriod", null, HttpStatusCode.BadRequest);
 
+            //Verifica se existe a nova locaçao que está sendo atualizada
             if (productTuitionRequest.RentId != productTuitionForUpdate.RentId)
             {
-                var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId);
+                var existsRent = await _rentRepository.RentExists(productTuitionRequest.RentId.Value);
                 if (!existsRent)
-                {
                     throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
-                }
             }
 
+            //Verifica se existe o tipo de produto que está sendo atualizado
             if (productTuitionRequest.ProductTypeId != productTuitionForUpdate.ProductTypeId)
             {
-                var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionRequest.ProductTypeId);
+                var existsProductType = await _productTypeRepository.ProductTypeExists(productTuitionRequest.ProductTypeId.Value);
                 if (!existsProductType)
                     throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
             }
 
-            if (productTuitionRequest.ProductCode != productTuitionForUpdate.ProductCode)
+            int? newId = null;
+
+            //Se estiver sendo atualizado o produto, algumas validações são realizadas
+            if (productTuitionRequest.ProductCode != productTuitionForUpdate.ProductCode || productTuitionRequest.ProductTypeId != productTuitionForUpdate.ProductTypeId)
             {
+                //Se o código novo que está sendo inserido não for nulo, é verificado se o produto com esse código existe e retém produto no estoque
                 if (productTuitionRequest.ProductCode != null)
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
                         throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
                     await RetainProduct(_mapper.Map<ProductTuitionEntity>(productTuitionRequest), productEntity);
+                    newId = productEntity.Id;
                 }
 
+                //Se o código antigo do produto não for nulo, produto é liberado no estoque
                 if (productTuitionForUpdate.ProductCode != null)
                 {
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
@@ -348,8 +365,10 @@ namespace Service.v1.Services
                 }
             }
 
-            if (productTuitionRequest.ProductCode == productTuitionForUpdate.ProductCode && productTuitionRequest.Parts != productTuitionForUpdate.Parts)
+            //Verifica se o produto é o mesmo e está sendo alterado a quantidade de peças "parts"
+            if (productTuitionRequest.ProductCode == productTuitionForUpdate.ProductCode && productTuitionRequest.ProductTypeId == productTuitionForUpdate.ProductTypeId && productTuitionRequest.Parts != productTuitionForUpdate.Parts)
             {
+                //Se realmente existir o produto, então o mesmo é liberado do estoque e retido novamente com a quantidade de peças modificadas
                 if (productTuitionRequest.ProductCode != null)
                 {
                     var productEntityForParts = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionRequest.ProductCode) ??
@@ -359,45 +378,31 @@ namespace Service.v1.Services
                 }
             }
 
+            //Mapeia o request para a entidade e atribui o id do producttuition a ser atualizado, parecido como se puxasse do banco de dados para atualizar
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
             productTuitionEntity.Id = id;
 
-            var billsUpdated = false;
-
-            if (productTuitionRequest.Value != productTuitionForUpdate.Value && billsUpdated == false)
+            //Valida se é necessário recalcular as parcelas do produto conforme informações novas, qualquer condição a seguir já atualiza as parcelas por completo            
+            //Valida se está sendo alterado: o valor do produto ou a data do primeiro vencimento ou a data de início da locação ou a data do período de locação
+            if (productTuitionRequest.Value != productTuitionForUpdate.Value ||
+                productTuitionRequest.FirstDueDate != productTuitionForUpdate.FirstDueDate ||
+                productTuitionRequest.InitialDateTime != productTuitionForUpdate.InitialDateTime ||
+                (productTuitionRequest.FinalDateTime != productTuitionForUpdate.FinalDateTime && productTuitionRequest.InitialDateTime == productTuitionForUpdate.InitialDateTime))
             {
-                billsUpdated = true;
                 UpdateBills(productTuitionEntity);
             }
 
-            if (productTuitionRequest.FirstDueDate != productTuitionForUpdate.FirstDueDate && billsUpdated == false)
-            {
-                billsUpdated = true;
-                UpdateBills(productTuitionEntity);
-            }
-
-            if (productTuitionRequest.InitialDateTime != productTuitionForUpdate.InitialDateTime && billsUpdated == false)
-            {
-                billsUpdated = true;
-                UpdateBills(productTuitionEntity);
-            }
-
-            if (productTuitionRequest.FinalDateTime != productTuitionForUpdate.FinalDateTime && productTuitionRequest.InitialDateTime == productTuitionForUpdate.InitialDateTime && billsUpdated == false)
-            {
-                billsUpdated = true;
-                UpdateBills(productTuitionEntity);
-            }
-
-            productTuitionForUpdate.RentId = productTuitionRequest.RentId;
-            productTuitionForUpdate.ProductTypeId = productTuitionRequest.ProductTypeId;
+            productTuitionForUpdate.ProductId = newId;
+            productTuitionForUpdate.RentId = productTuitionRequest.RentId.Value;
+            productTuitionForUpdate.ProductTypeId = productTuitionRequest.ProductTypeId.Value;
             productTuitionForUpdate.ProductCode = productTuitionRequest.ProductCode;
             productTuitionForUpdate.Value = productTuitionRequest.Value;
             productTuitionForUpdate.InitialDateTime = productTuitionRequest.InitialDateTime.Value;
             productTuitionForUpdate.FinalDateTime = productTuitionRequest.FinalDateTime.Value;
-            productTuitionForUpdate.Parts = productTuitionRequest.Parts;
+            productTuitionForUpdate.Parts = productTuitionRequest.Parts.Value;
             productTuitionForUpdate.Status = productTuitionRequest.Status;
             productTuitionForUpdate.FirstDueDate = productTuitionRequest.FirstDueDate;
-            productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod;
+            productTuitionForUpdate.QuantityPeriod = productTuitionRequest.QuantityPeriod.Value;
             productTuitionForUpdate.TimePeriod = productTuitionRequest.TimePeriod;
             productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
@@ -410,15 +415,20 @@ namespace Service.v1.Services
             var productTuitionForUpdate = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
+            int? newId = null;
+
             if (productCode != productTuitionForUpdate.ProductCode)
             {
+                //retém no estoque o produto do código que está sendo inserido
                 if (productCode != null)
                 {
                     var productEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productCode) ??
                                 throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
                     await RetainProduct(productTuitionForUpdate, productEntity);
+                    newId = productEntity.Id;
                 }
 
+                //libera no estoque o produto que existia anteriormente nesse producttuition e estava retido
                 if (productTuitionForUpdate.ProductCode != null)
                 {
                     var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForUpdate.ProductTypeId, productTuitionForUpdate.ProductCode) ??
@@ -427,6 +437,7 @@ namespace Service.v1.Services
                 }
             }
 
+            productTuitionForUpdate.ProductId = newId;
             productTuitionForUpdate.ProductCode = productCode;
             productTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionForUpdate.UpdatedBy = _email;
@@ -467,8 +478,8 @@ namespace Service.v1.Services
 
             if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
             {
-                var deliveryOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(0)));
-                var withdrawOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)));
+                var deliveryOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(0))); //delivery
+                var withdrawOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1))); //withdraw
 
                 if (deliveryOs != null)
                 {
@@ -497,9 +508,9 @@ namespace Service.v1.Services
         public IEnumerable<BillEntity> CreateBills(ProductTuitionEntity productTuition)
         {
             var billsQuantity = 0;
-            if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
+            if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(0) /*day*/ || productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1) /*week*/)
                 billsQuantity = 1;
-            else if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2))
+            else if (productTuition.TimePeriod == ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2)) //month
                 billsQuantity = productTuition.QuantityPeriod;
 
             var createdBills = new List<BillEntity>();
@@ -513,7 +524,7 @@ namespace Service.v1.Services
                 bill.ProductTuitionId = productTuition.Id;
                 bill.Value = productTuition.Value;
                 bill.DueDate = productTuition.FirstDueDate.Value.AddMonths(i);
-                bill.Status = BillStatus.BillStatusEnum.ElementAt(0);
+                bill.Status = BillStatus.BillStatusEnum.ElementAt(0); //open
                 bill.PaymentMode = null;
                 bill.CreatedBy = _email;
 
@@ -530,7 +541,7 @@ namespace Service.v1.Services
 
             foreach (var bill in oldBills)
             {
-                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1) && bill.NfIdFireBase == null)
+                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && bill.NfIdFireBase == null)
                     _billRepository.DeleteBill(bill);
                 else payedOldBills.Add(bill);
             }
@@ -552,12 +563,12 @@ namespace Service.v1.Services
 
             productTuitionsRentList.Remove(productTuitionEntity);
 
-            var isNotTheLastProductTuitionOfRent = productTuitionsRentList.Exists(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5));
+            var isNotTheLastProductTuitionOfRent = productTuitionsRentList.Exists(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5)); //returned
 
             if (isNotTheLastProductTuitionOfRent == false)
             {
                 var rent = await _rentRepository.GetById(productTuitionEntity.RentId);
-                rent.Status = RentStatus.RentStatusEnum.ElementAt(1);
+                rent.Status = RentStatus.RentStatusEnum.ElementAt(1); //finished
                 rent.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 rent.UpdatedBy = _email;
 
@@ -571,7 +582,7 @@ namespace Service.v1.Services
 
             os.ProductTuitionId = productTuition.Id;
             os.Type = type;
-            os.Status = OsStatus.OsStatusEnum.ElementAt(0);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(0); //waiting
             os.CreatedBy = _email;
 
             _osRepository.CreateOs(os);
@@ -579,16 +590,16 @@ namespace Service.v1.Services
 
         public async Task<ProductEntity> RetainProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
-            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1))
+            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(1)) //rented
                 throw new HttpRequestException("Esse produto está em outra locação", null, HttpStatusCode.BadRequest);
-            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2))
+            if (productEntity.Status == ProductStatus.ProductStatusEnum.ElementAt(2)) //maintenance
                 throw new HttpRequestException("Esse produto está em manutenção", null, HttpStatusCode.BadRequest);
             if (productEntity.Parts - productEntity.RentedParts < productTuition.Parts)
                 throw new HttpRequestException("Esse produto não possui essa quantidade de partes disponíveis", null, HttpStatusCode.BadRequest);
 
             productEntity.RentedParts += productTuition.Parts;
-            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
-            if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1);
+            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0); //free
+            if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1); //rented
 
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);
@@ -598,7 +609,7 @@ namespace Service.v1.Services
 
         public async Task<ProductEntity> ReleaseProduct(ProductTuitionEntity productTuition, ProductEntity productEntity)
         {
-            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0);
+            productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0); //free
             productEntity.RentedParts -= productTuition.Parts;
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar um produto para disponível", null, HttpStatusCode.InternalServerError);

@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Address;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Bill;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -47,7 +51,7 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             billRequest = TimeZoneConverter<CreateBillRequest>.ConvertToTimeZoneLocal(billRequest, _timeZone);
 
-            var rentExists = await _rentRepository.RentExists(billRequest.RentId);
+            var rentExists = await _rentRepository.RentExists(billRequest.RentId.Value);
             if (!rentExists)
                 throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
 
@@ -258,7 +262,7 @@ namespace Service.v1.Services
 
             if (billRequest.RentId != billForUpdate.RentId)
             {
-                var rentExists = await _rentRepository.RentExists(billRequest.RentId);
+                var rentExists = await _rentRepository.RentExists(billRequest.RentId.Value);
                 if (!rentExists)
                     throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
             }

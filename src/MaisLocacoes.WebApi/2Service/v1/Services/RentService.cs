@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -48,7 +47,7 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             rentRequest = TimeZoneConverter<CreateRentRequest>.ConvertToTimeZoneLocal(rentRequest, _timeZone);
 
-            var client = await _clientRepository.GetById(rentRequest.ClientId) ??
+            var client = await _clientRepository.GetById(rentRequest.ClientId.Value) ??
                 throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
 
             if (client.Status != ClientStatus.ClientStatusEnum.ElementAt(0))
@@ -135,14 +134,14 @@ namespace Service.v1.Services
 
             if (rentRequest.ClientId != rentForUpdate.ClientId)
             {
-                var client = await _clientRepository.GetById(rentRequest.ClientId) ??
+                var client = await _clientRepository.GetById(rentRequest.ClientId.Value) ??
                 throw new HttpRequestException("O cliente informado não existe", null, HttpStatusCode.BadRequest);
 
                 if (client.Status != ClientStatus.ClientStatusEnum.ElementAt(0))
                     throw new HttpRequestException("Esse cliente não pode realizar locação", null, HttpStatusCode.BadRequest);
             }
 
-            rentForUpdate.ClientId = rentRequest.ClientId;
+            rentForUpdate.ClientId = rentRequest.ClientId.Value;
             rentForUpdate.Carriage = rentRequest.Carriage;
             rentForUpdate.Description = rentRequest.Description;
             rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
