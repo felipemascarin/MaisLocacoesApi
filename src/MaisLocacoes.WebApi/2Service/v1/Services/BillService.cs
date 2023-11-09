@@ -203,11 +203,10 @@ namespace Service.v1.Services
                 }
                 else
                 {
-                    var productTuitionEntity = await _productTuitionRepository.GetById(bill.ProductTuitionId.Value);
-                    productTypeName = productTuitionEntity.ProductTypeEntity.Type;
-                    isManyParts = productTuitionEntity.ProductTypeEntity.IsManyParts;
-                    productCode = productTuitionEntity.ProductCode;
-                    parts = productTuitionEntity.Parts;
+                    productTypeName = bill.ProductTuitionEntity.ProductTypeEntity.Type;
+                    isManyParts = bill.ProductTuitionEntity.ProductTypeEntity.IsManyParts;
+                    productCode = bill.ProductTuitionEntity.ProductCode;
+                    parts = bill.ProductTuitionEntity.Parts;
                 }
 
                 var billDto = new GetAllBillsDebtsResponse()
@@ -244,6 +243,7 @@ namespace Service.v1.Services
             if (billForUpdate.NfIdFireBase != null)
                 throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
+            //Se estiver sendo atualizada a locação que a bill pertence, é verificado a mesma existe
             if (billRequest.RentId != billForUpdate.RentId)
             {
                 var rentExists = await _rentRepository.RentExists(billRequest.RentId.Value);
@@ -251,6 +251,7 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Não existe essa Locação", null, HttpStatusCode.BadRequest);
             }
 
+            //Se estiver sendo atualizado o ProductTuition que a bill pertence, é verificado o mesmo existe
             if (billRequest.ProductTuitionId != billForUpdate.ProductTuitionId && billRequest.ProductTuitionId != null)
             {
                 var existsRent = await _productTuitionRepository.ProductTuitionExists(billRequest.ProductTuitionId);
@@ -260,10 +261,12 @@ namespace Service.v1.Services
                 }
             }
 
-            if (billForUpdate.Status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && billRequest.PaymentMode == null)
-                throw new HttpRequestException("Modo de pagamento deve ser inserido para fatura paga", null, HttpStatusCode.BadRequest);
+            //Se o status for pago, deve ter o modo de pagamento
+            if (billForUpdate.Status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && (billRequest.PaymentMode == null || billRequest.PayDate == null))
+                throw new HttpRequestException("Modo de pagamento e data de pagamento devem ser inseridos para fatura paga", null, HttpStatusCode.BadRequest);
 
-            if (billForUpdate.Status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
+            //Se o status for diferente de pago, o modo de pagamento e a data de pagamento não devem existir
+            if (billForUpdate.Status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1)) /*payed*/
             {
                 billRequest.PaymentMode = null;
                 billRequest.PayDate = null;
@@ -292,36 +295,8 @@ namespace Service.v1.Services
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && paymentMode == null)
-                throw new HttpRequestException("Modo de pagamento deve ser inserido para status de fatura paga", null, HttpStatusCode.BadRequest);
-
-            if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1))
-            {
-                if (billForUpdate.ProductTuitionId != null)
-                {
-                    var productTuitionForUpdate = await _productTuitionRepository.GetById(billForUpdate.ProductTuitionId.Value);
-
-                    if (productTuitionForUpdate.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
-                    {
-                        productTuitionForUpdate.IsEditable = true;
-                        await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
-                    }
-                }
-
-                paymentMode = null;
-                payDate = null;
-            }
-
-            if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) && billForUpdate.ProductTuitionId != null)
-            {
-                var productTuitionForUpdate = await _productTuitionRepository.GetById(billForUpdate.ProductTuitionId.Value);
-
-                if (productTuitionForUpdate.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1))
-                {
-                    productTuitionForUpdate.IsEditable = false;
-                    await _productTuitionRepository.UpdateProductTuition(productTuitionForUpdate);
-                }
-            }
+            if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && (paymentMode == null || payDate == null))
+                throw new HttpRequestException("Modo de pagamento e data de pagamento devem ser inseridos para fatura paga", null, HttpStatusCode.BadRequest);
 
             if (paymentMode != null && !PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
                 throw new HttpRequestException("Não existe esse modo de pagamento", null, HttpStatusCode.BadRequest);
@@ -334,6 +309,46 @@ namespace Service.v1.Services
             billForUpdate.UpdatedBy = _email;
 
             await _billRepository.UpdateBill(billForUpdate);
+
+            //Se a fatura editada tiver status de fatura NÃO paga
+            if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/)
+            {
+                //Se a fatura pertencer a um produto é recuperado todas as faturas daquele producttuition
+                if (billForUpdate.ProductTuitionId != null)
+                {
+                    var productTuitionBills = await _billRepository.GetByProductTuitionId(billForUpdate.ProductTuitionId);
+
+                    bool anyBillPayed = false;
+
+                    foreach (var bill in productTuitionBills)
+                    {
+                        if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/)
+                        {
+                            anyBillPayed = true;
+                            break;
+                        }
+                    }
+
+                    //Se não existir nenhuma fatura paga e se o tipo de locação for diferente de mensal, é liberado o producttuition para edição
+                    if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1) /*week*/ && anyBillPayed == false)
+                    {
+                        billForUpdate.ProductTuitionEntity.IsEditable = true;
+                        await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity);
+                    }
+                }
+
+                paymentMode = null;
+                payDate = null;
+            }
+            else if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && billForUpdate.ProductTuitionId != null)
+            {
+                //Se a fatura a ser editada está indo para paga e se o tipo de locação for diferente de mensal, então o producttuition não pode mais ser editado
+                if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1) /*week*/)
+                {
+                    billForUpdate.ProductTuitionEntity.IsEditable = false;
+                    await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity.);
+                }
+            }
         }
 
         public async Task DeleteById(int id)
