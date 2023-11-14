@@ -27,9 +27,17 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<OsEntity>> GetAllByStatus(string status)
         {
             if (status == null)
-                return await _context.Oss.Include(o => o.ProductTuitionEntity).Where(o => o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) && o.Deleted == false).ToListAsync();
+                return await _context.Oss
+                    .Include(o => o.ProductTuitionEntity).ThenInclude(p => p.ProductTypeEntity)
+                    .Include(o => o.ProductTuitionEntity.RentEntity).ThenInclude(r => r.AddressEntity)
+                    .Include(o => o.ProductTuitionEntity.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+                    .Where(o => o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) && o.Deleted == false).ToListAsync();
 
-            return await _context.Oss.Include(o => o.ProductTuitionEntity).Where(o => o.Status == status && o.Deleted == false).ToListAsync();
+            return await _context.Oss
+                    .Include(o => o.ProductTuitionEntity).ThenInclude(p => p.ProductTypeEntity)
+                    .Include(o => o.ProductTuitionEntity.RentEntity).ThenInclude(r => r.AddressEntity)
+                    .Include(o => o.ProductTuitionEntity.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+                    .Where(o => o.Status == status && o.Deleted == false).ToListAsync();
         }
 
         public async Task<OsEntity> GetByProductTuitionId(int productTuitionId, string type) => await _context.Oss.FirstOrDefaultAsync(o => o.ProductTuitionId == productTuitionId && o.Type == type && o.Deleted == false);

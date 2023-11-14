@@ -1,11 +1,9 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Product;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
@@ -39,11 +37,11 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productRequest = TimeZoneConverter<CreateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
 
-            var existsProductType = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
+            var productroductType = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
-            var existsProduct = await _productRepository.GetByTypeCode(productRequest.ProductTypeId.Value, productRequest.Code);
-            if (existsProduct != null)
+            var product = await _productRepository.GetByTypeCode(productRequest.ProductTypeId.Value, productRequest.Code);
+            if (product != null)
                 throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
 
             if (productRequest.RentedParts > productRequest.Parts)
@@ -51,18 +49,14 @@ namespace Service.v1.Services
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
-            productEntity.ProductTypeEntity = existsProductType;
+            productEntity.ProductTypeEntity = productroductType;
 
             productEntity.CreatedBy = _email;
             productEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
-            var productTypeResponse = _mapper.Map<CreateProductTypeResponse>(productEntity.ProductTypeEntity);
-
             var productResponse = _mapper.Map<CreateProductResponse>(productEntity);
-
-            productResponse.ProductType = productTypeResponse;
 
             return productResponse;
         }
@@ -72,11 +66,7 @@ namespace Service.v1.Services
             var productEntity = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-            var productTypeResponse = _mapper.Map<CreateProductTypeResponse>(productEntity.ProductTypeEntity);
-
             var productResponse = _mapper.Map<GetProductByIdResponse>(productEntity);
-
-            productResponse.ProductType = productTypeResponse;
 
             return productResponse;
         }
@@ -86,11 +76,7 @@ namespace Service.v1.Services
             var productEntity = await _productRepository.GetByTypeCode(typeId, code) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-            var productTypeResponse = _mapper.Map<CreateProductTypeResponse>(productEntity.ProductTypeEntity);
-
             var productResponse = _mapper.Map<GetProductByTypeCodeResponse>(productEntity);
-
-            productResponse.ProductType = productTypeResponse;
 
             return productResponse;
         }
@@ -102,14 +88,7 @@ namespace Service.v1.Services
 
             var productsEntityList = await _productRepository.GetProductsByPage(items, page, query);
 
-            var productsEntityListLenght = productsEntityList.ToList().Count;
-
             var productsResponseList = _mapper.Map<IEnumerable<GetProductsByPageResponse>>(productsEntityList);
-
-            for (int i = 0; i < productsEntityListLenght; i++)
-            {
-                productsResponseList.ElementAt(i).ProductType = _mapper.Map<CreateProductTypeResponse>(productsEntityList.ElementAt(i).ProductTypeEntity);
-            }
 
             return productsResponseList;
         }

@@ -31,9 +31,9 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
             .Where(s => s.Deleted == false).ToListAsync();
 
         public async Task<ContractEntity> GetContractInfoByRentId(int rentId) => await _context.Contracts
-            .Include(c => c.RentEntity).ThenInclude(c => c.AddressEntity)
+            .Include(c => c.RentEntity).ThenInclude(r => r.AddressEntity)
             .Include(c => c.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
-            .Include(c => c.RentEntity.ProductTuitions)
+            .Include(c => c.RentEntity.ProductTuitions).ThenInclude(p => p.ProductEntity).ThenInclude(p => p.ProductTypeEntity)
             .Where(s => s.Deleted == false).FirstOrDefaultAsync();
 
         public async Task<int> UpdateContract(ContractEntity contractForUpdate)

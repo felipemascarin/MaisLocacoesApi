@@ -3,7 +3,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Os;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -11,7 +10,6 @@ using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Os.GetAllOsByStatusResponse;
 
 namespace Service.v1.Services
 {
@@ -81,20 +79,21 @@ namespace Service.v1.Services
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (os.Status != OsStatus.OsStatusEnum.ElementAt(0) && os.Status != OsStatus.OsStatusEnum.ElementAt(3))
+            //Se a nota for status Started, completed ou canceled, não pode ser iniciada
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ && os.Status != OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)
                 throw new HttpRequestException("Essa nota de serviço não pode mais ser iniciada.", null, HttpStatusCode.NotFound);
 
             var productTuitionEntity = await _productTuitionRepository.GetById(os.ProductTuitionId) ??
                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3);
+            productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(3) /*deliver*/;
             productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productTuitionEntity.UpdatedBy = _email;
 
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
-            os.Status = OsStatus.OsStatusEnum.ElementAt(1);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(1) /*started*/;
             os.InitialDateTime = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
@@ -107,11 +106,12 @@ namespace Service.v1.Services
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
+            //Somente notas iniciadas podem ser devolvidas
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1) /*started*/)
                 throw new HttpRequestException("Essa nota de serviço não pode ser devolvida.", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = null;
-            os.Status = OsStatus.OsStatusEnum.ElementAt(3);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(3) /*returned*/;
             os.InitialDateTime = null;
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
@@ -124,11 +124,12 @@ namespace Service.v1.Services
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (os.Status == OsStatus.OsStatusEnum.ElementAt(2) || os.Status == OsStatus.OsStatusEnum.ElementAt(4))
+            //Somente notas com status aguardando, iniciada ou completada podem ser canceladas
+            if (os.Status == OsStatus.OsStatusEnum.ElementAt(2) /*completed*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(4) /*canceled*/)
                 throw new HttpRequestException("Essa nota de serviço não pode mais ser cancelada.", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = null;
-            os.Status = OsStatus.OsStatusEnum.ElementAt(4);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(4) /*canceled*/;
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;
 
@@ -140,14 +141,14 @@ namespace Service.v1.Services
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1))
+            if (os.Status != OsStatus.OsStatusEnum.ElementAt(1) /*started*/)
                 throw new HttpRequestException("Não é possível finalizar uma nota de serviço não iniciada", null, HttpStatusCode.NotFound);
 
             var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId.Value) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
-            os.Status = OsStatus.OsStatusEnum.ElementAt(2);
+            os.Status = OsStatus.OsStatusEnum.ElementAt(2) /*completed*/;
             os.FinalDateTime = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.DeliveryObservation = finishOsRequest.DeliveryObservation;
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
@@ -171,7 +172,7 @@ namespace Service.v1.Services
                 await _productTuitionService.RetainProduct(productTuitionEntity, product);
 
                 productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
-                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2);
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/;
                 productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
@@ -194,7 +195,7 @@ namespace Service.v1.Services
 
                 product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
 
-                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5);
+                productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/;
                 productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
@@ -227,24 +228,7 @@ namespace Service.v1.Services
         {
             var osEntityList = await _osRepository.GetAllByStatus(status);
 
-            var osRelationTuition = _mapper.Map<List<GetOsByStatusRelationTuition>>(osEntityList);
-
-            var productTuitions = new List<GetAllProductTuitionByRentIdReponse>();
-
-            foreach (var osEntity in osEntityList)
-            {
-                productTuitions = (await _productTuitionService.GetAllProductTuitionByRentId(osEntity.ProductTuitionEntity.RentId)).ToList();
-
-                foreach (var os in osRelationTuition)
-                {
-                    if (os.ProductTuition == null)
-                        os.ProductTuition = productTuitions.FirstOrDefault(p => p.Id == os.ProductTuitionId);
-                }
-
-                productTuitions.Clear();
-            }
-
-            return _mapper.Map<List<GetAllOsByStatusResponse>>(osRelationTuition); ;
+            return _mapper.Map<List<GetAllOsByStatusResponse>>(osEntityList); ;
         }
 
         public async Task UpdateOs(UpdateOsRequest osRequest, int id)

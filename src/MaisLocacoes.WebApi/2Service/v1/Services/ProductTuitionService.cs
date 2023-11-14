@@ -9,7 +9,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;

@@ -301,36 +301,14 @@ namespace Service.v1.Services
             if (paymentMode != null && !PaymentModes.PaymentModesEnum.Contains(paymentMode.ToLower()))
                 throw new HttpRequestException("Não existe esse modo de pagamento", null, HttpStatusCode.BadRequest);
 
-            billForUpdate.Status = status;
-            billForUpdate.PaymentMode = paymentMode;
-            billForUpdate.NfIdFireBase = nfIdFireBase;
-            billForUpdate.PayDate = payDate;
-            billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            billForUpdate.UpdatedBy = _email;
-
-            await _billRepository.UpdateBill(billForUpdate);
-
-            //Se a fatura editada tiver status de fatura NÃO paga
+            //Se fatura NÃO paga
             if (status.ToLower() != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/)
             {
-                //Se a fatura pertencer a um produto é recuperado todas as faturas daquele producttuition
+                //Se tem um produto nessa fatura
                 if (billForUpdate.ProductTuitionId != null)
                 {
-                    var productTuitionBills = await _billRepository.GetByProductTuitionId(billForUpdate.ProductTuitionId);
-
-                    bool anyBillPayed = false;
-
-                    foreach (var bill in productTuitionBills)
-                    {
-                        if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/)
-                        {
-                            anyBillPayed = true;
-                            break;
-                        }
-                    }
-
-                    //Se não existir nenhuma fatura paga e se o tipo de locação for diferente de mensal, é liberado o producttuition para edição
-                    if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1) /*week*/ && anyBillPayed == false)
+                    //Se o produto dessa fatura for locação diária ou semanal, modifica o is editable, mas mensal sempre iseditable é true
+                    if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
                     {
                         billForUpdate.ProductTuitionEntity.IsEditable = true;
                         await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity);
@@ -340,15 +318,25 @@ namespace Service.v1.Services
                 paymentMode = null;
                 payDate = null;
             }
+            //Se for uma fatura que está sendo paga e tem um produto
             else if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && billForUpdate.ProductTuitionId != null)
             {
-                //Se a fatura a ser editada está indo para paga e se o tipo de locação for diferente de mensal, então o producttuition não pode mais ser editado
-                if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(1) /*week*/)
+                //Se a fatura a ser editada está indo para paga e se o tipo de locação for diferente de mensal, o producttuition não pode mais ser editado
+                if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
                 {
                     billForUpdate.ProductTuitionEntity.IsEditable = false;
-                    await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity.);
+                    await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity);
                 }
             }
+
+            billForUpdate.Status = status;
+            billForUpdate.PaymentMode = paymentMode;
+            billForUpdate.NfIdFireBase = nfIdFireBase;
+            billForUpdate.PayDate = payDate;
+            billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+            billForUpdate.UpdatedBy = _email;
+
+            await _billRepository.UpdateBill(billForUpdate);
         }
 
         public async Task DeleteById(int id)

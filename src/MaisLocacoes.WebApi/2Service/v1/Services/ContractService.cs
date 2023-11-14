@@ -59,6 +59,7 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
 
             return contractResponse;
         }
+
         public async Task<GetContractByIdResponse> GetContractById(int id)
         {
             var contractEntity = await _contractRepository.GetById(id) ??
@@ -84,27 +85,8 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
 
             var contractInfoResponse = _mapper.Map<GetContractInfoByRentIdResponse>(contractEntity);
 
-            contractInfoResponse.ProductTuitions = _mapper.Map<IEnumerable<GetContractInfoByRentIdResponse.ContractProductTuition>>(contractEntity.RentEntity.ProductTuitions);
-
             contractInfoResponse.Rent.InitialRentDate = contractInfoResponse.ProductTuitions.OrderBy(p => p.InitialDateTime).First().InitialDateTime;
             contractInfoResponse.Rent.FinalRentDate = contractInfoResponse.ProductTuitions.OrderByDescending(p => p.FinalDateTime).First().FinalDateTime;
-
-            var productCodesList = new List<string>();
-
-            foreach (var productTuition in contractInfoResponse.ProductTuitions)
-            {
-                if (productTuition.ProductCode != null)
-                    productCodesList.Add(productTuition.ProductCode);
-            }
-
-            var productsEntities = await _productRepository.GetProductsByProductCodeList(productCodesList);
-
-            foreach (var productTuition in contractInfoResponse.ProductTuitions)
-            {
-                var product = productsEntities.Where(p => p.Code == productTuition.ProductCode && p.ProductTypeId == productTuition.ProductTypeId).FirstOrDefault();
-
-                productTuition.Product = _mapper.Map<GetContractInfoByRentIdResponse.ContractProduct>(product);
-            }
 
             return contractInfoResponse;
         }

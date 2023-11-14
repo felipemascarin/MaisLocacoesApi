@@ -15,24 +15,6 @@
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
 
-
-        public class GetOsByStatusRelationTuition
-        {
-            public int Id { get; set; }
-            public int ProductTuitionId { get; set; }
-            public string Type { get; set; }
-            public string DeliveryCpf { get; set; }
-            public ProductTuitionResponse ProductTuition { get; set; }
-            public string Status { get; set; }
-            public DateTime? InitialDateTime { get; set; }
-            public DateTime? FinalDateTime { get; set; }
-            public string DeliveryObservation { get; set; }
-            public string CreatedBy { get; set; }
-            public DateTime CreatedAt { get; set; }
-            public string UpdatedBy { get; set; }
-            public DateTime? UpdatedAt { get; set; }
-        }
-
         public class ProductTuitionResponse
         {
             public int Id { get; set; }
