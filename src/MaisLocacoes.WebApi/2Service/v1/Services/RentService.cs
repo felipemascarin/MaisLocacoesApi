@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi._3Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
@@ -17,6 +19,7 @@ namespace Service.v1.Services
         private readonly IBillRepository _billRepository;
         private readonly IClientRepository _clientRepository;
         private readonly IProductTuitionRepository _productTuitionRepository;
+        private readonly IContractRepository _contractRepository;
         private readonly IAddressService _addressService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -27,6 +30,7 @@ namespace Service.v1.Services
             IBillRepository billRepository,
             IClientRepository clientRepository,
             IProductTuitionRepository productTuitionRepository,
+            IContractRepository contractRepository,
             IAddressService addressService,
             IMapper mapper,
             IHttpContextAccessor httpContextAccessor)
@@ -35,6 +39,7 @@ namespace Service.v1.Services
             _billRepository = billRepository;
             _clientRepository = clientRepository;
             _productTuitionRepository = productTuitionRepository;
+            _contractRepository = contractRepository;
             _addressService = addressService;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -62,6 +67,21 @@ namespace Service.v1.Services
             rentEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             rentEntity = await _rentRepository.CreateRent(rentEntity);
+
+            var contractEntity = new ContractEntity()
+            {
+                GuidId = Guid.NewGuid(),
+                RentId = rentEntity.Id,
+                Version = 1,
+                UrlSignature = null,
+                SignedAt = null,
+                UpdatedAt = null,
+                UpdatedBy = null,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone),
+                CreatedBy = _email
+            };
+
+            await _contractRepository.CreateContract(contractEntity);
 
             CreateCarriageBill(rentEntity);
 

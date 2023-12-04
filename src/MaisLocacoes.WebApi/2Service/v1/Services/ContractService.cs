@@ -6,6 +6,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.IRepository;
+using Repository.v1.IRepository.UserSchema;
 using System.Net;
 using TimeZoneConverter;
 
@@ -15,28 +16,27 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
     {
         private readonly IContractRepository _contractRepository;
         private readonly IRentRepository _rentRepository;
-        private readonly IProductTuitionRepository _productTuitionRepository;
-        private readonly IProductRepository _productRepository;
+        private readonly ICompanyRepository _companyRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
+        private readonly string _cnpj;
 
         public ContractService(IContractRepository contractRepository,
             IRentRepository rentRepository,
-            IProductTuitionRepository productTuitionRepository,
-            IProductRepository productRepository,
+            ICompanyRepository companyRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _contractRepository = contractRepository;
             _rentRepository = rentRepository;
-            _productTuitionRepository = productTuitionRepository;
-            _productRepository = productRepository;
+            _companyRepository = companyRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetSchemaByToken(_httpContextAccessor);
         }
 
         public async Task<CreateContractResponse> CreateContract(CreateContractRequest contractRequest)
@@ -83,7 +83,10 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
         {
             var contractEntity = await _contractRepository.GetContractInfoByRentId(rentId);
 
+            var companyEntity = await _companyRepository.GetByCnpj(_cnpj);
+
             var contractInfoResponse = _mapper.Map<GetContractInfoByRentIdResponse>(contractEntity);
+            contractInfoResponse.Company = _mapper.Map<GetContractInfoByRentIdResponse.ContractCompany>(companyEntity);
 
             contractInfoResponse.Rent.InitialRentDate = contractInfoResponse.ProductTuitions.OrderBy(p => p.InitialDateTime).First().InitialDateTime;
             contractInfoResponse.Rent.FinalRentDate = contractInfoResponse.ProductTuitions.OrderByDescending(p => p.FinalDateTime).First().FinalDateTime;
@@ -106,7 +109,6 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             }
 
             contractForUpdate.RentId = contractRequest.RentId.Value;
-            contractForUpdate.ProductQuantity = contractRequest.ProductQuantity;
             contractForUpdate.UrlSignature = contractRequest.UrlSignature;
             contractForUpdate.SignedAt = contractRequest.SignedAt;
             contractForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);

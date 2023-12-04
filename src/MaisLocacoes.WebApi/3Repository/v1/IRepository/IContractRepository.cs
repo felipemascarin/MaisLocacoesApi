@@ -8,6 +8,8 @@ namespace MaisLocacoes.WebApi._3Repository.v1.IRepository
         Task<ContractEntity> GetById(int id);
         Task<IEnumerable<ContractEntity>> GetAll();
         Task<ContractEntity> GetContractInfoByRentId(int rentId);
+        Task<int> GetTheLastVersion(int rentId);
+        Task<ContractEntity> GetTheLastContract(int rentId);
         Task<int> UpdateContract(ContractEntity contractForUpdate);
     }
 }

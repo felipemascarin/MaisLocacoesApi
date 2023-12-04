@@ -1,6 +1,4 @@
-﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response;
-using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
+﻿using Repository.v1.Entity;
 
 namespace Repository.v1.IRepository
 {

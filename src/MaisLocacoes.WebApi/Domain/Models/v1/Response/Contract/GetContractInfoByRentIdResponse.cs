@@ -5,7 +5,7 @@
         public int Id { get; set; }
         public Guid GuidId { get; set; }
         public ContractRent Rent { get; set; }
-        public int? ProductQuantity { get; set; }
+        public int Version { get; set; }
         public string UrlSignature { get; set; }
         public DateTime SignedAt { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -13,6 +13,7 @@
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
         public IEnumerable<ContractProductTuition> ProductTuitions { get; set; }
+        public ContractCompany Company { get; set; }
 
         public class ContractRent
         {
@@ -49,6 +50,7 @@
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
             public ContractProduct Product { get; set; }
+            public IEnumerable<ContractBill> Bills { get; set; }
         }
 
         public class ContractProduct
@@ -77,6 +79,24 @@
             public bool IsManyParts { get; set; }
             public string CreatedBy { get; set; }
             public string LastCreatedCode { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+        }
+
+        public class ContractBill
+        {
+            public int Id { get; set; }
+            public int? Order { get; set; }
+            public decimal Value { get; set; }
+            public DateTime? PayDate { get; set; }
+            public DateTime DueDate { get; set; }
+            public DateTime? InvoiceEmittedDate { get; set; }
+            public string Status { get; set; }
+            public int? NfIdFireBase { get; set; }
+            public string PaymentMode { get; set; }
+            public string Description { get; set; }
+            public string CreatedBy { get; set; }
             public DateTime CreatedAt { get; set; }
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
@@ -114,6 +134,48 @@
         }
 
         public class ContractAddress
+        {
+            public int Id { get; set; }
+            public string Cep { get; set; }
+            public string Street { get; set; }
+            public string Number { get; set; }
+            public string Complement { get; set; }
+            public string District { get; set; }
+            public string City { get; set; }
+            public string State { get; set; }
+            public string Country { get; set; }
+            public string CreatedBy { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+        }
+
+        public class ContractCompany
+        {
+            public string Cnpj { get; set; }
+            public int AddressId { get; set; }
+            public string CompanyName { get; set; }
+            public string StateRegister { get; set; }
+            public string FantasyName { get; set; }
+            public string Cel { get; set; }
+            public string Tel { get; set; }
+            public string Email { get; set; }
+            public string Segment { get; set; }
+            public string PjDocumentUrl { get; set; }
+            public string AddressDocumentUrl { get; set; }
+            public string LogoUrl { get; set; }
+            public int NotifyDaysBefore { get; set; }
+            public string Module { get; set; }
+            public string TimeZone { get; set; }
+            public string Status { get; set; }
+            public string CreatedBy { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+            public CompanyAddress CompanyAddress { get; set; }
+        }
+
+        public class CompanyAddress
         {
             public int Id { get; set; }
             public string Cep { get; set; }

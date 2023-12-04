@@ -7,7 +7,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract
         public int Id { get; set; }
         public Guid GuidId { get; set; }
         public RentResponse Rent { get; set; }
-        public int? ProductQuantity { get; set; }
+        public int Version { get; set; }
         public string UrlSignature { get; set; }
         public DateTime SignedAt { get; set; }
         public DateTime CreatedAt { get; set; }

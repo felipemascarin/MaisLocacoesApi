@@ -19,7 +19,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Entity
         public int RentId { get; set; }
         public virtual RentEntity RentEntity { get; set; }
 
-        public int? ProductQuantity { get; set; }
+        public int Version { get; set; }
 
         [StringLength(2048)]
         [Column(TypeName = "character varying(2048)")]

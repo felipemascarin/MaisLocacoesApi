@@ -6,6 +6,7 @@ namespace Repository.v1.IRepository
     {
         Task<ProductTuitionEntity> CreateProductTuition(ProductTuitionEntity productTuitionEntity);
         Task<ProductTuitionEntity> GetById(int id);
+        Task<int> GetProductTuitionsQuantity(int rentId);
         Task<bool> ProductTuitionExists(int? id);
         Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId);
         Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode);

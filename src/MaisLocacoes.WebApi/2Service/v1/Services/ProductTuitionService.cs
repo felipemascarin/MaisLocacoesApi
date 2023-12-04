@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi._3Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Address;
@@ -27,6 +29,7 @@ namespace Service.v1.Services
         private readonly IOsRepository _osRepository;
         private readonly IProductRepository _productRepository;
         private readonly IProductTypeRepository _productTypeRepository;
+        private readonly IContractRepository _contractRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
@@ -39,6 +42,7 @@ namespace Service.v1.Services
             IOsRepository osRepository,
             IProductRepository productRepository,
             IProductTypeRepository productTypeRepository,
+            IContractRepository contractRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
@@ -49,6 +53,7 @@ namespace Service.v1.Services
             _osRepository = osRepository;
             _productRepository = productRepository;
             _productTypeRepository = productTypeRepository;
+            _contractRepository = contractRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
@@ -96,6 +101,29 @@ namespace Service.v1.Services
 
             if (module == ProjectModules.Modules.ElementAt(1))
                 CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
+
+            //Sempre que adicionado producttuition o contrato é atualizado
+            //Se o contrato da nova locação desse produto ainda não foi assinado, apenas é editado o último contrato
+            var LastContract = await _contractRepository.GetTheLastContract(productTuitionRequest.RentId.Value);
+
+            if (LastContract.SignedAt != null)
+            {
+                //Se o contrato da locação desse produto já foi assinado, então cria um novo contrato
+                var contractEntity = new ContractEntity()
+                {
+                    GuidId = Guid.NewGuid(),
+                    RentId = productTuitionRequest.RentId.Value,
+                    Version = LastContract.Version + 1,
+                    UrlSignature = null,
+                    SignedAt = null,
+                    UpdatedAt = null,
+                    UpdatedBy = null,
+                    CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone),
+                    CreatedBy = _email
+                };
+
+                await _contractRepository.CreateContract(contractEntity);
+            }
 
             var productTuitionResponse = _mapper.Map<CreateProductTuitionResponse>(productTuitionEntity);
 
@@ -391,6 +419,52 @@ namespace Service.v1.Services
                 UpdateBills(productTuitionEntity);
             }
 
+            //Sempre que alterado o producttuition de uma rent para outra os contratos são atualizados
+            if (productTuitionRequest.RentId != productTuitionForUpdate.RentId)
+            {
+                //Se o contrato da nova locação desse produto já foi assinado, então cria um novo contrato
+                var productRequestContract = await _contractRepository.GetTheLastContract(productTuitionRequest.RentId.Value);
+
+                if (productRequestContract.SignedAt != null)
+                {
+                    var contractEntity = new ContractEntity()
+                    {
+                        GuidId = Guid.NewGuid(),
+                        RentId = productTuitionRequest.RentId.Value,
+                        Version = productRequestContract.Version + 1,
+                        UrlSignature = null,
+                        SignedAt = null,
+                        UpdatedAt = null,
+                        UpdatedBy = null,
+                        CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone),
+                        CreatedBy = _email
+                    };
+
+                    await _contractRepository.CreateContract(contractEntity);
+                }
+
+                //Se o contrato da antiga locação desse produto já foi assinado, então cria um novo contrato
+                var productForUpdateContract = await _contractRepository.GetTheLastContract(productTuitionForUpdate.RentId);
+
+                if (productForUpdateContract.SignedAt != null)
+                {
+                    var contractEntity = new ContractEntity()
+                    {
+                        GuidId = Guid.NewGuid(),
+                        RentId = productTuitionForUpdate.RentId,
+                        Version = await _contractRepository.GetTheLastVersion(productTuitionForUpdate.RentId) + 1,
+                        UrlSignature = null,
+                        SignedAt = null,
+                        UpdatedAt = null,
+                        UpdatedBy = null,
+                        CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone),
+                        CreatedBy = _email
+                    };
+
+                    await _contractRepository.CreateContract(contractEntity);
+                }
+            }
+
             productTuitionForUpdate.ProductId = newId;
             productTuitionForUpdate.RentId = productTuitionRequest.RentId.Value;
             productTuitionForUpdate.ProductTypeId = productTuitionRequest.ProductTypeId.Value;
@@ -475,7 +549,7 @@ namespace Service.v1.Services
                 await _billService.DeleteById(bill.Id);
             }
 
-            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //Module Delivery
+            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //delivery
             {
                 var deliveryOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(0))); //delivery
                 var withdrawOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1))); //withdraw
@@ -485,7 +559,7 @@ namespace Service.v1.Services
                     deliveryOs.Deleted = true;
                     deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     deliveryOs.UpdatedBy = _email;
-                    _ = await _osRepository.UpdateOs(deliveryOs);
+                    await _osRepository.UpdateOs(deliveryOs);
                 }
 
                 if (withdrawOs != null)
@@ -493,8 +567,29 @@ namespace Service.v1.Services
                     withdrawOs.Deleted = true;
                     withdrawOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     withdrawOs.UpdatedBy = _email;
-                    _ = await _osRepository.UpdateOs(withdrawOs);
+                    await _osRepository.UpdateOs(withdrawOs);
                 }
+            }
+
+            //Se o contrato da locação desse produto já foi assinado, então cria um novo contrato
+            var lastContract = await _contractRepository.GetTheLastContract(productTuitionForDelete.RentId);
+
+            if (lastContract.SignedAt != null)
+            {
+                var contractEntity = new ContractEntity()
+                {
+                    GuidId = Guid.NewGuid(),
+                    RentId = productTuitionForDelete.RentId,
+                    Version = lastContract.Version + 1,
+                    UrlSignature = null,
+                    SignedAt = null,
+                    UpdatedAt = null,
+                    UpdatedBy = null,
+                    CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone),
+                    CreatedBy = _email
+                };
+
+                await _contractRepository.CreateContract(contractEntity);
             }
 
             productTuitionForDelete.Deleted = true;
