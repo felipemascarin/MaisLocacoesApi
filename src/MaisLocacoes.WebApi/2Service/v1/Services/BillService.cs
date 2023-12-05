@@ -83,7 +83,7 @@ namespace Service.v1.Services
             var billEntity = await _billRepository.GetForTaxInvoice(billId) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor)) ??
+            var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor)) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             string productCode = null;
@@ -129,7 +129,7 @@ namespace Service.v1.Services
 
         public async Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills()
         {
-            var company = await _companyRepository.GetByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
+            var company = await _companyRepository.GetByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor));
 
             var billsEntityList = await _billRepository.GetDuedBills(company.NotifyDaysBefore);
 

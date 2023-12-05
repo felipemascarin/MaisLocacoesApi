@@ -36,7 +36,7 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _cnpj = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         public async Task<CreateContractResponse> CreateContract(CreateContractRequest contractRequest)

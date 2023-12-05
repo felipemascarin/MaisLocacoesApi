@@ -23,6 +23,20 @@ namespace MaisLocacoes.WebApi.Context
             Configuration = configuration;
         }
 
+        public PostgreSqlContext(string connectionString, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        : base(GetOptions(connectionString))
+        {
+            _httpContextAccessor = httpContextAccessor;
+            Configuration = configuration;
+        }
+
+        private static DbContextOptions<PostgreSqlContext> GetOptions(string connectionString)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlContext>();
+            optionsBuilder.UseNpgsql(connectionString);
+            return optionsBuilder.Options;
+        }
+
         public DbSet<AddressEntity> Addresses { get; set; }
         public DbSet<BillEntity> Bills { get; set; }
         public DbSet<ClientEntity> Clients { get; set; }
@@ -45,17 +59,17 @@ namespace MaisLocacoes.WebApi.Context
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
-                {
-                    var schema = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "schema");
+            //if (_httpContextAccessor.HttpContext != null)
+            //{
+            //    if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+            //    {
+            //        var database = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "cnpj");
 
-                    var connectionString = string.Concat(Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "SearchPath=", schema, ";");
+            //        var connectionString = string.Concat(Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "Database=", database, ";");
 
-                    optionsBuilder.UseNpgsql(connectionString);
-                }
-            }
+            //        optionsBuilder.UseNpgsql(connectionString);
+            //    }
+            //}
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -397,10 +411,12 @@ namespace MaisLocacoes.WebApi.Context
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
 
-        public void CreateSchema(string schemaName)
+        public async Task CreateDatabase(string databaseName)
         {
-            this.Database.ExecuteSqlRaw(NewSchemaSqlCreator.SqlQueryForNewSchema(schemaName));
-            this.Database.ExecuteSqlRaw(NewSchemaSqlCreator.SqlQueryForAtualizeSchemasTablesAndFks(schemaName));
+            this.Database.ExecuteSqlRaw(NewDatabaseSqlCreator.SqlQueryForNewDatabase(databaseName));
+
+            // Execute a migração para o banco de dados atual
+            await this.Database.MigrateAsync();
         }
     }
 }

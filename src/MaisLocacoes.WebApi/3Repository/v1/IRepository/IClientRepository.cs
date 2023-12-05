@@ -1,5 +1,5 @@
-﻿using Repository.v1.Entity;
-using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Client.GetClientsForRentResponse;
+﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using Repository.v1.Entity;
 
 namespace Repository.v1.IRepository
 {
@@ -10,7 +10,7 @@ namespace Repository.v1.IRepository
         Task<ClientEntity> GetByIdDetails(int id);
         Task<ClientEntity> GetByCpf(string cpf);
         Task<ClientEntity> GetByCnpj(string cnpj);
-        Task ClientExists(int id);
+        Task<bool> ClientExists(int id);
         Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query);
         Task<IEnumerable<GetClientForRentDtoResponse>> GetClientsForRent();
         Task<int> UpdateClient(ClientEntity clientForUpdate);

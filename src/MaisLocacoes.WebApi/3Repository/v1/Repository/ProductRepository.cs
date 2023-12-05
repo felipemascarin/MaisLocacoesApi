@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
@@ -9,11 +10,12 @@ namespace Repository.v1.Repository
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public ProductRepository(PostgreSqlContext context)
+        public ProductRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
+            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<ProductEntity> CreateProduct(ProductEntity productEntity)

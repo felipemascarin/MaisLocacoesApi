@@ -26,6 +26,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Repository.v1.Entity;
 using Repository.v1.Entity.UserSchema;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Contract.GetContractInfoByRentIdResponse;
 using static MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition.GetAllProductTuitionByProductIdResponse;
 
 namespace Configuration
@@ -103,20 +104,22 @@ namespace Configuration
                 //Contract
                 config.CreateMap<CreateContractRequest, ContractEntity>();
                 config.CreateMap<ContractEntity, CreateContractResponse>();
+
                 config.CreateMap<ContractEntity, GetContractInfoByRentIdResponse>()
                 .ForMember(dest => dest.Rent, opt => opt.MapFrom(src => src.RentEntity))
                 .ForPath(dest => dest.Rent.Address, opt => opt.MapFrom(src => src.RentEntity.AddressEntity))
                 .ForPath(dest => dest.Rent.Client, opt => opt.MapFrom(src => src.RentEntity.ClientEntity))
-                .ForPath(dest => dest.Rent.Client.Address, opt => opt.MapFrom(src => src.RentEntity.ClientEntity.AddressEntity))
-                .ForMember(dest => dest.ProductTuitions, opt => opt.MapFrom(src => src.RentEntity.ProductTuitions))
-                .ForMember(dest => dest.ProductTuitions.Select(pt => pt.Product), opt => opt.MapFrom(src => src.RentEntity.ProductTuitions.Select(pt => pt.ProductEntity)))
-                .ForMember(dest => dest.ProductTuitions.Select(pt => pt.Product.ProductType), opt => opt.MapFrom(src => src.RentEntity.ProductTuitions.Select(pt => pt.ProductEntity.ProductTypeEntity)))
-                .ForMember(dest => dest.ProductTuitions.Select(pt => pt.Bills), opt => opt.MapFrom(src => src.RentEntity.ProductTuitions.Select(pt => pt.Bills)));
+                .ForPath(dest => dest.Rent.Client.Address, opt => opt.MapFrom(src => src.RentEntity.ClientEntity.AddressEntity));
+                config.CreateMap<ProductTuitionEntity, ContractProductTuition>();
+                config.CreateMap<ContractEntity, ContractProduct>();
+                config.CreateMap<BillEntity, ContractBill>();
+
+
                 config.CreateMap<CompanyEntity, GetContractInfoByRentIdResponse.ContractCompany>();
                 config.CreateMap<CompanyAddressEntity, GetContractInfoByRentIdResponse.CompanyAddress>();
                 config.CreateMap<ProductTypeEntity, GetContractInfoByRentIdResponse.ContractProductType>();
                 config.CreateMap<ContractEntity, GetContractByIdResponse>()
-                .ForMember(ContractResponse => ContractResponse.Rent, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity))S
+                .ForMember(ContractResponse => ContractResponse.Rent, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity))
                 .ForPath(ContractResponse => ContractResponse.Rent.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.AddressEntity))
                 .ForPath(ContractResponse => ContractResponse.Rent.Client, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity))
                 .ForPath(ContractResponse => ContractResponse.Rent.Client.Address, opt => opt.MapFrom(ContractEntity => ContractEntity.RentEntity.ClientEntity.AddressEntity));

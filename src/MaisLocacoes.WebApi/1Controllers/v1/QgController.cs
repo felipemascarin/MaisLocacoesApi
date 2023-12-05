@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public QgController(IQgService qgService,
             IValidator<CreateQgRequest> createQgValidator,
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateQg {@dateTime} {@qgRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(qgRequest), _email, _schema);
+                _logger.LogInformation("CreateQg {@dateTime} {@qgRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(qgRequest), _email, _cnpj);
 
                 var validatedQg = _createQgValidator.Validate(qgRequest);
 
@@ -76,7 +76,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var qg = await _qgService.GetQgById(id);
                 return Ok(qg);
@@ -95,7 +95,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
                 var os = await _qgService.GetAllQgs();
                 return Ok(os);
@@ -115,7 +115,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(qgRequest), id, _email, _schema);
+                _logger.LogInformation("Updateqg {@dateTime} {@qgRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(qgRequest), id, _email, _cnpj);
 
                 var validatedQg = _updateQgValidator.Validate(qgRequest);
 
@@ -144,7 +144,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 await _qgService.DeleteById(id);
                 

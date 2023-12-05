@@ -3,10 +3,14 @@ using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._2_Service.v1.Services;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
 using MaisLocacoes.WebApi._2Service.v1.IServices;
+using MaisLocacoes.WebApi._2Service.v1.IServices.Migration;
 using MaisLocacoes.WebApi._2Service.v1.Services;
+using MaisLocacoes.WebApi._2Service.v1.Services.Migration;
 using MaisLocacoes.WebApi._3_Repository.v1.Repository;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
+using MaisLocacoes.WebApi._3Repository.v1.IRepository.Migration;
 using MaisLocacoes.WebApi._3Repository.v1.Repository;
+using MaisLocacoes.WebApi._3Repository.v1.Repository.Migration;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -43,6 +47,7 @@ namespace MaisLocacoes.WebApi.IoC
         public static void Configure(IServiceCollection services)
         {
             services.AddScoped<IAuthenticationService, AuthenticationService>();
+            services.AddScoped<IMigrationService, MigrationService>();
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ICompanyAddressService, CompanyAddressService>();
             services.AddScoped<IUserService, UserService>();
@@ -63,6 +68,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IRentService, RentService>();
             services.AddScoped<ISupplierService, SupplierService>();
 
+            services.AddScoped<IMigrationRepository, MigrationRepository>();
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyAddressRepository, CompanyAddressRepository>();
             services.AddScoped<IUserRepository, UserRepository>();

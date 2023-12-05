@@ -46,7 +46,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 Cpf = userEntity.Cpf,
                 Email = userEntity.Email,
                 Role = userEntity.Role,
-                Schema = userEntity.Cnpj,
+                Cnpj = userEntity.Cnpj,
                 Module = companyEntity.Module,
                 TimeZone = companyEntity.TimeZone.ToString()
             };
@@ -70,7 +70,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 Cpf = "adm",
                 Email = email,
                 Role = UserRole.PersonRolesEnum.ElementAt(3), //role adm
-                Schema = "maislocacoes",
+                Cnpj = "maislocacoes",
                 Module = ProjectModules.Modules.ElementAt(2),
                 TimeZone = "America/Sao_Paulo"
             };
@@ -84,7 +84,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
         {
             var email = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "email");
 
-            var cnpj = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "schema");
+            var cnpj = JwtManager.ExtractPropertyByToken(tokenRequest.Token, "cnpj");
 
             var userForUpdate = await _userRepository.GetByEmail(email, cnpj) ??
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);

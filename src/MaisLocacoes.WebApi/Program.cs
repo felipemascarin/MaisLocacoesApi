@@ -1,12 +1,11 @@
 using AutoMapper;
 using Configuration;
-using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using MaisLocacoes.WebApi.Exceptions.Middleware;
 using MaisLocacoes.WebApi.IoC;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -15,8 +14,9 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 //Postgres:
-var connectionString = builder.Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"];
-builder.Services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Scoped);
+//var connectionString = builder.Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"];
+//builder.Services.AddDbContext<PostgreSqlContext>(options => options.UseNpgsql(connectionString), ServiceLifetime.Scoped);
+builder.Services.AddScoped<PostgreSqlContextFactory>();
 
 //AutoMapper:
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();

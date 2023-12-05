@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,11 +8,12 @@ namespace Repository.v1.Repository
 {
     public class QgRepository : IQgRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public QgRepository(PostgreSqlContext context)
+        public QgRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
+            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<QgEntity> CreateQg(QgEntity qgEntity)

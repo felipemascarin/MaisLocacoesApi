@@ -1,19 +1,19 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response;
+using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using System.Linq;
 
 namespace Repository.v1.Repository
 {
     public class ProductWasteRepository : IProductWasteRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public ProductWasteRepository(PostgreSqlContext context)
+        public ProductWasteRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
+            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<ProductWasteEntity> CreateProductWaste(ProductWasteEntity productWasteEntity)

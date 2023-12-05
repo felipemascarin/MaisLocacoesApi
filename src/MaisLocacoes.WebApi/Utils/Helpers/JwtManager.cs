@@ -1,12 +1,10 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using Repository.v1.IRepository.UserSchema;
-using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
-using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Utils.Helpers
 {
@@ -16,7 +14,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public string Cpf { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
-        public string Schema { get; set; }
+        public string Cnpj { get; set; }
         public string Module { get; set; }
         public string TimeZone { get; set; }
     }
@@ -43,7 +41,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim(ClaimTypes.Name, user.Name),
                     new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.Role, user.Role),
-                    new Claim("schema", user.Schema),
+                    new Claim("cnpj", user.Cnpj),
                     new Claim("module", user.Module),
                     new Claim("cpf", user.Cpf),
                     new Claim("timeZone", user.TimeZone)
@@ -81,10 +79,10 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             return ExtractPropertyByToken(Token, "email");
         }
 
-        public static string GetSchemaByToken(IHttpContextAccessor httpContextAccessor)
+        public static string GetCnpjByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractPropertyByToken(Token, "schema");
+            return ExtractPropertyByToken(Token, "cnpj");
         }
 
         public static string GetModuleByToken(IHttpContextAccessor httpContextAccessor)

@@ -85,9 +85,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(logoutValidationErros);
                 }
 
-                var schema = JwtManager.ExtractPropertyByToken(request.Token, "role");
-
-                if (schema == "adm")
+                var role = JwtManager.ExtractPropertyByToken(request.Token, "role");
+                
+                if (role == "adm")
                     return Ok("Não é possível deslogar conta ADM, apenas por tempo de token.");
 
                 await _authenticationService.Logout(request);

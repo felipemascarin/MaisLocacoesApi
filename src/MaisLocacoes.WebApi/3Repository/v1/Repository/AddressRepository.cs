@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,27 +7,32 @@ namespace Repository.v1.Repository
 {
     public class AddressRepository : IAddressRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory;
 
-        public AddressRepository(PostgreSqlContext context)
+        public AddressRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<AddressEntity> CreateAddress(AddressEntity addressEntity)
         {
-                await _context.Addresses.AddAsync(addressEntity);
-                _context.SaveChanges();
-                return addressEntity;
+            using var context = _contextFactory.CreateContext();
+            await context.Addresses.AddAsync(addressEntity);
+            context.SaveChanges();
+            return addressEntity;
         }
 
-        public async Task<AddressEntity> GetById(int addressId) 
-            => await _context.Addresses.Where(a => a.Id == addressId).FirstOrDefaultAsync();
+        public async Task<AddressEntity> GetById(int addressId)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Addresses.Where(a => a.Id == addressId).FirstOrDefaultAsync();
+        }
 
         public async Task<int> UpdateAddress(AddressEntity addressForUpdate)
         {
-            _context.Addresses.Update(addressForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.Addresses.Update(addressForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }

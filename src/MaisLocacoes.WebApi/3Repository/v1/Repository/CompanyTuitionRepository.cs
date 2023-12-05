@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,17 +8,18 @@ namespace Repository.v1.Repository
 {
     public class CompanyTuitionRepository : ICompanyTuitionRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public CompanyTuitionRepository(PostgreSqlContext context)
+        public CompanyTuitionRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
         }
 
         public async Task<CompanyTuitionEntity> CreateCompanyTuition(CompanyTuitionEntity companyTuitionEntity)
         {
-            await _context.CompanyTuitions.AddAsync(companyTuitionEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.CompanyTuitions.AddAsync(companyTuitionEntity);
+            context.SaveChanges();
             return companyTuitionEntity;
         }
 
@@ -25,8 +27,9 @@ namespace Repository.v1.Repository
 
         public async Task<int> UpdateCompanyTuition(CompanyTuitionEntity companyTuitionForUpdate)
         {
-            _context.CompanyTuitions.Update(companyTuitionForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.CompanyTuitions.Update(companyTuitionForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }

@@ -217,6 +217,6 @@ namespace Service.v1.Services
             clientForDelete.UpdatedBy = _email;
 
             await _clientRepository.UpdateClient(clientForDelete);
-        }
+        }        
     }
 }

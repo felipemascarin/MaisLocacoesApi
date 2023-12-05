@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
@@ -9,13 +10,14 @@ namespace Repository.v1.Repository
 {
     public class ProductTuitionRepository : IProductTuitionRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
         private readonly TimeZoneInfo _timeZone;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductTuitionRepository(PostgreSqlContext context, IHttpContextAccessor httpContextAccessor)
+        public ProductTuitionRepository(PostgreSqlContextFactory contextFactory, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
+            using var _context = _contextFactory.CreateContext();
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
         }
@@ -45,7 +47,13 @@ namespace Repository.v1.Repository
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode) => await _context.ProductTuitions.Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
         
-        public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove() => await _context.ProductTuitions.Include(p => p.ProductTypeEntity).Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Include(p => p.RentEntity.ClientEntity).Include(p => p.RentEntity.ClientEntity.AddressEntity).Where(p => p.FinalDateTime.Date <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)).Date && p.Deleted == false).ToListAsync();
+        public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove() => await _context.ProductTuitions
+            .Include(p => p.ProductTypeEntity)
+            .Include(p => p.RentEntity)
+            .ThenInclude(p => p.AddressEntity)
+            .Include(p => p.RentEntity.ClientEntity)
+            .ThenInclude(p => p.AddressEntity)
+            .Where(p => p.FinalDateTime.Date <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)).Date && p.Deleted == false).ToListAsync();
         
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode) => await _context.ProductTuitions.AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId && p.ProductCode.ToLower() == productCode.ToLower() && p.Deleted == false);
 

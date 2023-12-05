@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public CompanyWasteController(ICompanyWasteService companyWasteService,
             IValidator<CreateCompanyWasteRequest> createCompanyWasteValidator,
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateCompanyWaste {@dateTime} {@companyWasteRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(companyWasteRequest), _email, _schema);
+                _logger.LogInformation("CreateCompanyWaste {@dateTime} {@companyWasteRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(companyWasteRequest), _email, _cnpj);
 
                 var validatedCompanyWaste = _createCompanyWasteValidator.Validate(companyWasteRequest);
 
@@ -76,7 +76,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var companyWaste = await _companyWasteService.GetCompanyWasteById(id);
                 return Ok(companyWaste);
@@ -95,7 +95,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateCompanyWaste {@dateTime} {@companyWasteRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(companyWasteRequest), id, _email, _schema);
+                _logger.LogInformation("UpdateCompanyWaste {@dateTime} {@companyWasteRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(companyWasteRequest), id, _email, _cnpj);
 
                 var validatedCompanyWaste = _updateCompanyWasteValidator.Validate(companyWasteRequest);
 
@@ -124,7 +124,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 await _companyWasteService.DeleteById(id);
 

@@ -3,12 +3,8 @@ using MaisLocacoes.WebApi._3Repository.v1.Entity;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Address;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
@@ -267,18 +263,7 @@ namespace Service.v1.Services
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllByRentId(rentId);
 
-            var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
-
             var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionByRentIdReponse>>(productTuitionEntityList);
-
-            for (int i = 0; i < productTuitionEntityListLenght; i++)
-            {
-                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<GetRentClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
-                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<CreateClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
-            }
 
             return productTuitionsResponseList;
         }
@@ -322,18 +307,7 @@ namespace Service.v1.Services
         {
             var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove();
 
-            var productTuitionEntityListLenght = productTuitionEntityList.ToList().Count;
-
             var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionToRemoveReponse>>(productTuitionEntityList);
-
-            for (int i = 0; i < productTuitionEntityListLenght; i++)
-            {
-                productTuitionsResponseList.ElementAt(i).Rent = _mapper.Map<GetRentClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.AddressEntity);
-                productTuitionsResponseList.ElementAt(i).ProductType = _mapper.Map<CreateProductTypeResponse>(productTuitionEntityList.ElementAt(i).ProductTypeEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client = _mapper.Map<CreateClientResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity);
-                productTuitionsResponseList.ElementAt(i).Rent.Client.Address = _mapper.Map<CreateAddressResponse>(productTuitionEntityList.ElementAt(i).RentEntity.ClientEntity.AddressEntity);
-            }
 
             return productTuitionsResponseList;
         }

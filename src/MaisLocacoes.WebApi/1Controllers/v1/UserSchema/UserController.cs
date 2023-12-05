@@ -24,7 +24,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public UserController(IUserService userService,
             IValidator<CreateUserRequest> createUserValidator,
@@ -39,7 +39,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize(Roles = "adm")]
@@ -48,7 +48,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("CreateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _schema);
+                _logger.LogInformation("CreateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _cnpj);
 
                 var validatedUser = _createUserValidator.Validate(userRequest);
 
@@ -76,7 +76,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), email, cnpj, _email, _schema);
+                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), email, cnpj, _email, _cnpj);
 
                 var user = await _userService.GetUserByEmail(email, cnpj);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
@@ -95,7 +95,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, cnpj, _email, _schema);
+                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, cnpj, _email, _cnpj);
 
                 var user = await _userService.GetUserByCpf(cpf, cnpj);
                 return Ok(user);
@@ -113,7 +113,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cnpj, _email, _schema);
+                _logger.LogInformation("GetAllByCnpj {@dateTime} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cnpj, _email, _cnpj);
 
                 var os = await _userService.GetAllUsersByCnpj(cnpj);
                 return Ok(os);
@@ -131,7 +131,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _schema);
+                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _cnpj);
 
                 var validatedUser = _updateUserValidator.Validate(userRequest);
 
@@ -159,7 +159,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, email, cnpj, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, email, cnpj, _email, _cnpj);
 
                 if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");

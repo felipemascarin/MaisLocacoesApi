@@ -1,33 +1,39 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Repository.v1.IRepository.UserSchema;
 using Microsoft.EntityFrameworkCore;
-using Repository.v1.Entity;
 
 namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
 {
     public class CompanyAddressRepository : ICompanyAddressRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory;
 
-        public CompanyAddressRepository(PostgreSqlContext context)
+        public CompanyAddressRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<CompanyAddressEntity> CreateCompanyAddress(CompanyAddressEntity companyAddressEntity)
         {
-            await _context.CompaniesAddresses.AddAsync(companyAddressEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.CompaniesAddresses.AddAsync(companyAddressEntity);
+            context.SaveChanges();
             return companyAddressEntity;
         }
 
-        public async Task<CompanyAddressEntity> GetById(int companyAddressId) => await _context.CompaniesAddresses.Where(a => a.Id == companyAddressId).FirstOrDefaultAsync();
-
+        public async Task<CompanyAddressEntity> GetById(int companyAddressId)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.CompaniesAddresses.Where(a => a.Id == companyAddressId).FirstOrDefaultAsync();
+        }
+        
         public async Task<int> UpdateCompanyAddress(CompanyAddressEntity companyAddressForUpdate)
         {
-            _context.CompaniesAddresses.Update(companyAddressForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.CompaniesAddresses.Update(companyAddressForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }

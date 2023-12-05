@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
@@ -7,34 +7,55 @@ namespace Repository.v1.Repository.UserSchema
 {
     public class UserRepository : IUserRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory;
 
-        public UserRepository(PostgreSqlContext context)
+        public UserRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
 
         public async Task<UserEntity> CreateUser(UserEntity userEntity)
         {
-            await _context.Users.AddAsync(userEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.Users.AddAsync(userEntity);
+            context.SaveChanges();
             return userEntity;
         }
 
-        public async Task<bool> UserHasToken(string token, string email, string cnpj) => await _context.Users.Where(u => u.Email == email && u.Cnpj == cnpj).AnyAsync(u => u.LastToken == token);
+        public async Task<bool> UserHasToken(string token, string email, string cnpj)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Users.Where(u => u.Email == email && u.Cnpj == cnpj).AnyAsync(u => u.LastToken == token);
+        }
+        public async Task<UserEntity> GetByEmail(string email, string cnpj)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        }
 
-        public async Task<UserEntity> GetByEmail(string email, string cnpj) => await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        public async Task<UserEntity> GetByCpf(string cpf, string cnpj)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Users.FirstOrDefaultAsync(u => u.Cpf == cpf);
+        }
 
-        public async Task<UserEntity> GetByCpf(string cpf, string cnpj) => await _context.Users.FirstOrDefaultAsync(u => u.Cpf == cpf);
+        public async Task<IEnumerable<UserEntity>> GetAllByCnpj(string cnpj)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Users.Where(u => u.Cnpj == cnpj).ToListAsync();
+        }
 
-        public async Task<IEnumerable<UserEntity>> GetAllByCnpj(string cnpj) => await _context.Users.Where(u => u.Cnpj == cnpj).ToListAsync();
-
-        public async Task<bool> UserExists(string email, string cpf, string cnpj) => await _context.Users.AnyAsync(u => u.Email == email && u.Cnpj == cnpj || u.Cpf == cpf && u.Cnpj == cnpj);
+        public async Task<bool> UserExists(string email, string cpf, string cnpj)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Users.AnyAsync(u => u.Email == email && u.Cnpj == cnpj || u.Cpf == cpf && u.Cnpj == cnpj);
+        }
 
         public async Task<int> UpdateUser(UserEntity userForUpdate)
         {
-            _context.Users.Update(userForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.Users.Update(userForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }

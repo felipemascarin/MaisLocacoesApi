@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,11 +8,12 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
 {
     public class ProductTuitionValueRepository : IProductTuitionValueRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public ProductTuitionValueRepository(PostgreSqlContext context)
+        public ProductTuitionValueRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; _context = 
+                _contextFactory.CreateContext();
         }
 
         public async Task<ProductTuitionValueEntity> CreateProductTuitionValue(ProductTuitionValueEntity productTuitionValueEntity)

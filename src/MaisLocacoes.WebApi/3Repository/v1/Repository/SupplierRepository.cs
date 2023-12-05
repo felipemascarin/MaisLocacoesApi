@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,11 +7,12 @@ namespace Repository.v1.Repository
 {
     public class SupplierRepository : ISupplierRepository
     {
-        private readonly PostgreSqlContext _context;
+        private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public SupplierRepository(PostgreSqlContext context)
+        public SupplierRepository(PostgreSqlContextFactory contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory; 
+            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity)

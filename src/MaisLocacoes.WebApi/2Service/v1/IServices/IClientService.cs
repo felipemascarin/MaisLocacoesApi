@@ -1,5 +1,6 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 
 namespace Service.v1.IServices
 {
