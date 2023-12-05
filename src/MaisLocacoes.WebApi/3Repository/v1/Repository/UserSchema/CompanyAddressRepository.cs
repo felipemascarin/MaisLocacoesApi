@@ -17,7 +17,7 @@ namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
 
         public async Task<CompanyAddressEntity> CreateCompanyAddress(CompanyAddressEntity companyAddressEntity)
         {
-            using var context = _contextFactory.CreateContext();
+            using var context = _contextFactory.CreateContext("maislocacoes");
             await context.CompaniesAddresses.AddAsync(companyAddressEntity);
             context.SaveChanges();
             return companyAddressEntity;
@@ -25,13 +25,13 @@ namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
 
         public async Task<CompanyAddressEntity> GetById(int companyAddressId)
         {
-            using var context = _contextFactory.CreateContext();
+            using var context = _contextFactory.CreateContext("maislocacoes");
             return await context.CompaniesAddresses.Where(a => a.Id == companyAddressId).FirstOrDefaultAsync();
         }
         
         public async Task<int> UpdateCompanyAddress(CompanyAddressEntity companyAddressForUpdate)
         {
-            using var context = _contextFactory.CreateContext();
+            using var context = _contextFactory.CreateContext("maislocacoes");
             context.CompaniesAddresses.Update(companyAddressForUpdate);
             return await context.SaveChangesAsync();
         }
