@@ -13,26 +13,39 @@ namespace Repository.v1.Repository
         public QgRepository(PostgreSqlContextFactory contextFactory)
         {
             _contextFactory = contextFactory; 
-            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<QgEntity> CreateQg(QgEntity qgEntity)
         {
-            await _context.Qgs.AddAsync(qgEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.Qgs.AddAsync(qgEntity);
+            context.SaveChanges();
             return qgEntity;
         }
 
-        public async Task<QgEntity> GetById(int id) => await _context.Qgs.FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+        public async Task<QgEntity> GetById(int id)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Qgs.FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+        }
 
-        public async Task<IEnumerable<QgEntity>> GetAll() => await _context.Qgs.Where(q => q.Deleted == false).ToListAsync();
-        
-        public async Task<bool> QgExists(int id) => await _context.Qgs.AnyAsync(q => q.Id == id && q.Deleted == false);
+        public async Task<IEnumerable<QgEntity>> GetAll()
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Qgs.Where(q => q.Deleted == false).ToListAsync();
+        }
+
+        public async Task<bool> QgExists(int id)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Qgs.AnyAsync(q => q.Id == id && q.Deleted == false);
+        }
 
         public async Task<int> UpdateQg(QgEntity qgForUpdate)
         {
-            _context.Qgs.Update(qgForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.Qgs.Update(qgForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.DataBase.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -23,7 +22,11 @@ namespace Repository.v1.Repository
             return companyTuitionEntity;
         }
 
-        public async Task<CompanyTuitionEntity> GetById(int id) => await _context.CompanyTuitions.FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+        public async Task<CompanyTuitionEntity> GetById(int id)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.CompanyTuitions.FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+        }
 
         public async Task<int> UpdateCompanyTuition(CompanyTuitionEntity companyTuitionForUpdate)
         {

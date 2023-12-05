@@ -12,33 +12,47 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
 
         public ProductTuitionValueRepository(PostgreSqlContextFactory contextFactory)
         {
-            _contextFactory = contextFactory; _context = 
-                _contextFactory.CreateContext();
+            _contextFactory = contextFactory; 
         }
 
         public async Task<ProductTuitionValueEntity> CreateProductTuitionValue(ProductTuitionValueEntity productTuitionValueEntity)
         {
-            await _context.ProductTuitionValues.AddAsync(productTuitionValueEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.ProductTuitionValues.AddAsync(productTuitionValueEntity);
+            context.SaveChanges();
             return productTuitionValueEntity;
         }
 
-        public async Task<ProductTuitionValueEntity> GetById(int id) => await _context.ProductTuitionValues.Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.Id == id);
+        public async Task<ProductTuitionValueEntity> GetById(int id)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.ProductTuitionValues.Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.Id == id);
+        }
 
-        public async Task<bool> ProductTuitionValueExists(int productTypeId, int quantityPeriod, string timePeriod) => await _context.ProductTuitionValues.AnyAsync(p => p.ProductTypeId == productTypeId && p.QuantityPeriod == quantityPeriod && p.TimePeriod == timePeriod);
-     
-        public async Task<IEnumerable<ProductTuitionValueEntity>> GetAllByProductTypeId(int productTypeId) => await _context.ProductTuitionValues.Where(p => p.ProductTypeId == productTypeId).OrderBy(p => p.TimePeriod).ToListAsync();
+        public async Task<bool> ProductTuitionValueExists(int productTypeId, int quantityPeriod, string timePeriod)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.ProductTuitionValues.AnyAsync(p => p.ProductTypeId == productTypeId && p.QuantityPeriod == quantityPeriod && p.TimePeriod == timePeriod);
+        }
+
+        public async Task<IEnumerable<ProductTuitionValueEntity>> GetAllByProductTypeId(int productTypeId)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.ProductTuitionValues.Where(p => p.ProductTypeId == productTypeId).OrderBy(p => p.TimePeriod).ToListAsync();
+        }
 
         public async Task<int> UpdateProductTuitionValue(ProductTuitionValueEntity productTuitionValueForUpdate)
         {
-            _context.ProductTuitionValues.Update(productTuitionValueForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.ProductTuitionValues.Update(productTuitionValueForUpdate);
+            return await context.SaveChangesAsync();
         }
 
         public async Task<int> DeleteProductTuitionValue(ProductTuitionValueEntity productTuitionValueForDelete)
         {
-            _context.ProductTuitionValues.Remove(productTuitionValueForDelete);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.ProductTuitionValues.Remove(productTuitionValueForDelete);
+            return await context.SaveChangesAsync();
         }
     }
 }

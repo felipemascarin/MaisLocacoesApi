@@ -12,24 +12,33 @@ namespace Repository.v1.Repository
         public SupplierRepository(PostgreSqlContextFactory contextFactory)
         {
             _contextFactory = contextFactory; 
-            using var _context = _contextFactory.CreateContext();
         }
 
         public async Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity)
         {
-            await _context.Suppliers.AddAsync(supplierEntity);
-            _context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            await context.Suppliers.AddAsync(supplierEntity);
+            context.SaveChanges();
             return supplierEntity;
         }
 
-        public async Task<SupplierEntity> GetById(int id) => await _context.Suppliers.Include(c => c.AddressEntity).FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
+        public async Task<SupplierEntity> GetById(int id)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Suppliers.Include(c => c.AddressEntity).FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
+        }
 
-        public async Task<IEnumerable<SupplierEntity>> GetAll() => await _context.Suppliers.Include(c => c.AddressEntity).Where(s => s.Deleted == false).ToListAsync();
+        public async Task<IEnumerable<SupplierEntity>> GetAll()
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Suppliers.Include(c => c.AddressEntity).Where(s => s.Deleted == false).ToListAsync();
+        }
 
         public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
         {
-            _context.Suppliers.Update(supplierForUpdate);
-            return await _context.SaveChangesAsync();
+            using var context = _contextFactory.CreateContext();
+            context.Suppliers.Update(supplierForUpdate);
+            return await context.SaveChangesAsync();
         }
     }
 }
