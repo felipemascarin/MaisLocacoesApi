@@ -23,7 +23,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public ProductController(IProductService productService,
         IValidator<CreateProductRequest> createProductValidator,
@@ -38,7 +38,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -48,7 +48,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateProduct {@dateTime} {@productRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), _email, _schema);
+                _logger.LogInformation("CreateProduct {@dateTime} {@productRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), _email, _cnpj);
 
                 var validatedProduct = _createProductValidator.Validate(productRequest);
 
@@ -77,7 +77,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var product = await _productService.GetProductById(id);
                 return Ok(product);
@@ -96,7 +96,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), typeId, code, _email, _schema);
+                _logger.LogInformation("GetByTypeCode {@dateTime} typeId:{@typeId} code:{@code} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), typeId, code, _email, _cnpj);
 
                 var product = await _productService.GetProductByTypeCode(typeId, code);
                 return Ok(product);
@@ -115,7 +115,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetProductsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), items, page, query, _email, _schema);
+                _logger.LogInformation("GetProductsByPage {@dateTime} items:{@items} pages:{@page} query:{@query} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), items, page, query, _email, _cnpj);
 
                 var productsList = await _productService.GetProductsByPage(items, page, query);
                 return Ok(productsList);
@@ -134,7 +134,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetProductsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+                _logger.LogInformation("GetProductsForRent {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
                 var productsList = await _productService.GetProductsForRent(productTypeId);
                 return Ok(productsList);
@@ -153,7 +153,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), id, _email, _schema);
+                _logger.LogInformation("Updateproduct {@dateTime} {@productRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(productRequest), id, _email, _cnpj);
 
                 var validatedProduct = _updateProductValidator.Validate(productRequest);
 
@@ -182,7 +182,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, id, _email, _cnpj);
 
                 if (!ProductStatus.ProductStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
@@ -205,7 +205,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 await _productService.DeleteById(id);
                 

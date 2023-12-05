@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public SupplierController(ISupplierService supplierService,
             IValidator<CreateSupplierRequest> createSupplierValidator,
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateSupplier {@dateTime} {@supplierRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), _email, _schema);
+                _logger.LogInformation("CreateSupplier {@dateTime} {@supplierRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), _email, _cnpj);
 
                 var validatedSupplier = _createSupplierValidator.Validate(supplierRequest);
 
@@ -76,7 +76,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var supplier = await _supplierService.GetSupplierById(id);
                 return Ok(supplier);
@@ -95,7 +95,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
                 var suppliers = await _supplierService.GetAllSuppliers();
                 return Ok(suppliers);
@@ -114,7 +114,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("Updatesupplier {@dateTime} {@supplierRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), id, _email, _schema);
+                _logger.LogInformation("Updatesupplier {@dateTime} {@supplierRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(supplierRequest), id, _email, _cnpj);
 
                 var validatedSupplier = _updateSupplierValidator.Validate(supplierRequest);
 
@@ -143,7 +143,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 await _supplierService.DeleteById(id);
 

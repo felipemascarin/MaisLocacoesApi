@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace MaisLocacoes.WebApi.Controllers.v1
+namespace MaisLocacoes.WebApi.Controllers.v1.Authentication
 {
     [Route("api/v1/auth")]
     [ApiController]
@@ -50,11 +50,11 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
                 //Verificar se o token recebido no request é um token válido no firebase:
                 //if (!await FireBaseAuthentication.IsFirebaseTokenValid(request.GoogleToken))
-                    //return Unauthorized();
+                //return Unauthorized();
 
                 LoginResponse response;
 
-                //Alterar a lógica para verificar o e-mail do maislocacoes no token
+                //Altenticação realizada no firebase
                 if (request.Cnpj != "maislocacoes")
                     response = await _authenticationService.Login(request);
                 else
@@ -85,13 +85,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
                     return BadRequest(logoutValidationErros);
                 }
 
-                var schema = JwtManager.ExtractPropertyByToken(request.Token, "role");
+                var role = JwtManager.ExtractPropertyByToken(request.Token, "role");
 
-                if (schema == "adm")
+                if (role == "adm")
                     return Ok("Não é possível deslogar conta ADM, apenas por tempo de token.");
 
                 await _authenticationService.Logout(request);
-                
+
                 return Ok();
             }
             catch (HttpRequestException ex)

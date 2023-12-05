@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public CompanyAddressController(ICompanyAddressService companyAddressService,
         IValidator<CreateCompanyAddressRequest> createCompanyAddressValidator,
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize(Roles = "adm")]
@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(request), _email, _schema);
+                _logger.LogInformation("CreateCompanyAddress {@dateTime} {@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(request), _email, _cnpj);
 
                 var validatedCompanyAddress = _createCompanyAddressValidator.Validate(request);
 
@@ -75,7 +75,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var companyAddress = await _companyAddressService.GetCompanyAddressById(id);
                 return Ok(companyAddress);
@@ -94,7 +94,7 @@ namespace MaisLocacoes.WebApi._1_Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@request} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(request), id, _email, _schema);
+                _logger.LogInformation("UpdateCompanyAddress {@dateTime} {@request} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(request), id, _email, _cnpj);
 
                 var validatedCompanyAddress = _updateCompanyAddressValidator.Validate(request);
 

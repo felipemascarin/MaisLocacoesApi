@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public ContractController(IContractService contractService,
             IValidator<CreateContractRequest> createContractValidator,
@@ -37,7 +37,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
             _httpContextAccessor = httpContextAccessor;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize]
@@ -47,7 +47,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("CreateContract {@dateTime} {@contractRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(contractRequest), _email, _schema);
+                _logger.LogInformation("CreateContract {@dateTime} {@contractRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(contractRequest), _email, _cnpj);
 
                 var validatedContract = _createContractValidator.Validate(contractRequest);
 
@@ -76,7 +76,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("GetById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 var contract = await _contractService.GetContractById(id);
                 return Ok(contract);
@@ -95,7 +95,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+                _logger.LogInformation("GetAll {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
                 var contracts = await _contractService.GetAllContracts();
                 return Ok(contracts);
@@ -114,7 +114,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("GetContractInfoByRentId {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _schema);
+                _logger.LogInformation("GetContractInfoByRentId {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
                 var contracts = await _contractService.GetContractInfoByRentId(rentId);
                 return Ok(contracts);
@@ -133,7 +133,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("UpdateContract {@dateTime} {@contractRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(contractRequest), id, _email, _schema);
+                _logger.LogInformation("UpdateContract {@dateTime} {@contractRequest} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(contractRequest), id, _email, _cnpj);
 
                 var validatedcontract = _updateContractValidator.Validate(contractRequest);
 
@@ -162,7 +162,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1
         {
             try
             {
-                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _schema);
+                _logger.LogInformation("DeleteById {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
 
                 await _contractService.DeleteById(id);
                 return Ok();

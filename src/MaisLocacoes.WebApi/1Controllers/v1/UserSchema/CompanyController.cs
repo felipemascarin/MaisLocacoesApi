@@ -21,7 +21,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly string _email;
-        private readonly string _schema;
+        private readonly string _cnpj;
 
         public CompanyController(ICompanyService companyService,
             IValidator<CreateCompanyRequest> createCompanyValidator,
@@ -35,7 +35,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _logger = loggerFactory.CreateLogger<CompanyController>();
             _httpContextAccessor = httpContextAccessor;
             _email = JwtManager.GetEmailByToken(_httpContextAccessor);
-            _schema = JwtManager.GetSchemaByToken(_httpContextAccessor);
+            _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
         [Authorize(Roles = "adm")]
@@ -44,7 +44,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("CreateCompany {@dateTime} UTC {@companyRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), _email, _schema);
+                _logger.LogInformation("CreateCompany {@dateTime} UTC {@companyRequest} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), _email, _cnpj);
 
                 var validatedCompany = _createCompanyValidator.Validate(companyRequest);
 
@@ -72,7 +72,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByCnpj {@dateTime} UTC cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, cnpj, _email, _schema);
+                _logger.LogInformation("GetByCnpj {@dateTime} UTC cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, cnpj, _email, _cnpj);
 
                 var company = await _companyService.GetCompanyByCnpj(cnpj);
                 return Ok(company);
@@ -90,9 +90,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("GetByToken {@dateTime} UTC User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, _email, _schema);
+                _logger.LogInformation("GetByToken {@dateTime} UTC User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, _email, _cnpj);
 
-                var company = await _companyService.GetCompanyByCnpj(JwtManager.GetSchemaByToken(_httpContextAccessor));
+                var company = await _companyService.GetCompanyByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor));
                 return Ok(company);
             }
             catch (HttpRequestException ex)
@@ -108,7 +108,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateCompany {@dateTime} UTC {@companyRequest} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), cnpj, _email, _schema);
+                _logger.LogInformation("UpdateCompany {@dateTime} UTC {@companyRequest} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, JsonConvert.SerializeObject(companyRequest), cnpj, _email, _cnpj);
 
                 var validatedCompany = _updateCompanyValidator.Validate(companyRequest);
 
@@ -136,7 +136,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, status, cnpj, _email, _schema);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, status, cnpj, _email, _cnpj);
 
                 if (!CompanyStatus.CompanyStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
