@@ -1,38 +1,20 @@
-﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
-using MaisLocacoes.WebApi.DataBase;
-using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
-using MaisLocacoes.WebApi.Utils.Enums;
-using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.EntityFrameworkCore;
-using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
-
-namespace MaisLocacoes.WebApi.Context
+﻿namespace MaisLocacoes.WebApi.DataBase.Context
 {
-    public class PostgreSqlContext : DbContext
+    public class DataBase1Context
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IConfiguration Configuration;
+        public DataBase1Context() { }
 
-        public PostgreSqlContext() { }
-
-        public PostgreSqlContext(DbContextOptions<PostgreSqlContext> options, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public DataBase1Context(DbContextOptions<AdmContext> options)
                 : base(options)
-        {
-            _httpContextAccessor = httpContextAccessor;
-            Configuration = configuration;
-        }
+        { }
 
-        public PostgreSqlContext(string connectionString, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+        public DataBase1Context(string connectionString)
         : base(GetOptions(connectionString))
-        {
-            _httpContextAccessor = httpContextAccessor;
-            Configuration = configuration;
-        }
+        { }
 
-        private static DbContextOptions<PostgreSqlContext> GetOptions(string connectionString)
+        private static DbContextOptions<AdmContext> GetOptions(string connectionString)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<AdmContext>();
             optionsBuilder.UseNpgsql(connectionString);
             return optionsBuilder.Options;
         }
@@ -297,109 +279,109 @@ namespace MaisLocacoes.WebApi.Context
 
             //Definindo ForeignKey para as entidades:
             modelBuilder.Entity<CompanyEntity>()
-            .HasOne<CompanyAddressEntity>(many => many.CompanyAddressEntity)
+            .HasOne(many => many.CompanyAddressEntity)
             .WithMany(one => one.Companies)
             .HasForeignKey(many => new { many.CompanyAddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompanyAddress));
 
             modelBuilder.Entity<UserEntity>()
-            .HasOne<CompanyEntity>(many => many.CompanyEntity)
+            .HasOne(many => many.CompanyEntity)
             .WithMany(one => one.Users)
             .HasForeignKey(many => new { many.Cnpj })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));
 
             modelBuilder.Entity<BillEntity>()
-            .HasOne<RentEntity>(many => many.RentEntity)
+            .HasOne(many => many.RentEntity)
             .WithMany(one => one.Bills)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.Rents));
 
             modelBuilder.Entity<BillEntity>()
-           .HasOne<ProductTuitionEntity>(many => many.ProductTuitionEntity)
+           .HasOne(many => many.ProductTuitionEntity)
            .WithMany(one => one.Bills)
            .HasForeignKey(many => new { many.ProductTuitionId })
            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ClientEntity>()
-            .HasOne<AddressEntity>(many => many.AddressEntity)
+            .HasOne(many => many.AddressEntity)
             .WithMany(one => one.Clients)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Clients, TableNameEnum.Addresses));
 
             modelBuilder.Entity<OsEntity>()
-            .HasOne<ProductTuitionEntity>(many => many.ProductTuitionEntity)
+            .HasOne(many => many.ProductTuitionEntity)
             .WithMany(one => one.Oss)
             .HasForeignKey(many => new { many.ProductTuitionId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ProductEntity>()
-            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductTypeEntity)
             .WithMany(one => one.Products)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductTypeEntity)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne<ProductEntity>(many => many.ProductEntity)
+            .HasOne(many => many.ProductEntity)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne<RentEntity>(many => many.RentEntity)
+            .HasOne(many => many.RentEntity)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Rents));
 
             modelBuilder.Entity<ProductTuitionValueEntity>()
-            .HasOne<ProductTypeEntity>(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductTypeEntity)
             .WithMany(one => one.ProductTuitionValues)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitionValues, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductWasteEntity>()
-            .HasOne<ProductEntity>(many => many.ProductEntity)
+            .HasOne(many => many.ProductEntity)
             .WithMany(one => one.ProductWastes)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductWastes, TableNameEnum.Products));
 
             modelBuilder.Entity<QgEntity>()
-            .HasOne<AddressEntity>(many => many.AddressEntity)
+            .HasOne(many => many.AddressEntity)
             .WithMany(one => one.Qgs)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentedPlaceEntity>()
-            .HasOne<ProductEntity>(many => many.ProductEntity)
+            .HasOne(many => many.ProductEntity)
             .WithMany(one => one.RentedPlaces)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
 
             modelBuilder.Entity<RentEntity>()
-            .HasOne<AddressEntity>(many => many.AddressEntity)
+            .HasOne(many => many.AddressEntity)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentEntity>()
-            .HasOne<ClientEntity>(many => many.ClientEntity)
+            .HasOne(many => many.ClientEntity)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.ClientId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Clients));
 
             modelBuilder.Entity<SupplierEntity>()
-            .HasOne<AddressEntity>(many => many.AddressEntity)
+            .HasOne(many => many.AddressEntity)
             .WithMany(one => one.Suppliers)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Suppliers, TableNameEnum.Addresses));
 
             modelBuilder.Entity<ContractEntity>()
-            .HasOne<RentEntity>(many => many.RentEntity)
+            .HasOne(many => many.RentEntity)
             .WithMany(one => one.Contracts)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Contracts, TableNameEnum.Rents));
@@ -413,10 +395,10 @@ namespace MaisLocacoes.WebApi.Context
 
         public async Task CreateDatabase(string databaseName)
         {
-            this.Database.ExecuteSqlRaw(NewDatabaseSqlCreator.SqlQueryForNewDatabase(databaseName));
+            Database.ExecuteSqlRaw(NewDatabaseSqlCreator.SqlQueryForNewDatabase(databaseName));
 
             // Execute a migração para o banco de dados atual
-            await this.Database.MigrateAsync();
+            await Database.MigrateAsync();
         }
     }
 }

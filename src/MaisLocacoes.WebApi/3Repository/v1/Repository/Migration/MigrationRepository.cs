@@ -1,5 +1,5 @@
 ﻿using MaisLocacoes.WebApi._3Repository.v1.IRepository.Migration;
-using MaisLocacoes.WebApi.DataBase.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using Npgsql;
 using System.Diagnostics;
 
@@ -10,12 +10,14 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository.Migration
         private readonly IConfiguration _configuration;
         private readonly PostgreSqlContextFactory _contextFactory;
         private readonly string _connectionString;
+        private readonly string _workingDirectory;
 
         public MigrationRepository(PostgreSqlContextFactory contextFactory, IConfiguration configuration)
         {
             _contextFactory = contextFactory;
             _configuration = configuration;
             _connectionString = _configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"];
+            _workingDirectory = _configuration["Migrations:ProjectPatch"];
         }
 
         public async Task AddMigrationAllDataBases(List<string> databaseNames)
@@ -49,16 +51,16 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository.Migration
 
         private async Task AddMigrationAndApplyToDatabase(string databaseName)
         {
-            string addMigration = $"dotnet ef migrations add {DateTime.UtcNow.ToString("dd-MM-yyyy")}_UTC -c PostgreSqlContext -p MaisLocacoes.WebApi";
+            string addMigration = $"dotnet ef migrations add {DateTime.UtcNow.ToString("dd-MM-yyyy")} -c PostgreSqlContext ";
 
-            string databaseUpdate = $"dotnet ef database update -c PostgreSqlContext -p MaisLocacoes.WebApi";
+            string databaseUpdate = $"dotnet ef database update -c PostgreSqlContext ";
 
             using (var context = _contextFactory.CreateContext(databaseName))
             {
                 // Adiciona a migração
                 await RunCommandAsync(addMigration);
 
-                // Aplica a migração ao banco de dados
+                // Aplica a migração ao banco de dadosS
                 await RunCommandAsync(databaseUpdate);
             }
         }
@@ -72,7 +74,8 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository.Migration
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                WorkingDirectory = _workingDirectory
             };
 
             using (var process = new Process { StartInfo = processInfo })

@@ -2,7 +2,7 @@
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 
-namespace MaisLocacoes.WebApi.DataBase.Context
+namespace MaisLocacoes.WebApi.DataBase.Context.Factory
 {
     public class PostgreSqlContextFactory
     {
@@ -15,28 +15,28 @@ namespace MaisLocacoes.WebApi.DataBase.Context
             _configuration = configuration;
         }
 
-        public PostgreSqlContext CreateContext()
+        public AdmContext CreateContext()
         {
             var database = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "cnpj");
 
             var connectionString = string.Concat(_configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "Database=", database, ";");
 
-            var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<AdmContext>();
 
             optionsBuilder.UseNpgsql(connectionString);
 
-            return new PostgreSqlContext(connectionString, _httpContextAccessor, _configuration);
+            return new AdmContext(connectionString);
         }
 
-        public PostgreSqlContext CreateContext(string database)
+        public AdmContext CreateContext(string database)
         {
             var connectionString = string.Concat(_configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "Database=", database, ";");
 
-            var optionsBuilder = new DbContextOptionsBuilder<PostgreSqlContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<AdmContext>();
 
             optionsBuilder.UseNpgsql(connectionString);
 
-            return new PostgreSqlContext(connectionString, _httpContextAccessor, _configuration);
+            return new AdmContext(connectionString);
         }
     }
 }

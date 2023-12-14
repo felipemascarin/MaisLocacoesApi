@@ -1,6 +1,6 @@
 using AutoMapper;
 using Configuration;
-using MaisLocacoes.WebApi.DataBase.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using MaisLocacoes.WebApi.Exceptions.Middleware;
 using MaisLocacoes.WebApi.IoC;
 using MaisLocacoes.WebApi.Utils.Helpers;

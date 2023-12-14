@@ -1,5 +1,5 @@
 ﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.DataBase.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;

@@ -1,6 +1,6 @@
 ﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
-using MaisLocacoes.WebApi.DataBase.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using Microsoft.EntityFrameworkCore;
 
 namespace MaisLocacoes.WebApi._3Repository.v1.Repository

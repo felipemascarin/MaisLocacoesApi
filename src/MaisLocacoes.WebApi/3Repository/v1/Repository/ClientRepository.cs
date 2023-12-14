@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;

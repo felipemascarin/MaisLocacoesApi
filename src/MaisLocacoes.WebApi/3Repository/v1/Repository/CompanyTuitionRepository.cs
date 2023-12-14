@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
