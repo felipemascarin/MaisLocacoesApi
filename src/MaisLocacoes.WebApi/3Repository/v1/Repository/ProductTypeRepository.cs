@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.ProductTypes.AddAsync(productTypeEntity);
+            await context.Set<ProductTypeEntity>().AddAsync(productTypeEntity);
             context.SaveChanges();
             return productTypeEntity;
         }
@@ -25,31 +25,31 @@ namespace Repository.v1.Repository
         public async Task<ProductTypeEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductTypes.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductTypeEntity>().FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
         }
 
         public async Task<bool> ProductTypeExists(string type)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductTypes.AnyAsync(p => p.Type.ToLower() == type.ToLower() && p.Deleted == false);
+            return await context.Set<ProductTypeEntity>().AnyAsync(p => p.Type.ToLower() == type.ToLower() && p.Deleted == false);
         }
 
         public async Task<bool> ProductTypeExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductTypes.AnyAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductTypeEntity>().AnyAsync(p => p.Id == id && p.Deleted == false);
         }
 
         public async Task<IEnumerable<ProductTypeEntity>> GetAll()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductTypes.Where(p => p.Deleted == false).ToListAsync();
+            return await context.Set<ProductTypeEntity>().Where(p => p.Deleted == false).ToListAsync();
         }
 
         public async Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.ProductTypes.Update(productTypeForUpdate);
+            context.Set<ProductTypeEntity>().Update(productTypeForUpdate);
             return await context.SaveChangesAsync();
         }
     }

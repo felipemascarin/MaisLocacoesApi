@@ -103,6 +103,12 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
             return ExtractPropertyByToken(Token, "role");
         }
 
+        public static string GetDataBaseByToken(IHttpContextAccessor httpContextAccessor)
+        {
+            Token = ExtractTokenByAuthorization(httpContextAccessor);
+            return ExtractPropertyByToken(Token, "database");
+        }
+
         public static string ExtractPropertyByToken(string token, string property)
         {
             var handler = new JwtSecurityTokenHandler();

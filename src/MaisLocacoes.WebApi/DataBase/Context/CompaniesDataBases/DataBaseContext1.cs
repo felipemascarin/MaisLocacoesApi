@@ -1,99 +1,59 @@
 ﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
 using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.DataBase;
-using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
+using MaisLocacoes.WebApi.DataBase.Context.BaseContext;
 using MaisLocacoes.WebApi.Utils.Enums;
+using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
-using Repository.v1.Entity.UserSchema;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.Adm
+namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBases
 {
-    public class AdmContext : DbContext
+    public class DataBaseContext1 : DataBaseCompanyBaseContext
     {
-        public AdmContext() { }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration Configuration;
 
-        public AdmContext(DbContextOptions<AdmContext> options)
-                : base(options)
-        { }
+        public DataBaseContext1() { }
 
-        public AdmContext(string connectionString)
+        public DataBaseContext1(string connectionString)
         : base(GetOptions(connectionString))
         { }
 
-        private static DbContextOptions<AdmContext> GetOptions(string connectionString)
+        private static DbContextOptions<DbContext> GetOptions(string connectionString)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<AdmContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<DbContext>();
             optionsBuilder.UseNpgsql(connectionString);
             return optionsBuilder.Options;
         }
 
-        public DbSet<AddressEntity> Addresses { get; set; }
-        public DbSet<BillEntity> Bills { get; set; }
-        public DbSet<ClientEntity> Clients { get; set; }
-        public DbSet<CompanyEntity> Companies { get; set; }
-        public DbSet<CompanyAddressEntity> CompaniesAddresses { get; set; }
-        public DbSet<CompanyTuitionEntity> CompanyTuitions { get; set; }
-        public DbSet<CompanyWasteEntity> CompanyWastes { get; set; }
-        public DbSet<ContractEntity> Contracts { get; set; }
-        public DbSet<OsEntity> Oss { get; set; }
-        public DbSet<UserEntity> Users { get; set; }
-        public DbSet<ProductEntity> Products { get; set; }
-        public DbSet<ProductTuitionEntity> ProductTuitions { get; set; }
-        public DbSet<ProductTuitionValueEntity> ProductTuitionValues { get; set; }
-        public DbSet<ProductTypeEntity> ProductTypes { get; set; }
-        public DbSet<ProductWasteEntity> ProductWastes { get; set; }
-        public DbSet<QgEntity> Qgs { get; set; }
-        public DbSet<RentedPlaceEntity> RentedPlaces { get; set; }
-        public DbSet<RentEntity> Rents { get; set; }
-        public DbSet<SupplierEntity> Suppliers { get; set; }
+        public DataBaseContext1(DbContextOptions<DbContext> options, IHttpContextAccessor httpContextAccessor, IConfiguration configuration)
+                : base(options)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            Configuration = configuration;
+        }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //if (_httpContextAccessor.HttpContext != null)
-            //{
-            //    if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
-            //    {
-            //        var database = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "cnpj");
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                if (_httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
+                {
+                    var database = JwtManager.ExtractPropertyByToken(_httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1], "database");
 
-            //        var connectionString = string.Concat(Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "Database=", database, ";");
+                    var connectionString = string.Concat(Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"], "Database=", database, ";");
 
-            //        optionsBuilder.UseNpgsql(connectionString);
-            //    }
-            //}
+                    optionsBuilder.UseNpgsql(connectionString);
+                }
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            //Definindo Schema de User - define o schema que a tabela existe:
-            modelBuilder.Entity<CompanyEntity>(entity =>
-            {
-                entity.ToTable(nameof(TableNameEnum.Companies), "users");
-            });
-
-            modelBuilder.Entity<CompanyAddressEntity>(entity =>
-            {
-                entity.ToTable(nameof(TableNameEnum.CompanyAddress), "users");
-            });
-
-            modelBuilder.Entity<UserEntity>(entity =>
-            {
-                entity.ToTable(nameof(TableNameEnum.Users), "users");
-            });
-
-            //Definindo valores Unique com Fluent API:
-            modelBuilder.Entity<CompanyEntity>()
-                .HasIndex(e => e.Email)
-                .IsUnique();
-
+            //Definindo valores Unique com Fluent API:           
             modelBuilder.Entity<ContractEntity>()
                 .HasIndex(e => e.GuidId)
                 .IsUnique();
-
-            //Definindo valor Default NotifyDaysBefore de CompanyEntity:
-            modelBuilder.Entity<CompanyEntity>()
-                .Property(p => p.NotifyDaysBefore)
-                .HasDefaultValue(0);
 
             //Definindo valor Default IsEditable de ProductTuitionEntity:
             modelBuilder.Entity<ProductTuitionEntity>()
@@ -121,18 +81,6 @@ namespace MaisLocacoes.WebApi.DataBase.Context.Adm
 
             //Definindo valores Default para campos CreatedAt como horario de inserção em UTC:
             var currenteTimestamp = "CURRENT_TIMESTAMP";
-
-            modelBuilder.Entity<CompanyAddressEntity>()
-                .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestamp);
-
-            modelBuilder.Entity<CompanyEntity>()
-                .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestamp);
-
-            modelBuilder.Entity<UserEntity>()
-                .Property(x => x.CreatedAt)
-                .HasDefaultValueSql(currenteTimestamp);
 
             modelBuilder.Entity<AddressEntity>()
                 .Property(x => x.CreatedAt)
@@ -253,15 +201,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.Adm
                 .Property(x => x.Country)
                 .HasDefaultValue("Brasil");
 
-            //Definindo valor Default para os status de todas entyties
-            modelBuilder.Entity<CompanyEntity>()
-               .Property(x => x.Status)
-               .HasDefaultValue(CompanyStatus.CompanyStatusEnum.ElementAt(0));
-
-            modelBuilder.Entity<UserEntity>()
-               .Property(x => x.Status)
-               .HasDefaultValue(UserStatus.UserStatusEnum.ElementAt(0));
-
+            //Definindo valor Default para os status de todas entyties            
             modelBuilder.Entity<BillEntity>()
                 .Property(x => x.Status)
                 .HasDefaultValue(BillStatus.BillStatusEnum.ElementAt(0));
@@ -286,19 +226,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.Adm
               .Property(x => x.Status)
               .HasDefaultValue(ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(1));
 
-            //Definindo ForeignKey para as entidades:
-            modelBuilder.Entity<CompanyEntity>()
-            .HasOne(many => many.CompanyAddressEntity)
-            .WithMany(one => one.Companies)
-            .HasForeignKey(many => new { many.CompanyAddressId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompanyAddress));
-
-            modelBuilder.Entity<UserEntity>()
-            .HasOne(many => many.CompanyEntity)
-            .WithMany(one => one.Users)
-            .HasForeignKey(many => new { many.Cnpj })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));
-
+            //Definindo ForeignKey para as entidades:            
             modelBuilder.Entity<BillEntity>()
             .HasOne(many => many.RentEntity)
             .WithMany(one => one.Bills)
@@ -400,14 +328,6 @@ namespace MaisLocacoes.WebApi.DataBase.Context.Adm
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
-        }
-
-        public async Task CreateDatabase(string databaseName)
-        {
-            Database.ExecuteSqlRaw(NewDatabaseSqlCreator.SqlQueryForNewDatabase(databaseName));
-
-            // Execute a migração para o banco de dados atual
-            await Database.MigrateAsync();
         }
     }
 }

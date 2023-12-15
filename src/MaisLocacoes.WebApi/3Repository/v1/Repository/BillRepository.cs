@@ -1,5 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,7 @@ namespace Repository.v1.Repository
         public async Task<BillEntity> CreateBill(BillEntity billEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Bills.AddAsync(billEntity);
+            await context.Set<BillEntity>().AddAsync(billEntity);
             context.SaveChanges();
             return billEntity;
         }
@@ -33,7 +32,7 @@ namespace Repository.v1.Repository
         public async Task<BillEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
             .Include(b => b.RentEntity)
@@ -46,7 +45,7 @@ namespace Repository.v1.Repository
         public async Task<BillEntity> GetForTaxInvoice(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
             .Include(b => b.RentEntity)
@@ -60,7 +59,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<BillEntity>> GetByRentId(int rentId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.RentEntity)
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
@@ -70,7 +69,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<BillEntity>> GetByProductTuitionId(int? productTuitionId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
             .Include(b => b.RentEntity)
@@ -84,7 +83,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
             .Include(b => b.RentEntity)
@@ -97,7 +96,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<BillEntity>> GetAllDebts()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Bills
+            return await context.Set<BillEntity>()
             .Include(b => b.ProductTuitionEntity)
             .ThenInclude(p => p.ProductTypeEntity)
             .Include(b => b.RentEntity)
@@ -108,14 +107,14 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateBill(BillEntity billForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Bills.Update(billForUpdate);
+            context.Set<BillEntity>().Update(billForUpdate);
             return await context.SaveChangesAsync();
         }
 
         public async Task<int> DeleteBill(BillEntity billForDelete)
         {
             using var context = _contextFactory.CreateContext();
-            context.Bills.Remove(billForDelete);
+            context.Set<BillEntity>().Remove(billForDelete);
             return await context.SaveChangesAsync();
         }
     }

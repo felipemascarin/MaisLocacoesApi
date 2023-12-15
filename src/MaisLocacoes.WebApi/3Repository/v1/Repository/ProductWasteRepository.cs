@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<ProductWasteEntity> CreateProductWaste(ProductWasteEntity productWasteEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.ProductWastes.AddAsync(productWasteEntity);
+            await context.Set<ProductWasteEntity>().AddAsync(productWasteEntity);
             context.SaveChanges();
             return productWasteEntity;
         }
@@ -25,22 +25,22 @@ namespace Repository.v1.Repository
         public async Task<ProductWasteEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductWastes.FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductWasteEntity>().FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
         }
 
         public async Task<IEnumerable<ProductWasteEntity>> GetAllByProductId(int productId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.ProductWastes.Where(p => p.ProductId == productId && p.Deleted == false).OrderByDescending(p => p.Date).ToListAsync();
+            return await context.Set<ProductWasteEntity>().Where(p => p.ProductId == productId && p.Deleted == false).OrderByDescending(p => p.Date).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductWasteEntity>> GetProductWastesByPage(int items, int page, string query)
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-                return await context.ProductWastes.Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+                return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
-                return await context.ProductWastes.Where(p => p.Deleted == false && (
+                return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false && (
                      p.ProductEntity.ProductTypeEntity.Type.ToLower().Contains(query.ToLower()) ||
                      p.ProductEntity.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower())))
@@ -50,7 +50,7 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateProductWaste(ProductWasteEntity productWasteForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.ProductWastes.Update(productWasteForUpdate);
+            context.Set<ProductWasteEntity>().Update(productWasteForUpdate);
             return await context.SaveChangesAsync();
         }
     }

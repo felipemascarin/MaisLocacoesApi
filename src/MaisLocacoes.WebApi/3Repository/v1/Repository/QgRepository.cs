@@ -1,5 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
-using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -18,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<QgEntity> CreateQg(QgEntity qgEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Qgs.AddAsync(qgEntity);
+            await context.Set<QgEntity>().AddAsync(qgEntity);
             context.SaveChanges();
             return qgEntity;
         }
@@ -26,25 +25,25 @@ namespace Repository.v1.Repository
         public async Task<QgEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Qgs.FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+            return await context.Set<QgEntity>().FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
         }
 
         public async Task<IEnumerable<QgEntity>> GetAll()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Qgs.Where(q => q.Deleted == false).ToListAsync();
+            return await context.Set<QgEntity>().Where(q => q.Deleted == false).ToListAsync();
         }
 
         public async Task<bool> QgExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Qgs.AnyAsync(q => q.Id == id && q.Deleted == false);
+            return await context.Set<QgEntity>().AnyAsync(q => q.Id == id && q.Deleted == false);
         }
 
         public async Task<int> UpdateQg(QgEntity qgForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Qgs.Update(qgForUpdate);
+            context.Set<QgEntity>().Update(qgForUpdate);
             return await context.SaveChangesAsync();
         }
     }

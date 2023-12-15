@@ -1,15 +1,15 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 
 namespace Repository.v1.Repository
 {
-    public class CompanyTuitionRepository : ICompanyTuitionRepository
+    public class CompanyTuitionRepositoryRepository : ICompanyTuitionRepository
     {
         private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public CompanyTuitionRepository(PostgreSqlContextFactory contextFactory)
+        public CompanyTuitionRepositoryRepository(PostgreSqlContextFactory contextFactory)
         {
             _contextFactory = contextFactory; 
         }
@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<CompanyTuitionEntity> CreateCompanyTuition(CompanyTuitionEntity companyTuitionEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.CompanyTuitions.AddAsync(companyTuitionEntity);
+            await context.Set<CompanyTuitionEntity>().AddAsync(companyTuitionEntity);
             context.SaveChanges();
             return companyTuitionEntity;
         }
@@ -25,13 +25,13 @@ namespace Repository.v1.Repository
         public async Task<CompanyTuitionEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.CompanyTuitions.FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<CompanyTuitionEntity>().FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
         }
 
         public async Task<int> UpdateCompanyTuition(CompanyTuitionEntity companyTuitionForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.CompanyTuitions.Update(companyTuitionForUpdate);
+            context.Set<CompanyTuitionEntity>().Update(companyTuitionForUpdate);
             return await context.SaveChangesAsync();
         }
     }

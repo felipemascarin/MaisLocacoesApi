@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +19,7 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> CreateClient(ClientEntity clientEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Clients.AddAsync(clientEntity);
+            await context.Set<ClientEntity>().AddAsync(clientEntity);
             context.SaveChanges();
             return clientEntity;
         }
@@ -27,40 +27,40 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
         }
 
         public async Task<ClientEntity> GetByIdDetails(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<ClientEntity> GetByCpf(string cpf)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
         }
 
         public async Task<ClientEntity> GetByCnpj(string cnpj)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients.Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
         }
 
         public async Task<bool> ClientExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients.AnyAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<ClientEntity>().AnyAsync(c => c.Id == id && c.Deleted == false);
         }
 
         public async Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query)
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-            return await context.Clients.Include(c => c.AddressEntity).Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
-            return await context.Clients.Include(c => c.AddressEntity).Where(c => c.Deleted == false && (
+            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).Where(c => c.Deleted == false && (
                  c.Cpf.Contains(query) ||
                  c.Cnpj.Contains(query) ||
                  c.CompanyName.ToLower().Contains(query.ToLower()) ||
@@ -76,7 +76,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<GetClientForRentDtoResponse>> GetClientsForRent()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Clients
+            return await context.Set<ClientEntity>()
                 .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0) && c.Deleted == false)
                 .Select(c => new GetClientForRentDtoResponse
                 {
@@ -91,7 +91,7 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateClient(ClientEntity clientForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Clients.Update(clientForUpdate);
+            context.Set<ClientEntity>().Update(clientForUpdate);
             return await context.SaveChangesAsync();
         }
     }

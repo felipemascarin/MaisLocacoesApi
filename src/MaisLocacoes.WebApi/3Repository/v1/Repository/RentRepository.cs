@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Factory;
+﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -17,7 +17,7 @@ namespace Repository.v1.Repository
         public async Task<RentEntity> CreateRent(RentEntity rentEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Rents.AddAsync(rentEntity);
+            await context.Set<RentEntity>().AddAsync(rentEntity);
             context.SaveChanges();
             return rentEntity;
         }
@@ -25,7 +25,7 @@ namespace Repository.v1.Repository
         public async Task<RentEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Rents
+            return await context.Set<RentEntity>()
             .Include(r => r.AddressEntity)
             .Include(r => r.ClientEntity).ThenInclude(c => c.AddressEntity)
             .FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
@@ -34,13 +34,13 @@ namespace Repository.v1.Repository
         public async Task<bool> RentExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Rents.AnyAsync(r => r.Id == id && r.Deleted == false);
+            return await context.Set<RentEntity>().AnyAsync(r => r.Id == id && r.Deleted == false);
         }
 
         public async Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Rents.Include(r => r.AddressEntity).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
+            return await context.Set<RentEntity>().Include(r => r.AddressEntity).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query, string status)
@@ -50,16 +50,16 @@ namespace Repository.v1.Repository
             {
                 if (status == null)
                 {
-                    return await context.Rents.Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                    return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
                         .Where(r => r.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
                 }
-                else return await context.Rents.Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                else return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
                         .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower()).Skip((page - 1) * items).Take(items).ToListAsync();
             }
             else
                 if (status == null)
             {
-                return await context.Rents.Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
                     .Where(r => r.Deleted == false && (
                      r.Status.Contains(query) ||
                      r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
@@ -84,7 +84,7 @@ namespace Repository.v1.Repository
             }
             else
             {
-                return await context.Rents.Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
                     .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower() && (
                      r.Status.Contains(query) ||
                      r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
@@ -112,7 +112,7 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateRent(RentEntity rentForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Rents.Update(rentForUpdate);
+            context.Set<RentEntity>().Update(rentForUpdate);
             return await context.SaveChangesAsync();
         }
     }
