@@ -100,6 +100,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .NotNull()
                 .WithMessage("TimeZone é obrigatório");
 
+            RuleFor(company => company.DataBase)
+                .Must(database => int.TryParse(database.ToString(), out var result) &&
+                 result > 0)
+                .WithMessage("DataBase deve ser um número inteiro maior que 0");
+
             RuleFor(company => company.CompanyAddress).SetValidator(new CreateCompanyAddressValidator());
         }
     }

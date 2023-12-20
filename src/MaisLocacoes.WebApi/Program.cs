@@ -1,6 +1,6 @@
 using AutoMapper;
 using Configuration;
-using MaisLocacoes.WebApi.Configuration;
+using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using MaisLocacoes.WebApi.Exceptions.Middleware;
 using MaisLocacoes.WebApi.IoC;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -13,16 +13,17 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton(builder.Configuration);
+
 //Postgres:
-var connectionString = builder.Configuration["MyPostgreSqlConnection:MyPostgreSqlConnectionString"];
-ContextInjetor.ConfigureContexts(builder.Services, connectionString);
+builder.Services.AddScoped<PostgreSqlContextFactory>();
 
 //AutoMapper:
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-//Injeção de dependência:SSS
+//Injeção de dependência:
 Bootstrapper.Configure(builder.Services);
 
 //Add Cors - permite requisições de servidor web para servidor web

@@ -48,7 +48,8 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 Role = userEntity.Role,
                 Cnpj = userEntity.Cnpj,
                 Module = companyEntity.Module,
-                TimeZone = companyEntity.TimeZone.ToString()
+                TimeZone = companyEntity.TimeZone.ToString(),
+                DataBase = companyEntity.DataBase
             };
 
             var tokenResponse = JwtManager.CreateToken(user, 15);
@@ -72,7 +73,8 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 Role = UserRole.PersonRolesEnum.ElementAt(3), //role adm
                 Cnpj = "maislocacoes",
                 Module = ProjectModules.Modules.ElementAt(2),
-                TimeZone = "America/Sao_Paulo"
+                TimeZone = "America/Sao_Paulo",
+                DataBase = "maislocacoes"
             };
 
             var tokenResponse = JwtManager.CreateToken(user, 1);

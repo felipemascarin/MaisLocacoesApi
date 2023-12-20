@@ -12,7 +12,7 @@ curl -SL --output dotnet-sdk.tar.gz https://download.visualstudio.microsoft.com/
     && rm dotnet-sdk.tar.gz \
     && if [ ! -e /usr/bin/dotnet ]; then ln -s /usr/share/dotnet/dotnet /usr/bin/dotnet; fi
 
-dotnet tool install --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 6.0.16
 
 export PATH="$PATH:/root/.dotnet/tools"
 

@@ -77,7 +77,15 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "character varying(255)")]
         public string Module { get; set; }
 
+        [Required]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
         public string TimeZone { get; set; }
+
+        [Required]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string DataBase { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }

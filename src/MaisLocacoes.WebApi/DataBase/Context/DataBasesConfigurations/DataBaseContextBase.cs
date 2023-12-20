@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.BaseContext
+namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
 {
-    public class DataBaseCompanyBaseContext : DbContext
+    public class DataBaseContextBase : DbContext
     {
-        public DataBaseCompanyBaseContext() { }
+        public DataBaseContextBase() { }
 
-        public DataBaseCompanyBaseContext(DbContextOptions<DbContext> options)
-                : base(options)
+        public DataBaseContextBase(DbContextOptions dbContextOptions)
+        : base(dbContextOptions)
         { }
 
         public DbSet<AddressEntity> Addresses { get; set; }

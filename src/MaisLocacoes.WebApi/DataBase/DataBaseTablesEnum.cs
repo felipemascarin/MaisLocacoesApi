@@ -3,7 +3,7 @@
     public class TableNameEnum
     {
         public const string Companies = "Companies";
-        public const string CompanyAddress = "CompaniesAddresses";
+        public const string CompaniesAddresses = "CompaniesAddresses";
         public const string Users = "Users";
 
         public const string Addresses = "Addresses";

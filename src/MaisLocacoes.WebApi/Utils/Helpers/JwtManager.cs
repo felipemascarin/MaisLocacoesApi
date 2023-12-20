@@ -17,6 +17,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public string Cnpj { get; set; }
         public string Module { get; set; }
         public string TimeZone { get; set; }
+        public string DataBase { get; set; }
     }
 
     public class JwtManager
@@ -44,7 +45,8 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim("cnpj", user.Cnpj),
                     new Claim("module", user.Module),
                     new Claim("cpf", user.Cpf),
-                    new Claim("timeZone", user.TimeZone)
+                    new Claim("timeZone", user.TimeZone),
+                    new Claim("dataBase", user.DataBase)
                 }),
                 Expires = System.DateTime.UtcNow.AddHours(tokenTime),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
@@ -106,7 +108,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public static string GetDataBaseByToken(IHttpContextAccessor httpContextAccessor)
         {
             Token = ExtractTokenByAuthorization(httpContextAccessor);
-            return ExtractPropertyByToken(Token, "database");
+            return ExtractPropertyByToken(Token, "dataBase");
         }
 
         public static string ExtractPropertyByToken(string token, string property)

@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema
 {
-    [Table(TableNameEnum.CompanyAddress)]
+    [Table(TableNameEnum.CompaniesAddresses)]
     public class CompanyAddressEntity
     {
         [Key]
