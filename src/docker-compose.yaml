@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres
-    container_image: postgres
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: maislocacoes
@@ -14,7 +14,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_image: maislocacoes
+    container_name: maislocacoes
     restart: always
     ports:
       - "9001:9001"
