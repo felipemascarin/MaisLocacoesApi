@@ -10,6 +10,7 @@ services:
       - data:/var/lib/postgresql/data
     ports:
       - 5432:5432
+
   api:
     build:
       context: .
@@ -20,3 +21,6 @@ services:
       - "9001:9001"
     depends_on:
       - db
+
+volumes:
+  data:
