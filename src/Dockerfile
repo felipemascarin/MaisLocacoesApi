@@ -3,7 +3,7 @@ WORKDIR /app
 EXPOSE 80
 
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
-COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+COPY ["entrypoint.sh", "/usr/local/bin/"]
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
