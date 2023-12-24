@@ -12,10 +12,11 @@ WORKDIR /src
 
 COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
 
+COPY MaisLocacoes.WebApi/appsettingsDocker.json ./MaisLocacoes.WebApi/appsettings.json
+
 RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
 
 COPY MaisLocacoes.WebApi/. ./MaisLocacoes.WebApi/
-COPY MaisLocacoes.WebApi/appsettingsDocker.json ./MaisLocacoes.WebApi/appsettings.json
 WORKDIR "/src/MaisLocacoes.WebApi"
 
 RUN dotnet build "MaisLocacoes.WebApi.csproj" -c Release -o /app/build
