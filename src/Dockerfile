@@ -7,7 +7,7 @@ WORKDIR /src
 
 COPY ["*.sln", "./"]
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
-COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
