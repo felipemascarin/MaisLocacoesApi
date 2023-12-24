@@ -1,24 +1,20 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
-
-COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-COPY MaisLocacoes.WebApi/appsettingsDocker.json ./MaisLocacoes.WebApi/appsettings.json
-
-RUN chmod +x /usr/local/bin/entrypoint.sh
+EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
+COPY *.sln ./
 COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 
-COPY MaisLocacoes.WebApi/appsettingsDocker.json ./MaisLocacoes.WebApi/appsettings.json
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
 RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
-
-COPY MaisLocacoes.WebApi/. ./MaisLocacoes.WebApi/
+COPY . ./
 WORKDIR "/src/MaisLocacoes.WebApi"
-
+RUN mv appsettingsDocker.json appsettings.json
 RUN dotnet build "MaisLocacoes.WebApi.csproj" -c Release -o /app/build
 
 FROM build AS publish
