@@ -6,9 +6,6 @@ COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-RUN ls /usr/local/bin
-RUN ls /src/MaisLocacoes.WebApi
-
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
