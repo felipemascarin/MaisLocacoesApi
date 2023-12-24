@@ -18,7 +18,7 @@ services:
     container_name: maislocacoes
     restart: always
     ports:
-      - "9001:50922"
+      - "8080:80"
     depends_on:
       - db
 
