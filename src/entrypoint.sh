@@ -16,4 +16,7 @@ dotnet tool install --global dotnet-ef --version 6.0.16
 
 export PATH="$PATH:/root/.dotnet/tools"
 
+# Redireciona a saída padrão e de erro para um arquivo no diretório /root
+exec > >(tee -a /root/container.log) 2>&1
+
 exec "$@"
