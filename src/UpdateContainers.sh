@@ -23,5 +23,4 @@ cd ~
 touch container.log
 
 #Redireciona a saída de logs para o arquivo de log
-pkill -f "docker logs -f maislocacoes"
 docker logs -f maislocacoes >> /root/container.log 2>&1 &
