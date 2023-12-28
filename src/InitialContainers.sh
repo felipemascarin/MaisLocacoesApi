@@ -1,14 +1,7 @@
 #!/bin/bash
 
-# Verifica se a imagem postgres já existe localmente
-image_name="postgres"
-if [[ ! "$(docker images -q $image_name 2> /dev/null)" ]]; then
-  echo "Imagem postgres não encontrada. Baixando..."
-  docker pull $image_name
-else
-  echo "Imagem postgres já existe localmente. Pulando o download."
-fi
-
+cd ~
+docker pull postgres
 docker pull mcr.microsoft.com/dotnet/sdk:6.0
 docker pull mcr.microsoft.com/dotnet/aspnet:6.0
 
