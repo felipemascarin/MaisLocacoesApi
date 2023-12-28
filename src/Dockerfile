@@ -3,7 +3,7 @@ EXPOSE 80
 
 WORKDIR /app
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
