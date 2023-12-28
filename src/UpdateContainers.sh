@@ -13,6 +13,7 @@ docker pull mcr.microsoft.com/dotnet/sdk:6.0
 docker pull mcr.microsoft.com/dotnet/aspnet:6.0
 
 cd ~/MaisLocacoesApi/src
+git clean -df
 git pull
 docker-compose build
 docker-compose up -d
@@ -22,4 +23,5 @@ cd ~
 touch container.log
 
 #Redireciona a saída de logs para o arquivo de log
-docker logs -f maislocacoes > /root/container.log 2>&1 &
+pkill -f "docker logs -f maislocacoes"
+docker logs -f maislocacoes >> /root/container.log 2>&1 &
