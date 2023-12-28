@@ -16,7 +16,14 @@ dotnet tool install --global dotnet-ef --version 6.0.16
 
 export PATH="$PATH:/root/.dotnet/tools"
 
+# Caminho do arquivo de logs do container maislocacoes no linux
+log_file="/root/container.log"
+
+# Cria o arquivo de log no linux se não existir e concede permissões de escrita
+touch "$log_file"
+chmod +x "$log_file"
+
 # Redireciona a saída padrão e de erro para o arquivo de log
-exec > >(tee -a "/root/container.log") 2>&1
+exec > >(tee -a "$log_file") 2>&1
 
 exec "$@"
