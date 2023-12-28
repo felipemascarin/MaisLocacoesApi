@@ -4,6 +4,7 @@ services:
     container_name: postgres
     restart: always
     environment:
+      POSTGRES_DB: ""
       POSTGRES_USER: maislocacoes
       POSTGRES_PASSWORD: admin
     volumes:
