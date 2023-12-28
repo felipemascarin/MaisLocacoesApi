@@ -1,5 +1,5 @@
 #!/bin/bash
-docker exec -it maislocacoes bash
+docker exec -it maislocacoes bash <<'EOF'
 
 cd MaisLocacoes.WebApi
 
@@ -15,3 +15,5 @@ dotnet ef database update -c DataBaseContextAdm;
 dotnet ef database update -c DataBaseContext1;
 dotnet ef database update -c DataBaseContext2;
 dotnet ef database update -c DataBaseContext3;
+
+EOF
