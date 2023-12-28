@@ -1,5 +1,5 @@
 #!/bin/bash
-docker exec -it maislocacoes bash <<'EOF'
+docker exec maislocacoes bash <<'EOF'
 
 cd MaisLocacoes.WebApi
 
