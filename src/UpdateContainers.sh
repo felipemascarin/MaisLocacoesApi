@@ -22,4 +22,4 @@ cd ~
 touch container.log
 
 #Redireciona a saída de logs para o arquivo de log
-docker logs -f maislocacoes > /root/container.log &
+docker logs -f maislocacoes > /root/container.log 2>&1 &
