@@ -24,7 +24,7 @@ services:
     depends_on:
       - db
     logging:
-      driver: "json-file"
+      driver: "local"
       options:
         max-size: "1000m"
         max-file: "5"
