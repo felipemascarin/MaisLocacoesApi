@@ -28,6 +28,7 @@ services:
       options:
         max-size: "1000m"
         max-file: "5"
+      path: /root/container.log
 
 volumes:
   data:
