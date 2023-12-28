@@ -23,6 +23,11 @@ services:
       - "8080:80"
     depends_on:
       - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1000m"
+        max-file: "4"
 
 volumes:
   data:
