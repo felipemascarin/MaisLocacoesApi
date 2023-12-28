@@ -16,8 +16,10 @@ dotnet tool install --global dotnet-ef --version 6.0.16
 
 export PATH="$PATH:/root/.dotnet/tools"
 
-# Adicione uma espera para garantir que o contêiner seja iniciado completamente
-sleep 60
+# Espera até que o contêiner esteja em execução
+while [ -z "$(docker ps -q -f name=maislocacoes)" ]; do
+  sleep 1
+done
 
 # Redireciona os logs para um arquivo no host
 docker logs -f maislocacoes > /root/container.log &
