@@ -23,12 +23,6 @@ services:
       - "8080:80"
     depends_on:
       - db
-    logging:
-      driver: "local"
-      options:
-        max-size: "1000m"
-        max-file: "5"
-      path: /root/container.log
 
 volumes:
   data:
