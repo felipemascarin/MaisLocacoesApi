@@ -16,4 +16,7 @@ dotnet tool install --global dotnet-ef --version 6.0.16
 
 export PATH="$PATH:/root/.dotnet/tools"
 
+# Redireciona os logs para um arquivo no host
+docker logs -f maislocacoes > /root/container.log &
+
 exec "$@"
