@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Redireciona a saída padrão e de erro para um arquivo
+exec > output.log 2>&1
+
 docker exec -it maislocacoes bash
 
 cd MaisLocacoes.WebApi
