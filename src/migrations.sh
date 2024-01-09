@@ -1,19 +1,24 @@
 #!/bin/bash
 
 # Caminho da pasta no sistema Linux
-source_folder=/root/Migrations
+source_folder="$HOME/Migrations"
 
-# Verifica se a pasta existe
-if [ ! -d "$source_folder" ]; then
-  echo "A pasta $source_folder de backup não existe no linux. O script será encerrado."
-  exit 1
-fi
+# Caminho dentro do contêiner
+container_folder="/app/Migrations"
 
 # Caminho dentro do contêiner
 container_folder=/app/Migrations
 
 # Copia a pasta para dentro do contêiner no caminho /app
 cp -r "$source_folder" "$container_folder"
+
+# Verifica se a pasta foi copiada com sucesso
+if [ $? -eq 0 ]; then
+  echo "Pasta Migrations copiada com sucesso para o container $container_folder."
+else
+  echo "Erro ao copiar a pasta Migrations do diretorio do linux ~/Migrations para o container $container_folder. O script será encerrado."
+  exit 1
+fi
 
 # Obtenha a data/hora UTC atual no formato YYYYMMDD_HHMMSS
 current_datetime=$(date -u +"%Y%m%d_%H%M%S")
