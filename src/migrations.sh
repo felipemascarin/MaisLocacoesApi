@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Caminho da pasta no sistema Linux
-source_folder="/root/Migrations"
+source_folder=~/Migrations
 
 # Verifica se a pasta existe
 if [ ! -d "$source_folder" ]; then
