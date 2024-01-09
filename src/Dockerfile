@@ -19,7 +19,7 @@ RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
 
 COPY ["MaisLocacoes.WebApi/.", "./MaisLocacoes.WebApi/"]
 WORKDIR "/src/MaisLocacoes.WebApi"
-RUN mv appsettingsDocker.json appsettings.json
+#RUN mv appsettingsDocker.json appsettings.json
 
 RUN dotnet build "MaisLocacoes.WebApi.csproj" -c Release -o /app/build
 
