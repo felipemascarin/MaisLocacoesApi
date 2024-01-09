@@ -4,8 +4,7 @@ services:
     container_name: container-postgres
     restart: always
     environment:
-      POSTGRES_DB: "maislocacoes, 1, 2, 3"
-      POSTGRES_USER: usermaislocacoes
+      POSTGRES_USER: maislocacoes
       POSTGRES_PASSWORD: admin
     volumes:
       - data:/var/lib/postgresql/data
