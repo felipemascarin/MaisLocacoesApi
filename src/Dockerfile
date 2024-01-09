@@ -11,7 +11,7 @@ WORKDIR /src
 COPY ["*.sln", "./"]
 COPY ["MaisLocacoes.WebApi/*.csproj", "./"]
 
-RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
+RUN dotnet restore
 COPY . ./
 WORKDIR "/src/MaisLocacoes.WebApi"
 RUN mv appsettingsDocker.json appsettings.json
