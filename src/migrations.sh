@@ -10,7 +10,7 @@ container_folder="/app/Migrations"
 container_folder=/app/Migrations
 
 # Copia a pasta para dentro do contêiner no caminho /app
-cp -r "$source_folder" "$container_folder"
+sudo cp -r "$source_folder" "$container_folder"
 
 # Verifica se a pasta foi copiada com sucesso
 if [ $? -eq 0 ]; then
@@ -40,8 +40,8 @@ dotnet ef database update -c DataBaseContext3;
 
 # Copia a pasta da migration atualizada de volta para o linux para backup:
 # Salva com nome temporario
-cp -r "$container_folder" "$source_folder"_temp
+sudo cp -r "$container_folder" "$source_folder"_temp
 # Deleta a pasta antiga
-rm -rf "$source_folder"
+sudo rm -rf "$source_folder"
 # Renomeia a de nome temporário para o nome Migrations
-mv "$source_folder"_temp "$source_folder"
+sudo mv "$source_folder"_temp "$source_folder"
