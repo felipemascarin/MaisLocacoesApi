@@ -2,6 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 EXPOSE 80
 
 WORKDIR /app
+COPY . ./
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
 COPY ["migrations.sh", "./MaisLocacoes.WebApi/"]
 COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
@@ -12,7 +13,6 @@ WORKDIR /src
 
 COPY ["*.sln", "./"]
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
-COPY . ./
 
 RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
 COPY . ./
