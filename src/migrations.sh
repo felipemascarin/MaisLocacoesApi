@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Caminho da pasta no sistema Linux
-source_folder=~/Migrations
+source_folder=/root/Migrations
 
 # Verifica se a pasta existe
 if [ ! -d "$source_folder" ]; then
@@ -10,8 +10,7 @@ if [ ! -d "$source_folder" ]; then
 fi
 
 # Caminho dentro do contêiner
-container_name="container-maislocacoes"
-container_folder="/app/Migrations"
+container_folder=/app/Migrations
 
 # Copia a pasta para dentro do contêiner no caminho /app
 cp -r "$source_folder" "$container_folder"
