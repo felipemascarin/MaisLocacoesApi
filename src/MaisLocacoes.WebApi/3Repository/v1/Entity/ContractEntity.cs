@@ -23,7 +23,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Entity
 
         [StringLength(2048)]
         [Column(TypeName = "character varying(2048)")]
-        public string? UrlSignature { get; set; }
+        public string UrlSignature { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? SignedAt { get; set; }
@@ -36,11 +36,11 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
     }

@@ -23,7 +23,7 @@ namespace Repository.v1.Entity
 
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]
-        public string? Description { get; set; }
+        public string Description { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? DateBought { get; set; }
@@ -50,11 +50,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
 

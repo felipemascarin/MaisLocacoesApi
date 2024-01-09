@@ -23,7 +23,7 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? ProductCode { get; set; }
+        public string ProductCode { get; set; }
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Value { get; set; }
@@ -42,7 +42,7 @@ namespace Repository.v1.Entity
         [Required]
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Status { get; set; }
+        public string Status { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? FirstDueDate { get; set; }
@@ -62,11 +62,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
 

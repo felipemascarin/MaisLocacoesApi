@@ -25,11 +25,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
 

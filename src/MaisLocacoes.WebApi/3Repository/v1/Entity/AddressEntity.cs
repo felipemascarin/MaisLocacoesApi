@@ -13,31 +13,31 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Cep { get; set; }
+        public string Cep { get; set; }
 
         [StringLength(500)]
         [Column(TypeName = "character varying(500)")]
-        public string? Street { get; set; }
+        public string Street { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Number { get; set; }
+        public string Number { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Complement { get; set; }
+        public string Complement { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? District { get; set; }
+        public string District { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? City { get; set; }
+        public string City { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? State { get; set; }
+        public string State { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
@@ -51,11 +51,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public ICollection<ClientEntity> Clients { get; set; }
         public ICollection<QgEntity> Qgs { get; set; }

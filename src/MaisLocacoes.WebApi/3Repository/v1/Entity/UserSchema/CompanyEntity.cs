@@ -24,7 +24,7 @@ namespace Repository.v1.Entity.UserSchema
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? StateRegister { get; set; }
+        public string StateRegister { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -38,7 +38,7 @@ namespace Repository.v1.Entity.UserSchema
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Tel { get; set; }
+        public string Tel { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -63,7 +63,7 @@ namespace Repository.v1.Entity.UserSchema
 
         [StringLength(2048)]
         [Column(TypeName = "character varying(2048)")]
-        public string? LogoUrl { get; set; }
+        public string LogoUrl { get; set; }
 
         public int NotifyDaysBefore { get; set; }
 
@@ -95,11 +95,11 @@ namespace Repository.v1.Entity.UserSchema
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public ICollection<UserEntity> Users { get; set; }
     }

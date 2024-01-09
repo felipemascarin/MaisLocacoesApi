@@ -22,19 +22,19 @@ namespace Repository.v1.Entity
 
         [StringLength(14)]
         [Column(TypeName = "character varying(14)")]
-        public string? Cnpj { get; set; }
+        public string Cnpj { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Email { get; set; }
+        public string Email { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Tel { get; set; }
+        public string Tel { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? Cel { get; set; }
+        public string Cel { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
@@ -44,11 +44,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
     }

@@ -21,7 +21,7 @@ namespace Repository.v1.Entity
 
         [StringLength(11)]
         [Column(TypeName = "character varying(11)")]
-        public string? DeliveryCpf { get; set; }
+        public string DeliveryCpf { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -36,7 +36,7 @@ namespace Repository.v1.Entity
 
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]
-        public string? DeliveryObservation { get; set; }
+        public string DeliveryObservation { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }
@@ -46,11 +46,11 @@ namespace Repository.v1.Entity
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? CreatedBy { get; set; }
+        public string CreatedBy { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        public string? UpdatedBy { get; set; }
+        public string UpdatedBy { get; set; }
 
         public bool? Deleted { get; set; }
     }
