@@ -3,9 +3,6 @@ EXPOSE 80
 
 WORKDIR /app
 
-#necesário para a migration:
-COPY . ./ 
-
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
 COPY ["migrations.sh", "./MaisLocacoes.WebApi/"]
 COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
