@@ -8,10 +8,11 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
+
 COPY ["*.sln", "./"]
 COPY ["MaisLocacoes.WebApi/*.csproj", "./"]
 
-RUN dotnet restore
+RUN dotnet restore "MaisLocacoes.WebApi.csproj"
 COPY . ./
 WORKDIR "/src/MaisLocacoes.WebApi"
 RUN mv appsettingsDocker.json appsettings.json
