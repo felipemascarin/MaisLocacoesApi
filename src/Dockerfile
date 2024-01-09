@@ -6,7 +6,7 @@ WORKDIR /app
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
 COPY ["MaisLocacoes.WebApi/.", "./MaisLocacoes.WebApi/"]
 COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
-COPY ["migrations.sh", "/MaisLocacoes.WebApi/migrations.sh"]
+COPY ["migrations.sh", "./MaisLocacoes.WebApi/migrations.sh"]
 COPY ["MaisLocacoes.WebApi/appsettingsDocker.json", "./MaisLocacoes.WebApi/appsettings.json"]
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
