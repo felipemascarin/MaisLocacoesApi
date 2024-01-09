@@ -4,7 +4,7 @@
 source_folder="/root/Migrations"
 
 # Caminho dentro do contêiner
-container_folder="/app"
+container_folder="/app/Migrations"
 
 # Copia a pasta para dentro do contêiner no caminho /app
 cp -r "$source_folder" "$container_folder"
