@@ -3,21 +3,21 @@ EXPOSE 80
 
 WORKDIR /app
 
-COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
-COPY ["MaisLocacoes.WebApi/.", "./MaisLocacoes.WebApi/"]
-COPY ["migrations.sh", "./MaisLocacoes.WebApi/"]
-COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
+COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
+COPY MaisLocacoes.WebApi/. ./MaisLocacoes.WebApi/
+COPY migrations.sh /MaisLocacoes.WebApi/migrations.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 
-COPY ["*.sln", "./"]
-COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
+COPY *.sln ./
+COPY MaisLocacoes.WebApi/*.csproj ./MaisLocacoes.WebApi/
 
 RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
 
-COPY ["MaisLocacoes.WebApi/.", "./MaisLocacoes.WebApi/"]
+COPY MaisLocacoes.WebApi/. ./MaisLocacoes.WebApi/
 WORKDIR "/src/MaisLocacoes.WebApi"
 #RUN mv appsettingsDocker.json appsettings.json
 
