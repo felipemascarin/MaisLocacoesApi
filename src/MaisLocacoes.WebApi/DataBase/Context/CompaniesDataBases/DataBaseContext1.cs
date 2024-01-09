@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBases
 {
-    public class DataBaseContext1 : DataBaseContextBase
+    public class DataBaseContext1 : DataBasesContextBase
     {
         private readonly string _database = "Database=1";
 

@@ -4,11 +4,11 @@ using Repository.v1.Entity;
 
 namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
 {
-    public class DataBaseContextBase : DbContext
+    public class DataBasesContextBase : DbContext
     {
-        public DataBaseContextBase() { }
+        public DataBasesContextBase() { }
 
-        public DataBaseContextBase(DbContextOptions dbContextOptions)
+        public DataBasesContextBase(DbContextOptions dbContextOptions)
         : base(dbContextOptions)
         { }
 

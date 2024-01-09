@@ -10,7 +10,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
     {
         public static void DataBaseConfigurations(ModelBuilder modelBuilder)
         {
-            //Definindo valores Unique com Fluent API:           
+            //Definindo valores Unique com Fluent API:
             modelBuilder.Entity<ContractEntity>()
                 .HasIndex(e => e.GuidId)
                 .IsUnique();

@@ -16,6 +16,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.Authentication
     [ApiController]
     public class AuthenticationController : Controller
     {
+        private const string ADMCNPJ = "maislocacoes";
         private readonly IAuthenticationService _authenticationService;
         private readonly IValidator<LoginRequest> _loginRequestValidator;
         private readonly IValidator<LogoutRequest> _logoutRequestValidator;
@@ -55,7 +56,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.Authentication
                 LoginResponse response;
 
                 //Altenticação realizada no firebase
-                if (request.Cnpj != "maislocacoes")
+                if (request.Cnpj != ADMCNPJ)
                     response = await _authenticationService.Login(request);
                 else
                     response = _authenticationService.LoginAdm(request);
