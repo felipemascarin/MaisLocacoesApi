@@ -1,13 +1,10 @@
 #!/bin/bash
 
 # Caminho da pasta no sistema Linux
-source_folder="$HOME/Migrations"
+source_folder="/root/Migrations"
 
 # Caminho dentro do contêiner
 container_folder="/app/Migrations"
-
-# Caminho dentro do contêiner
-container_folder=/app/Migrations
 
 # Copia a pasta para dentro do contêiner no caminho /app
 sudo cp -r "$source_folder" "$container_folder"
