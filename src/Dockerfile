@@ -4,6 +4,7 @@ EXPOSE 80
 WORKDIR /app
 
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
+COPY ["MaisLocacoes.WebApi/.", "./MaisLocacoes.WebApi/"]
 COPY ["migrations.sh", "./MaisLocacoes.WebApi/"]
 COPY ["entrypoint.sh", "/usr/local/bin/entrypoint.sh"]
 RUN chmod +x /usr/local/bin/entrypoint.sh
