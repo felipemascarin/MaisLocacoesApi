@@ -12,6 +12,7 @@ WORKDIR /src
 
 COPY ["*.sln", "./"]
 COPY ["MaisLocacoes.WebApi/*.csproj", "./MaisLocacoes.WebApi/"]
+COPY . ./
 
 RUN dotnet restore "MaisLocacoes.WebApi/MaisLocacoes.WebApi.csproj"
 COPY . ./
