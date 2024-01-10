@@ -15,6 +15,8 @@ docker pull mcr.microsoft.com/dotnet/aspnet:6.0
 cd ~/MaisLocacoesApi/src
 git clean -df
 git pull
+
+docker-compose down
 docker-compose build
 docker-compose up -d
 
