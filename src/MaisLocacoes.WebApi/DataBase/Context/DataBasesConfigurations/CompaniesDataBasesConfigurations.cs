@@ -188,97 +188,97 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
 
             //Definindo ForeignKey para as entidades:            
             modelBuilder.Entity<BillEntity>()
-            .HasOne(many => many.RentEntity)
+            .HasOne(many => many.Rent)
             .WithMany(one => one.Bills)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.Rents));
 
             modelBuilder.Entity<BillEntity>()
-           .HasOne(many => many.ProductTuitionEntity)
+           .HasOne(many => many.ProductTuition)
            .WithMany(one => one.Bills)
            .HasForeignKey(many => new { many.ProductTuitionId })
            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ClientEntity>()
-            .HasOne(many => many.AddressEntity)
+            .HasOne(many => many.Address)
             .WithMany(one => one.Clients)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Clients, TableNameEnum.Addresses));
 
             modelBuilder.Entity<OsEntity>()
-            .HasOne(many => many.ProductTuitionEntity)
+            .HasOne(many => many.ProductTuition)
             .WithMany(one => one.Oss)
             .HasForeignKey(many => new { many.ProductTuitionId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ProductEntity>()
-            .HasOne(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductType)
             .WithMany(one => one.Products)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductType)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne(many => many.ProductEntity)
+            .HasOne(many => many.Product)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
-            .HasOne(many => many.RentEntity)
+            .HasOne(many => many.Rent)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Rents));
 
             modelBuilder.Entity<ProductTuitionValueEntity>()
-            .HasOne(many => many.ProductTypeEntity)
+            .HasOne(many => many.ProductType)
             .WithMany(one => one.ProductTuitionValues)
             .HasForeignKey(many => new { many.ProductTypeId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitionValues, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductWasteEntity>()
-            .HasOne(many => many.ProductEntity)
+            .HasOne(many => many.Product)
             .WithMany(one => one.ProductWastes)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductWastes, TableNameEnum.Products));
 
             modelBuilder.Entity<QgEntity>()
-            .HasOne(many => many.AddressEntity)
+            .HasOne(many => many.Address)
             .WithMany(one => one.Qgs)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentedPlaceEntity>()
-            .HasOne(many => many.ProductEntity)
+            .HasOne(many => many.Product)
             .WithMany(one => one.RentedPlaces)
             .HasForeignKey(many => new { many.ProductId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
 
             modelBuilder.Entity<RentEntity>()
-            .HasOne(many => many.AddressEntity)
+            .HasOne(many => many.Address)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentEntity>()
-            .HasOne(many => many.ClientEntity)
+            .HasOne(many => many.Client)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.ClientId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Clients));
 
             modelBuilder.Entity<SupplierEntity>()
-            .HasOne(many => many.AddressEntity)
+            .HasOne(many => many.Address)
             .WithMany(one => one.Suppliers)
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Suppliers, TableNameEnum.Addresses));
 
             modelBuilder.Entity<ContractEntity>()
-            .HasOne(many => many.RentEntity)
+            .HasOne(many => many.Rent)
             .WithMany(one => one.Contracts)
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Contracts, TableNameEnum.Rents));

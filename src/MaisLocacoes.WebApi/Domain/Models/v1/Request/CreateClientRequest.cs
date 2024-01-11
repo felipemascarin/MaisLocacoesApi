@@ -2,7 +2,6 @@
 {
     public class CreateClientRequest
     {
-        //As classes CreateClientPfRequest e CreateClientPjRequest em ùtils/ devem sempre ser idênticas à essa.
         public string Type { get; set; }
         public string Cpf { get; set; }
         public string Rg { get; set; }

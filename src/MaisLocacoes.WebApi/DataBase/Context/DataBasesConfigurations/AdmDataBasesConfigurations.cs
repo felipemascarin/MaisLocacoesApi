@@ -51,13 +51,13 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
 
             //Definindo ForeignKey para as entidades:
             modelBuilder.Entity<CompanyEntity>()
-            .HasOne(many => many.CompanyAddressEntity)
+            .HasOne(many => many.CompanyAddress)
             .WithMany(one => one.Companies)
             .HasForeignKey(many => new { many.CompanyAddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompaniesAddresses));
 
             modelBuilder.Entity<UserEntity>()
-            .HasOne(many => many.CompanyEntity)
+            .HasOne(many => many.Company)
             .WithMany(one => one.Users)
             .HasForeignKey(many => new { many.Cnpj })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));

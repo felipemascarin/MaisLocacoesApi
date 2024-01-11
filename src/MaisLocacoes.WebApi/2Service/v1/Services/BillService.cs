@@ -93,10 +93,10 @@ namespace Service.v1.Services
             if (billEntity.ProductTuitionId != null)
             {
                 var productTuitionEntity = await _productTuitionRepository.GetById(billEntity.ProductTuitionId.Value) ??
-                    throw new HttpRequestException("Fatura de produto ProducTuition não encontrada", null, HttpStatusCode.NotFound);
+                    throw new HttpRequestException("Fatura de produto ProducTuition não encontrada no banco para uma das faturas", null, HttpStatusCode.NotFound);
                 productCode = productTuitionEntity.ProductCode;
                 productTuitionParts = productTuitionEntity.Parts;
-                productType = _mapper.Map<GetBillForTaxInvoiceResponse.ProductTypeResponse>(productTuitionEntity.ProductTypeEntity);
+                productType = _mapper.Map<GetBillForTaxInvoiceResponse.ProductTypeResponse>(productTuitionEntity.ProductType);
             }
 
             var billForTaxInvoiceResponse = _mapper.Map<GetBillForTaxInvoiceResponse>(billEntity);
@@ -119,8 +119,8 @@ namespace Service.v1.Services
             {
                 if (bill.ProductTuitionId != null)
                 {
-                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuitionEntity.Id == bill.ProductTuitionId).ProductTuitionEntity.ProductCode;
-                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuitionEntity.Id == bill.ProductTuitionId).ProductTuitionEntity.Parts;
+                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuition.Id == bill.ProductTuitionId).ProductTuition.ProductCode;
+                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuition.Id == bill.ProductTuitionId).ProductTuition.Parts;
                 }
             }
 
@@ -151,19 +151,19 @@ namespace Service.v1.Services
                 }
                 else
                 {
-                    productTypeName = bill.ProductTuitionEntity.ProductTypeEntity.Type;
-                    isManyParts = bill.ProductTuitionEntity.ProductTypeEntity.IsManyParts;
-                    productCode = bill.ProductTuitionEntity.ProductCode;
-                    parts = bill.ProductTuitionEntity.Parts;
+                    productTypeName = bill.ProductTuition.ProductType.Type;
+                    isManyParts = bill.ProductTuition.ProductType.IsManyParts;
+                    productCode = bill.ProductTuition.ProductCode;
+                    parts = bill.ProductTuition.Parts;
                 }
 
                 var billDto = new GetDuedsBillsResponse()
                 {
-                    ClientName = bill.RentEntity.ClientEntity.ClientName,
+                    ClientName = bill.Rent.Client.ClientName,
                     DueDate = bill.DueDate,
                     Value = bill.Value,
-                    ClientPhone = bill.RentEntity.ClientEntity.Cel,
-                    RentId = bill.RentEntity.Id,
+                    ClientPhone = bill.Rent.Client.Cel,
+                    RentId = bill.Rent.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description,
                     NfIdFireBase = bill.NfIdFireBase,
@@ -203,19 +203,19 @@ namespace Service.v1.Services
                 }
                 else
                 {
-                    productTypeName = bill.ProductTuitionEntity.ProductTypeEntity.Type;
-                    isManyParts = bill.ProductTuitionEntity.ProductTypeEntity.IsManyParts;
-                    productCode = bill.ProductTuitionEntity.ProductCode;
-                    parts = bill.ProductTuitionEntity.Parts;
+                    productTypeName = bill.Rent.Client.Type;
+                    isManyParts = bill.ProductTuition.ProductType.IsManyParts;
+                    productCode = bill.ProductTuition.ProductCode;
+                    parts = bill.ProductTuition.Parts;
                 }
 
                 var billDto = new GetAllBillsDebtsResponse()
                 {
-                    ClientName = bill.RentEntity.ClientEntity.ClientName,
+                    ClientName = bill.Rent.Client.ClientName,
                     DueDate = bill.DueDate,
                     Value = bill.Value,
-                    ClientPhone = bill.RentEntity.ClientEntity.Cel,
-                    RentId = bill.RentEntity.Id,
+                    ClientPhone = bill.Rent.Client.Cel,
+                    RentId = bill.Rent.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description,
                     NfIdFireBase = bill.NfIdFireBase,
@@ -308,10 +308,10 @@ namespace Service.v1.Services
                 if (billForUpdate.ProductTuitionId != null)
                 {
                     //Se o produto dessa fatura for locação diária ou semanal, modifica o is editable, mas mensal sempre iseditable é true
-                    if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
+                    if (billForUpdate.ProductTuition.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
                     {
-                        billForUpdate.ProductTuitionEntity.IsEditable = true;
-                        await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity);
+                        billForUpdate.ProductTuition.IsEditable = true;
+                        await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuition);
                     }
                 }
 
@@ -322,10 +322,10 @@ namespace Service.v1.Services
             else if (status.ToLower() == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && billForUpdate.ProductTuitionId != null)
             {
                 //Se a fatura a ser editada está indo para paga e se o tipo de locação for diferente de mensal, o producttuition não pode mais ser editado
-                if (billForUpdate.ProductTuitionEntity.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
+                if (billForUpdate.ProductTuition.TimePeriod != ProductTuitionPeriodTypes.ProductTuitionPeriodTypesEnum.ElementAt(2) /*month*/)
                 {
-                    billForUpdate.ProductTuitionEntity.IsEditable = false;
-                    await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuitionEntity);
+                    billForUpdate.ProductTuition.IsEditable = false;
+                    await _productTuitionRepository.UpdateProductTuition(billForUpdate.ProductTuition);
                 }
             }
 

@@ -17,7 +17,7 @@ namespace Repository.v1.Entity
         public string Code { get; set; }
 
         public int ProductTypeId { get; set; }
-        public virtual ProductTypeEntity ProductTypeEntity { get; set; }
+        public virtual ProductTypeEntity ProductType { get; set; }
 
         public int? SupplierId { get; set; }
 

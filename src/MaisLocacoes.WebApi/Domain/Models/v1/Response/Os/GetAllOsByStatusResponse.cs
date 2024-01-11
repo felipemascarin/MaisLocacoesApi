@@ -36,6 +36,7 @@
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
         }
+
         public class RentResponse
         {
             public int Id { get; set; }
@@ -49,6 +50,7 @@
             public DateTime? UpdatedAt { get; set; }
             public AddressResponse Address { get; set; }
         }
+
         public class ClientResponse
         {
             public int Id { get; set; }

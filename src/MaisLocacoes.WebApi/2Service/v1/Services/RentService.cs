@@ -167,7 +167,7 @@ namespace Service.v1.Services
             rentForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentForUpdate.UpdatedBy = _email;
 
-            await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.AddressEntity.Id);
+            await _addressService.UpdateAddress(rentRequest.Address, rentForUpdate.Address.Id);
 
             await _rentRepository.UpdateRent(rentForUpdate);
         }

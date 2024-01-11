@@ -33,15 +33,15 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             if (status == null)
                 return await context.Set<OsEntity>()
-                    .Include(o => o.ProductTuitionEntity).ThenInclude(p => p.ProductTypeEntity)
-                    .Include(o => o.ProductTuitionEntity.RentEntity).ThenInclude(r => r.AddressEntity)
-                    .Include(o => o.ProductTuitionEntity.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+                    .Include(o => o.ProductTuition).ThenInclude(p => p.ProductType)
+                    .Include(o => o.ProductTuition.Rent).ThenInclude(r => r.Address)
+                    .Include(o => o.ProductTuition.Rent.Client).ThenInclude(c => c.Address)
                     .Where(o => o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) && o.Deleted == false).ToListAsync();
 
             return await context.Set<OsEntity>()
-                    .Include(o => o.ProductTuitionEntity).ThenInclude(p => p.ProductTypeEntity)
-                    .Include(o => o.ProductTuitionEntity.RentEntity).ThenInclude(r => r.AddressEntity)
-                    .Include(o => o.ProductTuitionEntity.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+                    .Include(o => o.ProductTuition).ThenInclude(p => p.ProductType)
+                    .Include(o => o.ProductTuition.Rent).ThenInclude(r => r.Address)
+                    .Include(o => o.ProductTuition.Rent.Client).ThenInclude(c => c.Address)
                     .Where(o => o.Status == status && o.Deleted == false).ToListAsync();
         }
 

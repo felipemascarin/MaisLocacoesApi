@@ -81,7 +81,7 @@ namespace Service.v1.Services
             supplierForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForUpdate.UpdatedBy = _email;
 
-            await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.AddressEntity.Id);
+            await _addressService.UpdateAddress(supplierRequest.Address, supplierForUpdate.Address.Id);
 
             await _supplierRepository.UpdateSupplier(supplierForUpdate);
         }

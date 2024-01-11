@@ -25,7 +25,7 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         public async Task<ProductTuitionValueEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionValueEntity>().Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.Id == id);
+            return await context.Set<ProductTuitionValueEntity>().Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task<bool> ProductTuitionValueExists(int productTypeId, int quantityPeriod, string timePeriod)

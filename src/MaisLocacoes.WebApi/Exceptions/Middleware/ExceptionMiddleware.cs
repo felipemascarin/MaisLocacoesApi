@@ -24,7 +24,9 @@ namespace MaisLocacoes.WebApi.Exceptions.Middleware
             {
                 _logger.LogError("Log Error: {@Message}", ex.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                await context.Response.WriteAsync(ex.Message);
+                //string[] mensagem = ex.Message.Split('\n');
+                //await context.Response.WriteAsync("Erro no servidor: " + mensagem[0]);
+                await context.Response.WriteAsync("Erro no servidor: " + ex.Message);
             }
         }
     }

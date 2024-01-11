@@ -17,7 +17,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Entity
         public Guid GuidId { get; set; }
 
         public int RentId { get; set; }
-        public virtual RentEntity RentEntity { get; set; }
+        public virtual RentEntity Rent { get; set; }
 
         public int Version { get; set; }
 

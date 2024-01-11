@@ -12,7 +12,7 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int ProductTuitionId { get; set; }
-        public virtual ProductTuitionEntity ProductTuitionEntity { get; set; }
+        public virtual ProductTuitionEntity ProductTuition { get; set; }
 
         [Required]
         [StringLength(255)]

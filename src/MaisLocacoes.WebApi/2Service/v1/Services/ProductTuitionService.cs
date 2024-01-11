@@ -667,7 +667,7 @@ namespace Service.v1.Services
 
             productEntity.RentedParts += productTuition.Parts;
             productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(0); //free
-            if (!productEntity.ProductTypeEntity.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1); //rented
+            if (!productEntity.ProductType.IsManyParts) productEntity.Status = ProductStatus.ProductStatusEnum.ElementAt(1); //rented
 
             if (await _productRepository.UpdateProduct(productEntity) == 0)
                 throw new HttpRequestException("Não foi possível atualizar o produto novo", null, HttpStatusCode.InternalServerError);

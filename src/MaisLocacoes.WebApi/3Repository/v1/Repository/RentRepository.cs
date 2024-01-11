@@ -26,8 +26,8 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<RentEntity>()
-            .Include(r => r.AddressEntity)
-            .Include(r => r.ClientEntity).ThenInclude(c => c.AddressEntity)
+            .Include(r => r.Address)
+            .Include(r => r.Client).ThenInclude(c => c.Address)
             .FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
         }
 
@@ -40,7 +40,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<RentEntity>().Include(r => r.AddressEntity).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
+            return await context.Set<RentEntity>().Include(r => r.Address).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query, string status)
@@ -50,61 +50,61 @@ namespace Repository.v1.Repository
             {
                 if (status == null)
                 {
-                    return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                    return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
                         .Where(r => r.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
                 }
-                else return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                else return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
                         .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower()).Skip((page - 1) * items).Take(items).ToListAsync();
             }
             else
                 if (status == null)
             {
-                return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
                     .Where(r => r.Deleted == false && (
                      r.Status.Contains(query) ||
-                     r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Cpf.Contains(query) ||
-                     r.ClientEntity.Cnpj.Contains(query) ||
-                     r.ClientEntity.CompanyName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.StateRegister.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.FantasyName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Cel.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Tel.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Email.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Cep.Contains(query) ||
-                     r.AddressEntity.Street.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Number.Contains(query) ||
-                     r.AddressEntity.Complement.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.District.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.City.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.State.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Country.ToLower().Contains(query.ToLower())))
+                     r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Cpf.Contains(query) ||
+                     r.Client.Cnpj.Contains(query) ||
+                     r.Client.CompanyName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.StateRegister.ToLower().Contains(query.ToLower()) ||
+                     r.Client.FantasyName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Cel.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Tel.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Email.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Cep.Contains(query) ||
+                     r.Address.Street.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Number.Contains(query) ||
+                     r.Address.Complement.ToLower().Contains(query.ToLower()) ||
+                     r.Address.District.ToLower().Contains(query.ToLower()) ||
+                     r.Address.City.ToLower().Contains(query.ToLower()) ||
+                     r.Address.State.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Country.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
             }
             else
             {
-                return await context.Set<RentEntity>().Include(r => r.AddressEntity).Include(r => r.ClientEntity).Include(r => r.ClientEntity.AddressEntity)
+                return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
                     .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower() && (
                      r.Status.Contains(query) ||
-                     r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Cpf.Contains(query) ||
-                     r.ClientEntity.Cnpj.Contains(query) ||
-                     r.ClientEntity.CompanyName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.ClientName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.StateRegister.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.FantasyName.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Cel.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Tel.ToLower().Contains(query.ToLower()) ||
-                     r.ClientEntity.Email.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Cep.Contains(query) ||
-                     r.AddressEntity.Street.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Number.Contains(query) ||
-                     r.AddressEntity.Complement.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.District.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.City.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.State.ToLower().Contains(query.ToLower()) ||
-                     r.AddressEntity.Country.ToLower().Contains(query.ToLower())))
+                     r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Cpf.Contains(query) ||
+                     r.Client.Cnpj.Contains(query) ||
+                     r.Client.CompanyName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.StateRegister.ToLower().Contains(query.ToLower()) ||
+                     r.Client.FantasyName.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Cel.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Tel.ToLower().Contains(query.ToLower()) ||
+                     r.Client.Email.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Cep.Contains(query) ||
+                     r.Address.Street.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Number.Contains(query) ||
+                     r.Address.Complement.ToLower().Contains(query.ToLower()) ||
+                     r.Address.District.ToLower().Contains(query.ToLower()) ||
+                     r.Address.City.ToLower().Contains(query.ToLower()) ||
+                     r.Address.State.ToLower().Contains(query.ToLower()) ||
+                     r.Address.Country.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
             }
         }

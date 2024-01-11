@@ -13,13 +13,13 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int RentId { get; set; }
-        public virtual RentEntity RentEntity { get; set; }
+        public virtual RentEntity Rent { get; set; }
 
         public int ProductTypeId { get; set; }
-        public virtual ProductTypeEntity ProductTypeEntity { get; set; }
+        public virtual ProductTypeEntity ProductType { get; set; }
 
         public int? ProductId { get; set; }
-        public virtual ProductEntity ProductEntity { get; set; }
+        public virtual ProductEntity Product { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]

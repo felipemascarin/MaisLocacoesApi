@@ -49,7 +49,7 @@ namespace Service.v1.Services
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
-            productEntity.ProductTypeEntity = productroductType;
+            productEntity.ProductType = productroductType;
 
             productEntity.CreatedBy = _email;
             productEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);

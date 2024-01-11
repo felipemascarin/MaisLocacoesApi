@@ -190,7 +190,7 @@ namespace Service.v1.Services
             clientForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             clientForUpdate.UpdatedBy = _email;
 
-            await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.AddressEntity.Id);
+            await _addressService.UpdateAddress(clientRequest.Address, clientForUpdate.Address.Id);
 
             await _clientRepository.UpdateClient(clientForUpdate);
         }

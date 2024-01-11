@@ -15,7 +15,7 @@ namespace Repository.v1.Entity.UserSchema
 
         public int CompanyAddressId { get; set; }
 
-        public virtual CompanyAddressEntity CompanyAddressEntity { get; set; }
+        public virtual CompanyAddressEntity CompanyAddress { get; set; }
 
         [Required]
         [StringLength(255)]

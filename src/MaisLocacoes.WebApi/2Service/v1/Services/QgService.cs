@@ -79,7 +79,7 @@ namespace Service.v1.Services
             qgForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             qgForUpdate.UpdatedBy = _email;
 
-            await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.AddressEntity.Id);
+            await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.Address.Id);
 
             await _qgRepository.UpdateQg(qgForUpdate);
         }

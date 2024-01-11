@@ -41,8 +41,8 @@ namespace Repository.v1.Repository
                 return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
                 return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false && (
-                     p.ProductEntity.ProductTypeEntity.Type.ToLower().Contains(query.ToLower()) ||
-                     p.ProductEntity.Code.ToLower().Contains(query.ToLower()) ||
+                     p.Product.ProductType.Type.ToLower().Contains(query.ToLower()) ||
+                     p.Product.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
         }

@@ -27,25 +27,25 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
         }
 
         public async Task<ClientEntity> GetByIdDetails(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Id == id);
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<ClientEntity> GetByCpf(string cpf)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
         }
 
         public async Task<ClientEntity> GetByCnpj(string cnpj)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
         }
 
         public async Task<bool> ClientExists(int id)
@@ -58,9 +58,9 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+            return await context.Set<ClientEntity>().Include(c => c.Address).Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
-            return await context.Set<ClientEntity>().Include(c => c.AddressEntity).Where(c => c.Deleted == false && (
+            return await context.Set<ClientEntity>().Include(c => c.Address).Where(c => c.Deleted == false && (
                  c.Cpf.Contains(query) ||
                  c.Cnpj.Contains(query) ||
                  c.CompanyName.ToLower().Contains(query.ToLower()) ||

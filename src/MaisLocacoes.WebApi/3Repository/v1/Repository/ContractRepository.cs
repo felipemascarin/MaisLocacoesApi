@@ -25,8 +25,8 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ContractEntity>()
-            .Include(c => c.RentEntity).ThenInclude(c => c.AddressEntity)
-            .Include(c => c.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+            .Include(c => c.Rent).ThenInclude(c => c.Address)
+            .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
             .FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
         }
 
@@ -34,8 +34,8 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ContractEntity>()
-            .Include(c => c.RentEntity).ThenInclude(c => c.AddressEntity)
-            .Include(c => c.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
+            .Include(c => c.Rent).ThenInclude(c => c.Address)
+            .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
             .Where(c => c.Deleted == false).ToListAsync();
         }
 
@@ -43,10 +43,10 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ContractEntity>()
-            .Include(c => c.RentEntity).ThenInclude(r => r.AddressEntity)
-            .Include(c => c.RentEntity.ClientEntity).ThenInclude(c => c.AddressEntity)
-            .Include(c => c.RentEntity.ProductTuitions).ThenInclude(p => p.ProductEntity).ThenInclude(p => p.ProductTypeEntity)
-            .Include(c => c.RentEntity.ProductTuitions).ThenInclude(p => p.Bills)
+            .Include(c => c.Rent).ThenInclude(r => r.Address)
+            .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
+            .Include(c => c.Rent.ProductTuitions).ThenInclude(p => p.Product).ThenInclude(p => p.ProductType)
+            .Include(c => c.Rent.ProductTuitions).ThenInclude(p => p.Bills)
             .Where(c => c.Deleted == false).OrderByDescending(c => c.Version).FirstOrDefaultAsync();
         }
 

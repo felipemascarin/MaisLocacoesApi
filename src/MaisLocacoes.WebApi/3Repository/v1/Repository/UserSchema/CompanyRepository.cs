@@ -25,13 +25,13 @@ namespace Repository.v1.Repository.UserSchema
         public async Task<CompanyEntity> GetByCnpj(string cnpj)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.Companies.Include(c => c.CompanyAddressEntity).FirstOrDefaultAsync(c => c.Cnpj == cnpj);
+            return await context.Companies.Include(c => c.CompanyAddress).FirstOrDefaultAsync(c => c.Cnpj == cnpj);
         }
 
         public async Task<CompanyEntity> GetByEmail(string email)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.Companies.Include(c => c.CompanyAddressEntity).FirstOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
+            return await context.Companies.Include(c => c.CompanyAddress).FirstOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
         }
 
         public async Task<bool> CompanyExists(string cnpj)

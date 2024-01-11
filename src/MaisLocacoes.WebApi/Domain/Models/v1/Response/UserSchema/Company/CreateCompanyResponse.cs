@@ -3,7 +3,6 @@
     public class CreateCompanyResponse
     {
         public string Cnpj { get; set; }
-        public int AddressId { get; set; }
         public string CompanyName { get; set; }
         public string StateRegister { get; set; }
         public string FantasyName { get; set; }

@@ -18,7 +18,7 @@ namespace Repository.v1.Entity
         public string Type { get; set; }
 
         public int AddressId { get; set; }
-        public virtual AddressEntity AddressEntity { get; set; }
+        public virtual AddressEntity Address { get; set; }
 
         [StringLength(11)]
         [Column(TypeName = "character varying(11)")]

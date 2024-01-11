@@ -103,7 +103,7 @@ namespace Service.v1.Services.UserSchema
             companyForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyForUpdate.UpdatedBy = _email;
 
-            await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddressEntity.Id);
+            await _companyAddressService.UpdateCompanyAddress(companyRequest.CompanyAddress, companyForUpdate.CompanyAddress.Id);
 
             await _companyRepository.UpdateCompany(companyForUpdate);
         }

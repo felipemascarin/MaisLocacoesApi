@@ -13,10 +13,10 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int ClientId { get; set; }
-        public virtual ClientEntity ClientEntity { get; set; }
+        public virtual ClientEntity Client { get; set; }
 
         public int AddressId { get; set; }
-        public virtual AddressEntity AddressEntity { get; set; }
+        public virtual AddressEntity Address { get; set; }
 
         [Required]
         [StringLength(255)]

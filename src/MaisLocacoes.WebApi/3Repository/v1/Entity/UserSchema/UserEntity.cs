@@ -15,9 +15,8 @@ namespace Repository.v1.Entity.UserSchema
         [StringLength(14)]
         [Column(TypeName = "char")]
         public string Cnpj { get; set; }
-        public string Cnpjs { get; set; }
 
-        public virtual CompanyEntity CompanyEntity { get; set; }
+        public virtual CompanyEntity Company { get; set; }
 
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]

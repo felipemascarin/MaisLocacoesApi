@@ -27,13 +27,13 @@ namespace Repository.v1.Repository
         public async Task<ProductEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductEntity>().Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductEntity>().Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
         }
 
         public async Task<ProductEntity> GetByTypeCode(int typeId, string code)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductEntity>().Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.ProductTypeId == typeId && p.Code.ToLower() == code.ToLower() && p.Deleted == false);
+            return await context.Set<ProductEntity>().Include(p => p.ProductType).FirstOrDefaultAsync(p => p.ProductTypeId == typeId && p.Code.ToLower() == code.ToLower() && p.Deleted == false);
         }
 
         public async Task<bool> ProductExists(int typeId, string code)
@@ -52,12 +52,12 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-                return await context.Set<ProductEntity>().Include(p => p.ProductTypeEntity).Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+                return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
             else
-                return await context.Set<ProductEntity>().Include(p => p.ProductTypeEntity).Where(p => p.Deleted == false && (
+                return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => p.Deleted == false && (
                      p.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower()) ||
-                     p.ProductTypeEntity.Type.ToLower().Contains(query.ToLower())))
+                     p.ProductType.Type.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
         }
 
@@ -65,7 +65,7 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductEntity>()
-                .Include(p => p.ProductTypeEntity).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) && p.ProductTypeEntity.Id == productTypeId && p.Deleted == false)
+                .Include(p => p.ProductType).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) && p.ProductType.Id == productTypeId && p.Deleted == false)
                 .Select(p => new GetProductForRentDtoResponse
                 {
                     Code = p.Code,
@@ -77,13 +77,13 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<ProductEntity>> GetProductsByProductCodeList(List<string> productCodeList)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductEntity>().Include(p => p.ProductTypeEntity).Where(p => productCodeList.Contains(p.Code)).ToListAsync();
+            return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => productCodeList.Contains(p.Code)).ToListAsync();
         }
 
         public async Task<ProductEntity> GetTheLastsCreated(int productTypeId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductEntity>().OrderByDescending(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductTypeEntity.Id == productTypeId && p.Deleted == false);
+            return await context.Set<ProductEntity>().OrderByDescending(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductType.Id == productTypeId && p.Deleted == false);
         }
 
         public async Task<int> UpdateProduct(ProductEntity productForUpdate)

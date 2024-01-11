@@ -31,7 +31,7 @@ namespace Repository.v1.Repository
         public async Task<ProductTuitionEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Include(p => p.ProductTypeEntity).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
         }
 
         public async Task<int> GetProductTuitionsQuantity(int rentId)
@@ -51,30 +51,30 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductTuitionEntity>()
-            .Include(p => p.ProductTypeEntity)
-            .Include(p => p.ProductEntity)
-            .Include(p => p.RentEntity)
-            .ThenInclude(p => p.AddressEntity)
-            .Include(p => p.RentEntity.ClientEntity)
-            .ThenInclude(p => p.AddressEntity)
+            .Include(p => p.ProductType)
+            .Include(p => p.Product)
+            .Include(p => p.Rent)
+            .ThenInclude(p => p.Address)
+            .Include(p => p.Rent.Client)
+            .ThenInclude(p => p.Address)
             .Where(p => p.RentId == rentId && p.Deleted == false).OrderBy(p => p.FinalDateTime).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().Include(p => p.RentEntity).Include(p => p.RentEntity.AddressEntity).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
+            return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove()
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductTuitionEntity>()
-            .Include(p => p.ProductTypeEntity)
-            .Include(p => p.RentEntity)
-            .ThenInclude(p => p.AddressEntity)
-            .Include(p => p.RentEntity.ClientEntity)
-            .ThenInclude(p => p.AddressEntity)
+            .Include(p => p.ProductType)
+            .Include(p => p.Rent)
+            .ThenInclude(p => p.Address)
+            .Include(p => p.Rent.Client)
+            .ThenInclude(p => p.Address)
             .Where(p => p.FinalDateTime.Date <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)).Date && p.Deleted == false).ToListAsync();
         }
 

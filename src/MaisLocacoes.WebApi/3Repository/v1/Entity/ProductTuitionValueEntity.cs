@@ -12,7 +12,7 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int ProductTypeId { get; set; }
-        public virtual ProductTypeEntity ProductTypeEntity { get; set; }
+        public virtual ProductTypeEntity ProductType { get; set; }
 
         public int QuantityPeriod { get; set; }
 
