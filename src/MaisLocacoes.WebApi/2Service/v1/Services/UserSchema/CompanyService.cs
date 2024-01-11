@@ -50,7 +50,7 @@ namespace Service.v1.Services.UserSchema
 
             var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
 
-            //Atribui na company o id do endereço criado no BD
+            //Atribui na company o id do address criado no BD
             companyEntity.CompanyAddressId = companyAddressResponse.Id;
             companyEntity.CreatedBy = _email;
             companyEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
