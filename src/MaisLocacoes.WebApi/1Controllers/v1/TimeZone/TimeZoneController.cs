@@ -43,7 +43,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1.TimeZone
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }

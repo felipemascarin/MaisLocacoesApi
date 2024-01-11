@@ -61,7 +61,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
@@ -79,7 +79,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
@@ -97,7 +97,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
@@ -125,7 +125,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
@@ -147,7 +147,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             }
             catch (HttpRequestException ex)
             {
-                _logger.LogWarning("Log Warning: {@Message}", ex.Message);
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
                 return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
             }
         }
