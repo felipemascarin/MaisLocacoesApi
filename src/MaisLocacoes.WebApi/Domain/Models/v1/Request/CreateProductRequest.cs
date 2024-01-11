@@ -2,8 +2,8 @@
 {
     public class CreateProductRequest
     {
-        public string Code { get; set; }
         public int? ProductTypeId { get; set; }
+        public string Code { get; set; }
         public int? SupplierId { get; set; }
         public string Description { get; set; }
         public DateTime? DateBought { get; set; }
