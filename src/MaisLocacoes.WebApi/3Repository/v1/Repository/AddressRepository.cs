@@ -17,8 +17,10 @@ namespace Repository.v1.Repository
         public async Task<AddressEntity> CreateAddress(AddressEntity addressEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<AddressEntity>().AddAsync(addressEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(addressEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return addressEntity;
         }
 
@@ -31,7 +33,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateAddress(AddressEntity addressForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<AddressEntity>().Update(addressForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(addressForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

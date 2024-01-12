@@ -22,7 +22,7 @@ namespace MaisLocacoes.WebApi.Exceptions.Middleware
             }
             catch (Exception ex)
             {
-                _logger.LogError("Log Error: {@Message}", ex.Message);
+                _logger.LogError("Log Error: {@Message}", ex.Message + ex.InnerException.Message);
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 //string[] mensagem = ex.Message.Split('\n');
                 //await context.Response.WriteAsync("Erro no servidor: " + mensagem[0]);

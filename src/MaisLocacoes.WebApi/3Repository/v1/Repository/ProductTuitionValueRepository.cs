@@ -17,8 +17,10 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         public async Task<ProductTuitionValueEntity> CreateProductTuitionValue(ProductTuitionValueEntity productTuitionValueEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<ProductTuitionValueEntity>().AddAsync(productTuitionValueEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTuitionValueEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return productTuitionValueEntity;
         }
 
@@ -50,7 +52,8 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         public async Task<int> DeleteProductTuitionValue(ProductTuitionValueEntity productTuitionValueForDelete)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<ProductTuitionValueEntity>().Remove(productTuitionValueForDelete);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTuitionValueForDelete).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

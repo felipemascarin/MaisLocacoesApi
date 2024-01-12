@@ -19,8 +19,10 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> CreateClient(ClientEntity clientEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<ClientEntity>().AddAsync(clientEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(clientEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return clientEntity;
         }
 
@@ -91,7 +93,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateClient(ClientEntity clientForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<ClientEntity>().Update(clientForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(clientForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

@@ -17,8 +17,10 @@ namespace Repository.v1.Repository
         public async Task<RentEntity> CreateRent(RentEntity rentEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<RentEntity>().AddAsync(rentEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(rentEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return rentEntity;
         }
 
@@ -112,7 +114,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateRent(RentEntity rentForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<RentEntity>().Update(rentForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(rentForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

@@ -36,6 +36,7 @@
             public DateTime? UpdatedAt { get; set; }
             public AddressResponse Address { get; set; }
         }
+
         public class ClientResponse
         {
             public int Id { get; set; }
@@ -66,6 +67,7 @@
             public bool Deleted { get; set; }
             public AddressResponse Address { get; set; }
         }
+
         public class AddressResponse
         {
             public int Id { get; set; }
@@ -82,6 +84,7 @@
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
         }
+
         public class ProductTypeResponse
         {
             public int Id { get; set; }
@@ -118,6 +121,7 @@
             public DateTime? UpdatedAt { get; set; }
             public CompanyAddressResponse CompanyAddress { get; set; }
         }
+
         public class CompanyAddressResponse
         {
             public int Id { get; set; }

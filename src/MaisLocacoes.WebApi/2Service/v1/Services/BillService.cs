@@ -131,7 +131,9 @@ namespace Service.v1.Services
         {
             var company = await _companyRepository.GetByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor));
 
-            var billsEntityList = await _billRepository.GetDuedBills(company.NotifyDaysBefore);
+            var todayDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+
+            var billsEntityList = await _billRepository.GetDuedBills(company.NotifyDaysBefore, todayDate);
 
             var billDtoList = new List<GetDuedsBillsResponse>();
 

@@ -45,13 +45,15 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Cliente já cadastrado", null, HttpStatusCode.BadRequest);
 
             var addressResponse = await _addressService.CreateAddress(clientRequest.Address);
+            var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             clientRequest = TimeZoneConverter<CreateClientRequest>.ConvertToTimeZoneLocal(clientRequest, _timeZone);
 
             var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
 
-            clientEntity.AddressId = addressResponse.Id;
+            clientEntity.Address.Id = addressResponse.Id;
+            clientEntity.Address = addressEntity;
             clientEntity.BornDate = clientEntity.BornDate.Value.Date;
             clientEntity.CreatedBy = _email;
             clientEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);

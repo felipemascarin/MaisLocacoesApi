@@ -35,10 +35,12 @@ namespace Service.v1.Services
         public async Task<CreateQgResponse> CreateQg(CreateQgRequest qgRequest)
         {
             var addressResponse = await _addressService.CreateAddress(qgRequest.Address);
+            var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
             var qgEntity = _mapper.Map<QgEntity>(qgRequest);
 
             qgEntity.AddressId = addressResponse.Id;
+            qgEntity.Address = addressEntity;
             qgEntity.CreatedBy = _email;
             qgEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 

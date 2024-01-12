@@ -88,8 +88,8 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             var contractInfoResponse = _mapper.Map<GetContractInfoByRentIdResponse>(contractEntity);
             contractInfoResponse.Company = _mapper.Map<GetContractInfoByRentIdResponse.ContractCompany>(companyEntity);
 
-            contractInfoResponse.Rent.InitialRentDate = contractInfoResponse.ProductTuitions.OrderBy(p => p.InitialDateTime).First().InitialDateTime;
-            contractInfoResponse.Rent.FinalRentDate = contractInfoResponse.ProductTuitions.OrderByDescending(p => p.FinalDateTime).First().FinalDateTime;
+            contractInfoResponse.Rent.InitialRentDate = contractInfoResponse.Rent.ProductTuitions.OrderBy(p => p.InitialDateTime).First().InitialDateTime;
+            contractInfoResponse.Rent.FinalRentDate = contractInfoResponse.Rent.ProductTuitions.OrderByDescending(p => p.FinalDateTime).First().FinalDateTime;
 
             return contractInfoResponse;
         }

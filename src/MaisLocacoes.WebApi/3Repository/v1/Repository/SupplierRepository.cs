@@ -7,18 +7,20 @@ namespace Repository.v1.Repository
 {
     public class SupplierRepository : ISupplierRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
+        private readonly PostgreSqlContextFactory _contextFactory;
 
         public SupplierRepository(PostgreSqlContextFactory contextFactory)
         {
-            _contextFactory = contextFactory; 
+            _contextFactory = contextFactory;
         }
 
         public async Task<SupplierEntity> CreateSupplier(SupplierEntity supplierEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<SupplierEntity>().AddAsync(supplierEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(supplierEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return supplierEntity;
         }
 
@@ -37,7 +39,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<SupplierEntity>().Update(supplierForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(supplierForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

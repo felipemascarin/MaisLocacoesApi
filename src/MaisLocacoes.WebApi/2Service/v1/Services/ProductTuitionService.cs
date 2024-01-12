@@ -302,11 +302,12 @@ namespace Service.v1.Services
             return productTuitionsResponse;
         }
 
-        //Refatorar
         public async Task<IEnumerable<GetAllProductTuitionToRemoveReponse>> GetAllProductTuitionToRemove()
         {
-            var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove();
+            var todayDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
+            var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove(todayDate);
+            
             var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionToRemoveReponse>>(productTuitionEntityList);
 
             return productTuitionsResponseList;

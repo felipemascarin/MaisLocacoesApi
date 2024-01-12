@@ -16,7 +16,7 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             RuleFor(companyTuition => companyTuition.TuitionNumber)
                 .Must(tuitionNumber => int.TryParse(tuitionNumber.ToString(), out var result) &&
                  result > 0)
-                .WithMessage("Número da fatura do Asaas inválido")
+                .WithMessage("Número da fatura inválido")
                 .When(companyTuition => companyTuition.TuitionNumber != null);
 
             RuleFor(companyTuition => companyTuition.Value)

@@ -1,30 +1,28 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
-using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using TimeZoneConverter;
 
 namespace Repository.v1.Repository
 {
     public class ProductTuitionRepository : IProductTuitionRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
-        private readonly TimeZoneInfo _timeZone;
+        private readonly PostgreSqlContextFactory _contextFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductTuitionRepository(PostgreSqlContextFactory contextFactory, IHttpContextAccessor httpContextAccessor)
         {
             _contextFactory = contextFactory; 
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
         }
 
         public async Task<ProductTuitionEntity> CreateProductTuition(ProductTuitionEntity productTuitionEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<ProductTuitionEntity>().AddAsync(productTuitionEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTuitionEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return productTuitionEntity;
         }
 
@@ -66,7 +64,7 @@ namespace Repository.v1.Repository
             return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
         }
 
-        public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove()
+        public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove(DateTime todayDate)
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductTuitionEntity>()
@@ -75,7 +73,7 @@ namespace Repository.v1.Repository
             .ThenInclude(p => p.Address)
             .Include(p => p.Rent.Client)
             .ThenInclude(p => p.Address)
-            .Where(p => p.FinalDateTime.Date <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)).Date && p.Deleted == false).ToListAsync();
+            .Where(p => p.FinalDateTime.Date <= todayDate && p.Deleted == false).ToListAsync();
         }
 
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)
@@ -87,7 +85,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<ProductTuitionEntity>().Update(productTuitionForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTuitionForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

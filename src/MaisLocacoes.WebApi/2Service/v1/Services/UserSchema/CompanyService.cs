@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
+using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity.UserSchema;
@@ -39,19 +40,25 @@ namespace Service.v1.Services.UserSchema
             var existsCompany = await _companyRepository.GetByCnpj(companyRequest.Cnpj);
 
             if (existsCompany != null)
-                throw new HttpRequestException("Empresa já cadastrada", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("CNPJ já cadastrado", null, HttpStatusCode.BadRequest);
 
             var existsEmailCompany = await _companyRepository.GetByEmail(companyRequest.Email);
             if (existsEmailCompany != null)
                 throw new HttpRequestException("Email de empresa já cadastrado", null, HttpStatusCode.BadRequest);
 
-            //Cria o endereço da empresa
+            if ((await _companyRepository.ReturnDatabases()).Contains(companyRequest.DataBase))
+                throw new HttpRequestException("Existe uma empresa cadastrada com esse nome de banco de dados", null, HttpStatusCode.BadRequest);
+
+            if (!(await _companyRepository.ReturnAllDatabaseNames()).Contains(companyRequest.DataBase))
+                throw new HttpRequestException("Esse nome de banco de dados está disponível, porém esse banco ainda não existe no servidor de banco de dados", null, HttpStatusCode.BadRequest);
+
             var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
+            var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressResponse);
 
             var companyEntity = _mapper.Map<CompanyEntity>(companyRequest);
 
-            //Atribui na company o id do address criado no BD
             companyEntity.CompanyAddressId = companyAddressResponse.Id;
+            companyEntity.CompanyAddress = companyAddressEntity;
             companyEntity.CreatedBy = _email;
             companyEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
@@ -65,7 +72,7 @@ namespace Service.v1.Services.UserSchema
         public async Task<GetCompanyByCnpjResponse> GetCompanyByCnpj(string cnpj)
         {
             var companyEntity = await _companyRepository.GetByCnpj(cnpj) ??
-                throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
+                throw new HttpRequestException("Empresa não encontrada com o CNPJ " + cnpj, null, HttpStatusCode.NotFound);
 
             var companyResponse = _mapper.Map<GetCompanyByCnpjResponse>(companyEntity);
 
@@ -78,7 +85,7 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
             if (companyRequest.Cnpj != cnpj)
-                    throw new HttpRequestException("Não é possível alterar o CNPJ de uma empresa cadastrada", null, HttpStatusCode.BadRequest);
+                throw new HttpRequestException("Não é possível alterar o CNPJ de uma empresa cadastrada", null, HttpStatusCode.BadRequest);
 
             if (companyRequest.Email != companyForUpdate.Email)
             {

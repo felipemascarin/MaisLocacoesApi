@@ -17,8 +17,10 @@ namespace Repository.v1.Repository
         public async Task<CompanyWasteEntity> CreateCompanyWaste(CompanyWasteEntity companyWasteEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<CompanyWasteEntity>().AddAsync(companyWasteEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyWasteEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return companyWasteEntity;
         }
 
@@ -31,7 +33,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateCompanyWaste(CompanyWasteEntity companyWasteForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<CompanyWasteEntity>().Update(companyWasteForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyWasteForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

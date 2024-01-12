@@ -59,10 +59,12 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Esse cliente não pode realizar locação", null, HttpStatusCode.BadRequest);
 
             var addressResponse = await _addressService.CreateAddress(rentRequest.Address);
+            var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
             var rentEntity = _mapper.Map<RentEntity>(rentRequest);
 
             rentEntity.AddressId = addressResponse.Id;
+            rentEntity.Address = addressEntity;
             rentEntity.CreatedBy = _email;
             rentEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 

@@ -12,7 +12,6 @@
         public DateTime? UpdatedAt { get; set; }
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
-        public IEnumerable<ContractProductTuition> ProductTuitions { get; set; }
         public ContractCompany Company { get; set; }
 
         public class ContractRent
@@ -29,6 +28,7 @@
             public DateTime? InitialRentDate { get; set; }
             public DateTime? FinalRentDate { get; set; }
             public ContractAddress Address { get; set; }
+            public IEnumerable<ContractProductTuition> ProductTuitions { get; set; }
         }
 
         public class ContractProductTuition

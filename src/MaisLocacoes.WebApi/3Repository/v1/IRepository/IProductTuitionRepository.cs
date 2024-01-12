@@ -10,7 +10,7 @@ namespace Repository.v1.IRepository
         Task<bool> ProductTuitionExists(int? id);
         Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId);
         Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode);
-        Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove();
+        Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove(DateTime todayDate);
         Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode);
         Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate);
     }

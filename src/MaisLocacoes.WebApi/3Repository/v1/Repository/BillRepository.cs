@@ -1,31 +1,29 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using MaisLocacoes.WebApi.Utils.Enums;
-using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using TimeZoneConverter;
 
 namespace Repository.v1.Repository
 {
     public class BillRepository : IBillRepository
     {
         private readonly PostgreSqlContextFactory _contextFactory; 
-        private readonly TimeZoneInfo _timeZone;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BillRepository(PostgreSqlContextFactory contextFactory, IHttpContextAccessor httpContextAccessor)
         {
             _contextFactory = contextFactory; 
             _httpContextAccessor = httpContextAccessor;
-            _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
         }
 
         public async Task<BillEntity> CreateBill(BillEntity billEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<BillEntity>().AddAsync(billEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(billEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return billEntity;
         }
 
@@ -80,7 +78,7 @@ namespace Repository.v1.Repository
             .Where(b => b.ProductTuitionId == productTuitionId && b.Deleted == false).ToListAsync();
         }
 
-        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore)
+        public async Task<IEnumerable<BillEntity>> GetDuedBills(int notifyDaysBefore, DateTime todayDate)
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<BillEntity>()
@@ -88,7 +86,7 @@ namespace Repository.v1.Repository
             .ThenInclude(p => p.ProductType)
             .Include(b => b.Rent)
             .ThenInclude(r => r.Client)
-            .Where(b => b.DueDate <= (TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone))
+            .Where(b => b.DueDate <= todayDate
             .AddDays(notifyDaysBefore) && b.Status != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && b.Status != BillStatus.BillStatusEnum.ElementAt(3) /*canceled*/ && b.Deleted == false)
             .OrderByDescending(b => b.DueDate).ToListAsync();
         }
@@ -107,7 +105,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateBill(BillEntity billForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<BillEntity>().Update(billForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(billForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
 

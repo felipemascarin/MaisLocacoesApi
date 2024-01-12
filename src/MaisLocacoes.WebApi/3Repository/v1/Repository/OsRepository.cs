@@ -18,8 +18,10 @@ namespace Repository.v1.Repository
         public async Task<OsEntity> CreateOs(OsEntity osEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<OsEntity>().AddAsync(osEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(osEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return osEntity;
         }
 
@@ -60,7 +62,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateOs(OsEntity osForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<OsEntity>().Update(osForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(osForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

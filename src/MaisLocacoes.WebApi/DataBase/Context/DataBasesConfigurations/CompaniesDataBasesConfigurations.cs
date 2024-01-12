@@ -120,6 +120,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
                 .Property(x => x.Deleted)
                 .HasDefaultValue(false);
 
+            modelBuilder.Entity<CompanyWasteEntity>()
+                .Property(x => x.Deleted)
+                .HasDefaultValue(false);
+
             modelBuilder.Entity<ContractEntity>()
                 .Property(x => x.Deleted)
                 .HasDefaultValue(false);

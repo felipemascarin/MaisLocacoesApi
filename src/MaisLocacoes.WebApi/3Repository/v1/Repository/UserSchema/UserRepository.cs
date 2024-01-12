@@ -16,9 +16,11 @@ namespace Repository.v1.Repository.UserSchema
 
         public async Task<UserEntity> CreateUser(UserEntity userEntity)
         {
-            using var context = _contextFactory.CreateAdmContext();
-            await context.Users.AddAsync(userEntity);
-            context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(userEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return userEntity;
         }
 
@@ -53,8 +55,9 @@ namespace Repository.v1.Repository.UserSchema
 
         public async Task<int> UpdateUser(UserEntity userForUpdate)
         {
-            using var context = _contextFactory.CreateAdmContext();
-            context.Users.Update(userForUpdate);
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(userForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

@@ -17,8 +17,10 @@ namespace Repository.v1.Repository
         public async Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<ProductTypeEntity>().AddAsync(productTypeEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTypeEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return productTypeEntity;
         }
 
@@ -49,7 +51,8 @@ namespace Repository.v1.Repository
         public async Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<ProductTypeEntity>().Update(productTypeForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTypeForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

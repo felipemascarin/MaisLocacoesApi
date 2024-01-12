@@ -42,13 +42,17 @@ namespace Configuration
 
                 //Company
                 config.CreateMap<CreateCompanyRequest, CompanyEntity>();
-                config.CreateMap<CompanyAddressEntity, GetCompanyByCnpjResponse.CompanyAddressResponse>();
+
                 config.CreateMap<CompanyEntity, GetCompanyByCnpjResponse>();
+                config.CreateMap<CompanyAddressEntity, GetCompanyByCnpjResponse.CompanyAddressResponse>();
+
                 config.CreateMap<CompanyEntity, CreateCompanyResponse>();
+                config.CreateMap<CompanyAddressEntity, CreateCompanyResponse.CompanyAddressResponse>();
 
                 //Address
                 config.CreateMap<CreateAddressRequest, AddressEntity>();
                 config.CreateMap<AddressEntity, CreateAddressResponse>();
+                config.CreateMap<CreateAddressResponse, AddressEntity>();
                 config.CreateMap<AddressEntity, GetAddressByIdResponse>();
 
                 //User
@@ -91,6 +95,8 @@ namespace Configuration
                 config.CreateMap<AddressEntity, GetBillForTaxInvoiceResponse.AddressResponse>();
                 config.CreateMap<ProductTypeEntity, GetBillForTaxInvoiceResponse.ProductTypeResponse>();
                 config.CreateMap<CompanyEntity, GetBillForTaxInvoiceResponse.CompanyResponse>();
+                config.CreateMap<CompanyAddressEntity, GetBillForTaxInvoiceResponse.CompanyAddressResponse>();
+
 
                 //CompanyTuition
                 config.CreateMap<CreateCompanyTuitionRequest, CompanyTuitionEntity>();
@@ -174,7 +180,10 @@ namespace Configuration
 
                 //ProductTuitionValue
                 config.CreateMap<CreateProductTuitionValueRequest, ProductTuitionValueEntity>();
-                config.CreateMap<ProductTuitionValueEntity, GetAllProductTuitionToRemoveReponse>();
+
+                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionToRemoveReponse>()
+                .ForMember(dest => dest.Rent, opt => opt.MapFrom(src => src.Rent))
+                .ForMember(dest => dest.ProductType, opt => opt.MapFrom(src => src.ProductType));
                 config.CreateMap<RentEntity, GetAllProductTuitionToRemoveReponse.RentResponse>();
                 config.CreateMap<ClientEntity, GetAllProductTuitionToRemoveReponse.ClientResponse>();
                 config.CreateMap<AddressEntity, GetAllProductTuitionToRemoveReponse.AddressResponse>();
@@ -200,8 +209,12 @@ namespace Configuration
                 //Qg
                 config.CreateMap<CreateQgRequest, QgEntity>();
                 config.CreateMap<QgEntity, CreateQgResponse>();
+
                 config.CreateMap<QgEntity, GetQgByIdResponse>();
+                config.CreateMap<AddressEntity, GetQgByIdResponse.AddressResponse>();
+
                 config.CreateMap<QgEntity, GetAllQgsResponse>();
+                config.CreateMap<AddressEntity, GetAllQgsResponse.AddressResponse>();
 
                 //RentedPlace
                 config.CreateMap<CreateRentedPlaceRequest, RentedPlaceEntity>();

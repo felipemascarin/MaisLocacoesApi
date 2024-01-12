@@ -16,22 +16,25 @@ namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
 
         public async Task<CompanyAddressEntity> CreateCompanyAddress(CompanyAddressEntity companyAddressEntity)
         {
-            using var context = _contextFactory.CreateAdmContext();
-            await context.CompaniesAddresses.AddAsync(companyAddressEntity);
-            context.SaveChanges();
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyAddressEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return companyAddressEntity;
         }
-        
+
         public async Task<CompanyAddressEntity> GetById(int companyAddressId)
         {
             using var context = _contextFactory.CreateAdmContext();
             return await context.CompaniesAddresses.Where(a => a.Id == companyAddressId).FirstOrDefaultAsync();
         }
-        
+
         public async Task<int> UpdateCompanyAddress(CompanyAddressEntity companyAddressForUpdate)
         {
-            using var context = _contextFactory.CreateAdmContext();
-            context.CompaniesAddresses.Update(companyAddressForUpdate);
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyAddressForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

@@ -17,8 +17,10 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
         public async Task<ContractEntity> CreateContract(ContractEntity contractEntity)
         {
             using var context = _contextFactory.CreateContext();
-            await context.Set<ContractEntity>().AddAsync(contractEntity);
-            context.SaveChanges();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(contractEntity).State = EntityState.Added;
+            await context.SaveChangesAsync();
+
             return contractEntity;
         }
         public async Task<ContractEntity> GetById(int id)
@@ -65,7 +67,8 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
         public async Task<int> UpdateContract(ContractEntity contractForUpdate)
         {
             using var context = _contextFactory.CreateContext();
-            context.Set<ContractEntity>().Update(contractForUpdate);
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(contractForUpdate).State = EntityState.Modified;
             return await context.SaveChangesAsync();
         }
     }

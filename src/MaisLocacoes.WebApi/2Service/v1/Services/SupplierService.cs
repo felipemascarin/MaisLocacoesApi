@@ -35,10 +35,12 @@ namespace Service.v1.Services
         public async Task<CreateSupplierResponse> CreateSupplier(CreateSupplierRequest supplierRequest)
         {
             var addressResponse = await _addressService.CreateAddress(supplierRequest.Address);
+            var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
             var supplierEntity = _mapper.Map<SupplierEntity>(supplierRequest);
 
             supplierEntity.AddressId = addressResponse.Id;
+            supplierEntity.Address = addressEntity;
             supplierEntity.CreatedBy = _email;
             supplierEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 

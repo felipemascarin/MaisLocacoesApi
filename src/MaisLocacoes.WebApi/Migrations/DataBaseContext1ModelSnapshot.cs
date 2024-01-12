@@ -408,7 +408,9 @@ namespace MaisLocacoes.WebApi.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool?>("Deleted")
-                        .HasColumnType("boolean");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("Description")
                         .IsRequired()

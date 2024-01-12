@@ -3,17 +3,19 @@ using System;
 using MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MaisLocacoes.WebApi.Migrations.DataBaseContext2Migrations
+namespace MaisLocacoes.WebApi.Migrations.DataBaseContext3Migrations
 {
-    [DbContext(typeof(DataBaseContext2))]
-    partial class DataBaseContext2ModelSnapshot : ModelSnapshot
+    [DbContext(typeof(DataBaseContext3))]
+    [Migration("20240112233346_aoas")]
+    partial class aoas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
