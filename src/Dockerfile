@@ -31,4 +31,6 @@ COPY --from=publish /app/publish .
 
 ENV PATH="$PATH:/root/.dotnet/tools"
 
+RUN rm -rf ./MaisLocacoes.WebApi/Migrations
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh", "dotnet", "MaisLocacoes.WebApi.dll"]

@@ -14,6 +14,7 @@
         public string CivilStatus { get; set; }
         public string CpfDocumentUrl { get; set; }
         public string Status { get; set; }
+        public List<string> Cnpjs { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }

@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema;
+using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -43,7 +44,6 @@ namespace Repository.v1.Entity.UserSchema
         [Required]
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        //Unique configurado na classe PostgreSqlContext
         public string Email { get; set; }
 
         [Required]
@@ -102,5 +102,6 @@ namespace Repository.v1.Entity.UserSchema
         public string UpdatedBy { get; set; }
 
         public ICollection<UserEntity> Users { get; set; }
+        public ICollection<CompanyUserEntity> CompaniesUsers { get; set; }
     }
 }

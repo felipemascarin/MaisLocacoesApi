@@ -17,6 +17,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
                 .HasIndex(c => c.DataBase)
                 .IsUnique();
 
+            modelBuilder.Entity<UserEntity>()
+                .HasIndex(c => c.Cpf)
+                .IsUnique();
+
             //Definindo valor Default NotifyDaysBefore de CompanyEntity:
             modelBuilder.Entity<CompanyEntity>()
                 .Property(p => p.NotifyDaysBefore)
@@ -56,6 +60,18 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
             .WithMany(one => one.Companies)
             .HasForeignKey(many => new { many.CompanyAddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompaniesAddresses));
+
+            modelBuilder.Entity<CompanyUserEntity>()
+            .HasOne(many => many.User)
+            .WithMany(one => one.CompaniesUsers)
+            .HasForeignKey(many => new { many.Email })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.CompaniesUsers, TableNameEnum.Users));
+
+            modelBuilder.Entity<CompanyUserEntity>()
+            .HasOne(many => many.Company)
+            .WithMany(one => one.CompaniesUsers)
+            .HasForeignKey(many => new { many.Cnpj })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.CompaniesUsers, TableNameEnum.Companies));
 
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)

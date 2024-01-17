@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema;
+using MaisLocacoes.WebApi.Context;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,6 +9,11 @@ namespace Repository.v1.Entity.UserSchema
     public class UserEntity
     {
         [Key]
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Email { get; set; }
+
+        [Required]
         [StringLength(11)]
         [Column(TypeName = "char")]
         public string Cpf { get; set; }
@@ -22,11 +28,6 @@ namespace Repository.v1.Entity.UserSchema
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string Name { get; set; }
-
-        [Required]
-        [StringLength(255)]
-        [Column(TypeName = "character varying(255)")]
-        public string Email { get; set; }
 
         [Required]
         [StringLength(255)]
@@ -73,5 +74,7 @@ namespace Repository.v1.Entity.UserSchema
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string UpdatedBy { get; set; }
+
+        public ICollection<CompanyUserEntity> CompaniesUsers { get; set; }
     }
 }
