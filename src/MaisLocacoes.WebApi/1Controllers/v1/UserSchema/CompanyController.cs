@@ -38,7 +38,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
             _cnpj = JwtManager.GetCnpjByToken(_httpContextAccessor);
         }
 
-        //[Authorize(Roles = "adm")]
+        [Authorize(Roles = "adm")]
         [HttpPost]
         public async Task<IActionResult> CreateCompany([FromBody] CreateCompanyRequest companyRequest)
         {
