@@ -48,10 +48,6 @@ namespace Service.v1.Services.UserSchema
             if (existsUser)
                 throw new HttpRequestException("Cpf ou e-mail de usuário já cadastrado", null, HttpStatusCode.BadRequest);
 
-            var existsCompany = await _companyRepository.CompanyExists(userRequest.Cnpj);
-            if (!existsCompany)
-                throw new HttpRequestException("Não existe empresa cadastrada com esse CNPJ", null, HttpStatusCode.BadRequest);
-
             var userEntity = _mapper.Map<UserEntity>(userRequest);
 
             userEntity.BornDate = userEntity.BornDate.Value.Date;

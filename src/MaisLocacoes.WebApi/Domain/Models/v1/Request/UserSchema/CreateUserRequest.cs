@@ -3,7 +3,6 @@
     public class CreateUserRequest
     {
         public string Cpf { get; set; }
-        public string Cnpj { get; set; }
         public string Rg { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
