@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
@@ -60,7 +61,9 @@ namespace Configuration
                 config.CreateMap<CreateUserRequest, UserEntity>();
                 config.CreateMap<UserEntity, GetUserByEmailResponse>();
                 config.CreateMap<UserEntity, GetUserByCpfResponse>();
+
                 config.CreateMap<UserEntity, GetAllUsersByCnpjResponse>();
+
                 config.CreateMap<UserEntity, CreateUserResponse>();
 
                 //Client

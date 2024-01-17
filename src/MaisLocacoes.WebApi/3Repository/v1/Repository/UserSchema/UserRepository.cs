@@ -39,13 +39,13 @@ namespace Repository.v1.Repository.UserSchema
         public async Task<UserEntity> GetByCpf(string cpf)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.Users.FirstOrDefaultAsync(u => u.Cpf == cpf);
+            return await context.Users.Include(u => u.CompaniesUsers).FirstOrDefaultAsync(u => u.Cpf == cpf);
         }
 
         public async Task<IEnumerable<UserEntity>> GetAllByEmailList(IEnumerable<string> email)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.Users.Where(u => email.Contains(u.Email)).ToListAsync();
+            return await context.Users.Include(u => u.CompaniesUsers).Where(u => email.Contains(u.Email)).ToListAsync();
         }
 
         public async Task<bool> UserExists(string email, string cpf)

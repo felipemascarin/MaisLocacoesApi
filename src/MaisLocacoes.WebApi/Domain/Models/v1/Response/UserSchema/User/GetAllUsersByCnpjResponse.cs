@@ -1,4 +1,6 @@
-﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User
+﻿using System.Text.Json.Serialization;
+
+namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User
 {
     public class GetAllUsersByCnpjResponse
     {

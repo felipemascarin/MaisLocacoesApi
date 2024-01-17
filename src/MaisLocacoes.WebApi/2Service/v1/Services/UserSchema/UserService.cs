@@ -72,6 +72,8 @@ namespace Service.v1.Services.UserSchema
 
             var userResponse = _mapper.Map<GetUserByEmailResponse>(userEntity);
 
+            userResponse.Cnpjs = (await _companyUserRepository.GetCnpjListByEmail(email)).ToList();
+
             return userResponse;
         }
 
@@ -81,6 +83,8 @@ namespace Service.v1.Services.UserSchema
                 throw new HttpRequestException("Usuário não encontrado", null, HttpStatusCode.NotFound);
 
             var userResponse = _mapper.Map<GetUserByCpfResponse>(userEntity);
+
+            userResponse.Cnpjs = (await _companyUserRepository.GetCnpjListByEmail(userEntity.Email)).ToList();
 
             return userResponse;
         }
@@ -92,6 +96,21 @@ namespace Service.v1.Services.UserSchema
             var userEntities = await _userRepository.GetAllByEmailList(emails);
 
             var usersResponse = _mapper.Map<IEnumerable<GetAllUsersByCnpjResponse>>(userEntities);
+
+            foreach (var userEntity in userEntities)
+            {
+                foreach (var user in usersResponse)
+                {
+                    if (userEntity.Cpf == user.Cpf)
+                        user.Cnpjs = new List<string>();
+
+                    foreach (var companyCnpj in userEntity.CompaniesUsers)
+                    {
+                        if (userEntity.Cpf == user.Cpf)
+                            user.Cnpjs.Add(companyCnpj.Cnpj);
+                    }
+                }
+            }
 
             return usersResponse;
         }
