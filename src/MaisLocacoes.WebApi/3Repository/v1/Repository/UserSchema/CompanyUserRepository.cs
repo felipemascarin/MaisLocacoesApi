@@ -33,7 +33,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository.UserSchema
         public async Task<IEnumerable<string>> GetEmailListByCnpj(string cnpj)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.CompaniesUsers.Where(c => c.Cnpj == cnpj).Select(c => c.Cnpj).ToListAsync();
+            return await context.CompaniesUsers.Where(c => c.Cnpj == cnpj).Select(c => c.Email).ToListAsync();
         }
 
         public async Task DeleteCompanyUser(CompanyUserEntity userForDelete)
