@@ -1,8 +1,7 @@
 ﻿namespace MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication
 {
-    public class LoginResponse
+    public class LoginEnviromentResponse
     {
         public string Token { get; set; }
-        public List<string> Cnpjs { get; set; }
     }
 }

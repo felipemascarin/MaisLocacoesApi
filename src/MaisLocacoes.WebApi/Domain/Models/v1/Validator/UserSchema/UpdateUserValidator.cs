@@ -18,15 +18,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .WithMessage("O CPF informado é inválido")
                 .When(person => !string.IsNullOrEmpty(person.Cpf));
 
-            RuleFor(person => person.Cnpj)
-                .Must(cnpj => !string.IsNullOrEmpty(cnpj))
-                .WithMessage("O CNPJ é obrigatório");
-
-            RuleFor(person => person.Cnpj)
-                .Must(cnpj => DocumentValidator.IsCnpj(cnpj))
-                .WithMessage("O CNPJ informado é inválido")
-                .When(person => !string.IsNullOrEmpty(person.Cnpj));
-
             RuleFor(person => person.Rg)
                .Must(rg => long.TryParse(rg, out var result) && result > 0)
                .WithMessage("RG se informado deve conter somente números")

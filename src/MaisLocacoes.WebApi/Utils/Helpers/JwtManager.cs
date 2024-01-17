@@ -120,9 +120,9 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         }
 
         //Verifica se é o ultimo token criado para o usuário acessando
-        public async Task<bool> UserHasToken(string token, string email, string cnpj)
+        public async Task<bool> UserHasToken(string token, string email)
         {
-            if (await _userRepository.UserHasToken(token, email, cnpj))
+            if (await _userRepository.UserHasToken(token, email))
                 return true;
             else
                 return false;

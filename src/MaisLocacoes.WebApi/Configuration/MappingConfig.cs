@@ -39,6 +39,7 @@ namespace Configuration
                 config.CreateMap<CreateCompanyAddressRequest, CompanyAddressEntity>();
                 config.CreateMap<CompanyAddressEntity, CreateCompanyAddressResponse>();
                 config.CreateMap<CompanyAddressEntity, GetCompanyAddressByIdResponse>();
+                config.CreateMap<CreateCompanyAddressResponse, CompanyAddressEntity>();
 
                 //Company
                 config.CreateMap<CreateCompanyRequest, CompanyEntity>();

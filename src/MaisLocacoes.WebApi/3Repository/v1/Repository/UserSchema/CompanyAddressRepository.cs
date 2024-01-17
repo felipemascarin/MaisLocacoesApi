@@ -16,7 +16,7 @@ namespace MaisLocacoes.WebApi.Repository.v1.Repository.UserSchema
 
         public async Task<CompanyAddressEntity> CreateCompanyAddress(CompanyAddressEntity companyAddressEntity)
         {
-            using var context = _contextFactory.CreateContext();
+            using var context = _contextFactory.CreateAdmContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(companyAddressEntity).State = EntityState.Added;
             await context.SaveChangesAsync();

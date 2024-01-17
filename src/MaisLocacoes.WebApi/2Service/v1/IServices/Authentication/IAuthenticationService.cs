@@ -7,7 +7,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication
     public interface IAuthenticationService
     {
         Task<LoginResponse> Login(LoginRequest loginRequest);
-        LoginResponse LoginAdm(LoginRequest loginRequest);
+        Task<LoginEnviromentResponse> LoginEnviroment(LoginEnviromentRequest modifyLoginTokenRequest);
         Task Logout(LogoutRequest tokenRequest);
     }
 }

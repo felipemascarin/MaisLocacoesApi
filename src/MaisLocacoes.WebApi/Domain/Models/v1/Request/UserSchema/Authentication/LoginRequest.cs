@@ -3,6 +3,5 @@
     public class LoginRequest
     {
         public string GoogleToken { get; set; }
-        public string Cnpj { get; set; }
     }
 }

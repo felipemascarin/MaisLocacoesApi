@@ -12,10 +12,6 @@ namespace Repository.v1.Entity.UserSchema
         [Column(TypeName = "char")]
         public string Cpf { get; set; }
 
-        [StringLength(14)]
-        [Column(TypeName = "char")]
-        public string Cnpj { get; set; }
-
         public virtual CompanyEntity Company { get; set; }
 
         [StringLength(255)]
@@ -30,7 +26,6 @@ namespace Repository.v1.Entity.UserSchema
         [Required]
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
-        //Unique configurado na classe na classe PostgreSqlContext
         public string Email { get; set; }
 
         [Required]

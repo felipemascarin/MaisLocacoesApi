@@ -5,6 +5,7 @@
         public const string Companies = "Companies";
         public const string CompaniesAddresses = "CompaniesAddresses";
         public const string Users = "Users";
+        public const string CompaniesUsers = "CompaniesUsers";
 
         public const string Addresses = "Addresses";
         public const string Bills = "Bills";

@@ -3,6 +3,7 @@ using System;
 using MaisLocacoes.WebApi.DataBase.Context.Adm;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
 {
     [DbContext(typeof(DataBaseContextAdm))]
-    partial class DataBaseContextAdmModelSnapshot : ModelSnapshot
+    [Migration("20240116164500_aoassd")]
+    partial class aoassd
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +23,6 @@ namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema.CompanyUserEntity", b =>
-                {
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Cnpj")
-                        .HasMaxLength(14)
-                        .HasColumnType("char(14)");
-
-                    b.HasKey("Email", "Cnpj");
-
-                    b.ToTable("CompaniesUsers");
-                });
 
             modelBuilder.Entity("MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema.CompanyAddressEntity", b =>
                 {
@@ -224,7 +211,8 @@ namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("CompanyCnpj")
+                    b.Property<string>("Cnpj")
+                        .HasMaxLength(14)
                         .HasColumnType("char(14)");
 
                     b.Property<string>("CpfDocumentUrl")
@@ -282,7 +270,7 @@ namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
 
                     b.HasKey("Cpf");
 
-                    b.HasIndex("CompanyCnpj");
+                    b.HasIndex("Cnpj");
 
                     b.ToTable("Users");
                 });
@@ -303,7 +291,8 @@ namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
                 {
                     b.HasOne("Repository.v1.Entity.UserSchema.CompanyEntity", "Company")
                         .WithMany("Users")
-                        .HasForeignKey("CompanyCnpj");
+                        .HasForeignKey("Cnpj")
+                        .HasConstraintName("FK_Users_Companies");
 
                     b.Navigation("Company");
                 });

@@ -17,7 +17,7 @@ namespace Repository.v1.Repository.UserSchema
 
         public async Task<CompanyEntity> CreateCompany(CompanyEntity companyEntity)
         {
-            using var context = _contextFactory.CreateContext();
+            using var context = _contextFactory.CreateAdmContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(companyEntity).State = EntityState.Added;
             await context.SaveChangesAsync();
@@ -31,10 +31,10 @@ namespace Repository.v1.Repository.UserSchema
             return await context.Companies.Include(c => c.CompanyAddress).FirstOrDefaultAsync(c => c.Cnpj == cnpj);
         }
 
-        public async Task<CompanyEntity> GetByEmail(string email)
+        public async Task<IEnumerable<CompanyEntity>> GetByEmail(string email)
         {
             using var context = _contextFactory.CreateAdmContext();
-            return await context.Companies.Include(c => c.CompanyAddress).FirstOrDefaultAsync(c => c.Email.ToLower() == email.ToLower());
+            return await context.Companies.Include(c => c.CompanyAddress).Where(c => c.Email.ToLower() == email.ToLower()).ToListAsync();
         }
 
         public async Task<bool> CompanyExists(string cnpj)

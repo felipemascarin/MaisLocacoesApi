@@ -7,10 +7,10 @@ namespace Service.v1.IServices.UserSchema
     public interface IUserService
     {
         Task<CreateUserResponse> CreateUser(CreateUserRequest userRequest);
-        Task<GetUserByEmailResponse> GetUserByEmail(string email, string cnpj);
-        Task<GetUserByCpfResponse> GetUserByCpf(string cpf, string cnpj);
+        Task<GetUserByEmailResponse> GetUserByEmail(string email);
+        Task<GetUserByCpfResponse> GetUserByCpf(string cpf);
         Task<IEnumerable<GetAllUsersByCnpjResponse>> GetAllUsersByCnpj(string cnpj);
-        Task UpdateUser(UpdateUserRequest userRequest, string email, string cnpj);
-        Task UpdateStatus(string status, string email, string cnpj);
+        Task UpdateUser(UpdateUserRequest userRequest, string email);
+        Task UpdateStatus(string status, string email);
     }
 }

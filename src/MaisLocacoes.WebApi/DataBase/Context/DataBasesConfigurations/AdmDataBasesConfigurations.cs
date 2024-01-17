@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema;
+using MaisLocacoes.WebApi.Context;
 using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
@@ -7,15 +8,11 @@ using Repository.v1.Entity.UserSchema;
 namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
 {
     public static class AdmDataBasesConfigurations
-     
+
     {
         public static void AdmDataBaseConfigurations(ModelBuilder modelBuilder)
         {
             //Definindo valores Unique com Fluent API:
-            modelBuilder.Entity<CompanyEntity>()
-                .HasIndex(c => c.Email)
-                .IsUnique();
-
             modelBuilder.Entity<CompanyEntity>()
                 .HasIndex(c => c.DataBase)
                 .IsUnique();
@@ -24,6 +21,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
             modelBuilder.Entity<CompanyEntity>()
                 .Property(p => p.NotifyDaysBefore)
                 .HasDefaultValue(0);
+
+            //Definindochave primária composta para CompaniesUsers:
+            modelBuilder.Entity<CompanyUserEntity>()
+                .HasKey(c => new { c.Email, c.Cnpj });
 
             //Definindo valores Default para campos CreatedAt como horario de inserção em UTC:
             var currenteTimestamp = "CURRENT_TIMESTAMP";
@@ -55,12 +56,6 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
             .WithMany(one => one.Companies)
             .HasForeignKey(many => new { many.CompanyAddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompaniesAddresses));
-
-            modelBuilder.Entity<UserEntity>()
-            .HasOne(many => many.Company)
-            .WithMany(one => one.Users)
-            .HasForeignKey(many => new { many.Cnpj })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Users, TableNameEnum.Companies));
 
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)

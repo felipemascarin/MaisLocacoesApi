@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Service.v1.IServices.UserSchema;
-using System.Data;
 using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
@@ -71,14 +70,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         }
 
         [Authorize(Roles = "adm")]
-        [HttpGet("email/{email}/cnpj/{cnpj}")]
-        public async Task<IActionResult> GetByEmail(string email, string cnpj)
+        [HttpGet("email/{email}")]
+        public async Task<IActionResult> GetByEmail(string email)
         {
             try
             {
-                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), email, cnpj, _email, _cnpj);
+                _logger.LogInformation("GetByEmail {@dateTime} email:{@email} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), email, _email, _cnpj);
 
-                var user = await _userService.GetUserByEmail(email, cnpj);
+                var user = await _userService.GetUserByEmail(email);
                 if (string.IsNullOrEmpty(user.Email)) return NotFound("Usuário não encontrado");
                 return Ok(user);
             }
@@ -90,14 +89,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         }
 
         [Authorize(Roles = "adm")]
-        [HttpGet("cpf/{cpf}/cnpj/{cnpj}")]
-        public async Task<IActionResult> GetByCpf(string cpf, string cnpj)
+        [HttpGet("cpf/{cpf}")]
+        public async Task<IActionResult> GetByCpf(string cpf)
         {
             try
             {
-                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, cnpj, _email, _cnpj);
+                _logger.LogInformation("GetByCpf {@dateTime} cpf:{@cpf} cnpj:{@cnpj} User:{@email}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), cpf, _email, _cnpj);
 
-                var user = await _userService.GetUserByCpf(cpf, cnpj);
+                var user = await _userService.GetUserByCpf(cpf);
                 return Ok(user);
             }
             catch (HttpRequestException ex)
@@ -126,12 +125,12 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         }
 
         [Authorize(Roles = "adm")]
-        [HttpPut("email/{email}/cnpj/{cnpj}")]
-        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest userRequest, string email, string cnpj)
+        [HttpPut("email/{email}")]
+        public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequest userRequest, string email)
         {
             try
             {
-                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email, _cnpj);
+                _logger.LogInformation("UpdateUser {@dateTime} {@userRequest} User:{@email}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), JsonConvert.SerializeObject(userRequest), _email);
 
                 var validatedUser = _updateUserValidator.Validate(userRequest);
 
@@ -142,7 +141,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
                     return BadRequest(userValidationErros);
                 }
 
-                await _userService.UpdateUser(userRequest, email, cnpj);
+                await _userService.UpdateUser(userRequest, email);
 
                 return Ok();
             }
@@ -154,17 +153,17 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         }
 
         [Authorize(Roles = "adm")]
-        [HttpPut("email/{email}/cnpj/{cnpj}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, string email, string cnpj)
+        [HttpPut("email/{email}/status/{status}")]
+        public async Task<IActionResult> UpdateStatus(string status, string email)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} cnpj:{@cnpj} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, email, cnpj, _email, _cnpj);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} email:{@email} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, email, _email, _cnpj);
 
                 if (!UserStatus.UserStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                await _userService.UpdateStatus(status, email, cnpj);
+                await _userService.UpdateStatus(status, email);
 
                 return Ok();
             }

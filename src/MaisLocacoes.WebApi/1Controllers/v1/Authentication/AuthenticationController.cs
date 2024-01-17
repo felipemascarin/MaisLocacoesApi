@@ -2,7 +2,6 @@
 using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
-using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Exceptions;
 using MaisLocacoes.WebApi.Utils.Annotations;
 using MaisLocacoes.WebApi.Utils.Helpers;
@@ -16,19 +15,21 @@ namespace MaisLocacoes.WebApi.Controllers.v1.Authentication
     [ApiController]
     public class AuthenticationController : Controller
     {
-        private const string ADMCNPJ = "maislocacoes";
         private readonly IAuthenticationService _authenticationService;
         private readonly IValidator<LoginRequest> _loginRequestValidator;
+        private readonly IValidator<LoginEnviromentRequest> _modifyLoginTokenRequestValidator;
         private readonly IValidator<LogoutRequest> _logoutRequestValidator;
         private readonly ILogger _logger;
 
         public AuthenticationController(IAuthenticationService authenticationService,
             IValidator<LoginRequest> loginRequestValidator,
+            IValidator<LoginEnviromentRequest> modifyLoginTokenRequestValidator,
             IValidator<LogoutRequest> logoutRequestValidator,
             ILoggerFactory loggerFactory)
         {
             _authenticationService = authenticationService;
             _loginRequestValidator = loginRequestValidator;
+            _modifyLoginTokenRequestValidator = modifyLoginTokenRequestValidator;
             _logoutRequestValidator = logoutRequestValidator;
             _logger = loggerFactory.CreateLogger<AuthenticationController>();
         }
@@ -53,15 +54,32 @@ namespace MaisLocacoes.WebApi.Controllers.v1.Authentication
                 //if (!await FireBaseAuthentication.IsFirebaseTokenValid(request.GoogleToken))
                 //return Unauthorized();
 
-                LoginResponse response;
+                return Ok(await _authenticationService.Login(request));
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
 
-                //Altenticação realizada no firebase
-                if (request.Cnpj != ADMCNPJ)
-                    response = await _authenticationService.Login(request);
-                else
-                    response = _authenticationService.LoginAdm(request);
+        [HttpPost("login/enviroment")]
+        public async Task<IActionResult> LoginEnviroment([FromBody] LoginEnviromentRequest request)
+        {
+            try
+            {
+                _logger.LogInformation("LoginEnviroment {@dateTime} UTC {@request}", System.DateTime.UtcNow, JsonConvert.SerializeObject(request));
 
-                return Ok(response);
+                var validatedLogin = _modifyLoginTokenRequestValidator.Validate(request);
+
+                if (!validatedLogin.IsValid)
+                {
+                    var loginValidationErros = new List<string>();
+                    validatedLogin.Errors.ForEach(error => loginValidationErros.Add(error.ErrorMessage));
+                    return BadRequest(loginValidationErros);
+                }
+
+                return Ok(await _authenticationService.LoginEnviroment(request));
             }
             catch (HttpRequestException ex)
             {

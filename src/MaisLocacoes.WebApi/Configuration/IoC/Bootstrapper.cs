@@ -3,10 +3,14 @@ using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._2_Service.v1.Services;
 using MaisLocacoes.WebApi._2_Service.v1.Services.Authentication;
 using MaisLocacoes.WebApi._2Service.v1.IServices;
+using MaisLocacoes.WebApi._2Service.v1.IServices.UserSchema;
 using MaisLocacoes.WebApi._2Service.v1.Services;
+using MaisLocacoes.WebApi._2Service.v1.Services.UserSchema;
 using MaisLocacoes.WebApi._3_Repository.v1.Repository;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
+using MaisLocacoes.WebApi._3Repository.v1.IRepository.UserSchema;
 using MaisLocacoes.WebApi._3Repository.v1.Repository;
+using MaisLocacoes.WebApi._3Repository.v1.Repository.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
@@ -38,6 +42,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<ICompanyAddressService, CompanyAddressService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ICompanyUserService, CompanyUserService>();
             services.AddScoped<IAddressService, AddressService>();
             services.AddScoped<IBillService, BillService>();
             services.AddScoped<IClientService, ClientService>();
@@ -58,6 +63,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<ICompanyRepository, CompanyRepository>();
             services.AddScoped<ICompanyAddressRepository, CompanyAddressRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICompanyUserRepository, CompanyUserRepository>();
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IBillRepository, BillRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
@@ -76,6 +82,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<ISupplierRepository, SupplierRepository>();
 
             services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
+            services.AddScoped<IValidator<LoginEnviromentRequest>, LoginEnviromentRequestValidator>();
             services.AddScoped<IValidator<LogoutRequest>, LogoutRequestValidator>();
             services.AddScoped<IValidator<CreateCompanyRequest>, CreateCompanyValidator>();
             services.AddScoped<IValidator<CreateCompanyAddressRequest>, CreateCompanyAddressValidator>();

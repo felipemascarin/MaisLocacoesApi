@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
 {
     [DbContext(typeof(DataBaseContextAdm))]
-    [Migration("20240112233259_aoas")]
-    partial class aoas
+    [Migration("20240116164238_aoass")]
+    partial class aoass
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -189,9 +189,6 @@ namespace MaisLocacoes.WebApi.Migrations.DataBaseContextAdmMigrations
                     b.HasIndex("CompanyAddressId");
 
                     b.HasIndex("DataBase")
-                        .IsUnique();
-
-                    b.HasIndex("Email")
                         .IsUnique();
 
                     b.ToTable("Companies");

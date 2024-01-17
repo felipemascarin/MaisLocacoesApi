@@ -3,7 +3,6 @@
     public class UpdateUserRequest
     {
         public string Cpf { get; set; }
-        public string Cnpj { get; set; }
         public string Rg { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
@@ -13,5 +12,6 @@
         public string Cel { get; set; }
         public string CivilStatus { get; set; }
         public string CpfDocumentUrl { get; set; }
+        public List<string> Cnpjs { get; set; }
     }
 }
