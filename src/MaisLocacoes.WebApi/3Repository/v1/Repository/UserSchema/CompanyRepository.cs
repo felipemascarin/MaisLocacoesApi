@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
@@ -23,6 +24,12 @@ namespace Repository.v1.Repository.UserSchema
             await context.SaveChangesAsync();
 
             return companyEntity;
+        }
+
+        public async Task<IEnumerable<CompanyEntity>> GetAllCompany()
+        {
+            using var context = _contextFactory.CreateAdmContext();
+            return await context.Companies.Include(c => c.CompanyAddress).ToListAsync();
         }
 
         public async Task<CompanyEntity> GetByCnpj(string cnpj)
@@ -83,6 +90,12 @@ namespace Repository.v1.Repository.UserSchema
             }
 
             return databaseNames;
+        }
+
+        public async Task<bool> CompanyNameExists(string companyName)
+        {
+            using var context = _contextFactory.CreateAdmContext();
+            return await context.Companies.AnyAsync(c => c.CompanyName == companyName) ;
         }
     }
 }

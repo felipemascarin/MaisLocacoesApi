@@ -12,11 +12,5 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services.UserSchema
         {
             _companyUserRepository = companyUserRepository;
         }
-
-        public async Task<IEnumerable<string>> GetCnpjListByEmail(string email)
-        {
-            return await _companyUserRepository.GetCnpjListByEmail(email) ??
-                throw new HttpRequestException("Usuário não possui nenhum CNPJ vinculado", null, HttpStatusCode.NotFound);
-        }
     }
 }

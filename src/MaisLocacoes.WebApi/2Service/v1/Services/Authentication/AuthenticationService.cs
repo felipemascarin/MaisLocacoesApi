@@ -1,12 +1,15 @@
-﻿using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
+﻿using AutoMapper;
+using MaisLocacoes.WebApi._2_Service.v1.IServices.Authentication;
 using MaisLocacoes.WebApi._3Repository.v1.IRepository.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Repository.v1.Entity.UserSchema;
 using Repository.v1.IRepository.UserSchema;
 using System.Net;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication.LoginResponse;
 
 namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
 {
@@ -18,17 +21,20 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
         private const string ADMCPF = "adm";
         private const string ADMTIMEZONE = "America/Sao_Paulo";
         private const string ADMCNPJ = "maislocacoes";
+        private const string ADMCOMPANYNAME = "maislocacoes";
         private const string ADMDATABASE = "maislocacoes";
 
         private readonly IUserRepository _userRepository;
         private readonly ICompanyRepository _companyRepository;
         private readonly ICompanyUserRepository _companyUserRepository;
+        private readonly IMapper _mapper;
 
-        public AuthenticationService(IUserRepository userRepository, ICompanyRepository companyRepository, ICompanyUserRepository companyUserRepository)
+        public AuthenticationService(IUserRepository userRepository, ICompanyRepository companyRepository, ICompanyUserRepository companyUserRepository, IMapper mapper)
         {
             _userRepository = userRepository;
             _companyUserRepository = companyUserRepository;
             _companyRepository = companyRepository;
+            _mapper = mapper;
         }
 
         public async Task<LoginResponse> Login(LoginRequest loginRequest)
@@ -44,13 +50,13 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                     Email = userEmail,
                     Role = UserRole.PersonRolesEnum.ElementAt(3), //role adm
                     Cnpj = ADMCNPJ,
-                    Module = ProjectModules.Modules.ElementAt(2),
+                    Module = ProjectModules.Modules.ElementAt(2), //module adm
                     TimeZone = ADMTIMEZONE,
                     DataBase = ADMDATABASE
                 };
 
                 var loginResponse = JwtManager.CreateToken(admUser, 1);
-                loginResponse.Cnpjs = new List<string>() { admUser.Cnpj };
+                loginResponse.CompanyUser = new List<CompanyUserDto>() { new CompanyUserDto() { CompanyName = ADMCOMPANYNAME, Cnpj = admUser.Cnpj } };
 
                 return loginResponse;
             }
@@ -61,13 +67,13 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
             if (userEntity.Status == UserStatus.UserStatusEnum.ElementAt(1) /*blocked*/)
                 throw new HttpRequestException("Usuário bloqueado", null, HttpStatusCode.Forbidden);
 
-            var userCnpjList = await _companyUserRepository.GetCnpjListByEmail(userEmail);
-            if (!userCnpjList.Any())
+            var companyUserList = await _companyUserRepository.GetByEmail(userEmail);
+            if (!companyUserList.Any())
                 throw new HttpRequestException("Nenhuma empresa encontrada para esse usuário", null, HttpStatusCode.NotFound);
 
-            if (userCnpjList.Count() == 1)
+            if (companyUserList.Count() == 1)
             {
-                var companyEntity = await _companyRepository.GetByCnpj(userCnpjList.ElementAt(0)) ??
+                var companyEntity = companyUserList.ElementAt(0).Company ??
                     throw new HttpRequestException("Empresa não encontrada no banco de dados para o cnpj cadastrado nesse usuário", null, HttpStatusCode.NotFound);
 
                 //Se o status da Empresa for diferente de regular, não deixa loggar
@@ -87,7 +93,10 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 };
 
                 var loginResponse = JwtManager.CreateToken(user, TOKENHOURS);
-                loginResponse.Cnpjs = userCnpjList.ToList();
+
+                var companyUserResponse = _mapper.Map<CompanyUserDto>(companyUserList.ElementAt(0).Company);
+
+                loginResponse.CompanyUser = new List<CompanyUserDto>() { companyUserResponse };
 
                 //Salva o novo token gerado na propriedade LastToken da tabela Users no banco de dados
                 userEntity.LastToken = loginResponse.Token;
@@ -110,7 +119,14 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
                 };
 
                 var loginResponse = JwtManager.CreateToken(user, TOKENHOURS);
-                loginResponse.Cnpjs = userCnpjList.ToList();
+
+                var companiesEntities = new List<CompanyEntity>();
+                foreach (var company in companyUserList)
+                {
+                    companiesEntities.Add(company.Company);
+                }
+
+                loginResponse.CompanyUser = _mapper.Map<IEnumerable<CompanyUserDto>>(companiesEntities);
 
                 return loginResponse;
             }

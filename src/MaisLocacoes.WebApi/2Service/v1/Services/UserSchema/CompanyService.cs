@@ -48,6 +48,9 @@ namespace Service.v1.Services.UserSchema
             if (!(await _companyRepository.ReturnAllDatabaseNames()).Contains(companyRequest.DataBase))
                 throw new HttpRequestException("Esse nome de banco de dados está disponível, porém esse banco ainda não existe no servidor de banco de dados", null, HttpStatusCode.BadRequest);
 
+            if ((await _companyRepository.CompanyNameExists(companyRequest.CompanyName)))
+                throw new HttpRequestException("Já existe essa razão social", null, HttpStatusCode.BadRequest);
+
             var companyAddressResponse = await _companyAddressService.CreateCompanyAddress(companyRequest.CompanyAddress);
             var companyAddressEntity = _mapper.Map<CompanyAddressEntity>(companyAddressResponse);
 
@@ -63,6 +66,17 @@ namespace Service.v1.Services.UserSchema
             var companyResponse = _mapper.Map<CreateCompanyResponse>(companyEntity);
 
             return companyResponse;
+        }
+
+        public async Task<IEnumerable<GetAllCompanyResponse>> GetAllCompany()
+        {
+            var companiesEntities = await _companyRepository.GetAllCompany();
+
+            var companies = _mapper.Map<IEnumerable<GetAllCompanyResponse.CompanyResponse>>(companiesEntities);
+
+            var companiesResponse = new List<GetAllCompanyResponse> { new GetAllCompanyResponse() { TotalQuantity = companies.Count(), Companies = companies } };
+
+            return companiesResponse;
         }
 
         public async Task<GetCompanyByCnpjResponse> GetCompanyByCnpj(string cnpj)

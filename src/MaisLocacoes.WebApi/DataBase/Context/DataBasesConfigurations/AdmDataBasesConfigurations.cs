@@ -17,6 +17,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
                 .HasIndex(c => c.DataBase)
                 .IsUnique();
 
+                modelBuilder.Entity<CompanyEntity>()
+                .HasIndex(c => c.CompanyName)
+                .IsUnique();
+
             modelBuilder.Entity<UserEntity>()
                 .HasIndex(c => c.Cpf)
                 .IsUnique();

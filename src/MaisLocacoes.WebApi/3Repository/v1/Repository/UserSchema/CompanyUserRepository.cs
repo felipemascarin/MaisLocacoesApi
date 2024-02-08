@@ -24,6 +24,12 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository.UserSchema
             return companyUserEntity;
         }
 
+        public async Task<IEnumerable<CompanyUserEntity>> GetByEmail(string email)
+        {
+            using var context = _contextFactory.CreateAdmContext();
+            return await context.CompaniesUsers.Include(c => c.Company).Where(c => c.Email.ToLower() == email.ToLower()).ToListAsync();
+        }
+
         public async Task<IEnumerable<string>> GetCnpjListByEmail(string email)
         {
             using var context = _contextFactory.CreateAdmContext();

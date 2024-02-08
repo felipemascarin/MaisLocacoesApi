@@ -76,6 +76,11 @@ namespace Repository.v1.Repository
             .Where(p => p.FinalDateTime.Date <= todayDate && p.Deleted == false).ToListAsync();
         }
 
+        public Task<IEnumerable<ProductTuitionEntity>> GetAllProductPlaces()
+        {
+            return null;
+        }
+
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)
         {
             using var context = _contextFactory.CreateContext();

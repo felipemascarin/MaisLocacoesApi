@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi._3Repository.v1.Entity;
-using MaisLocacoes.WebApi._3Repository.v1.Entity.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
@@ -21,6 +20,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Qg;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.RentedPlace;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Supplier;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.Company;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.CompanyAddress;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.UserSchema.User;
@@ -36,6 +36,9 @@ namespace Configuration
         {
             var mappingConfig = new MapperConfiguration(config =>
             {
+                //Authentication
+                config.CreateMap<CompanyEntity, LoginResponse.CompanyUserDto>();
+
                 //CompanyAddress
                 config.CreateMap<CreateCompanyAddressRequest, CompanyAddressEntity>();
                 config.CreateMap<CompanyAddressEntity, CreateCompanyAddressResponse>();
@@ -44,6 +47,9 @@ namespace Configuration
 
                 //Company
                 config.CreateMap<CreateCompanyRequest, CompanyEntity>();
+
+                config.CreateMap<CompanyEntity, GetAllCompanyResponse.CompanyResponse>();
+                config.CreateMap<CompanyAddressEntity, GetAllCompanyResponse.CompanyAddressResponse>();
 
                 config.CreateMap<CompanyEntity, GetCompanyByCnpjResponse>();
                 config.CreateMap<CompanyAddressEntity, GetCompanyByCnpjResponse.CompanyAddressResponse>();

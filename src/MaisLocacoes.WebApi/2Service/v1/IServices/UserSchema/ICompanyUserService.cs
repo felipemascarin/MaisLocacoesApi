@@ -2,6 +2,5 @@
 {
     public interface ICompanyUserService
     {
-        Task<IEnumerable<string>> GetCnpjListByEmail(string email);
     }
 }

@@ -3,6 +3,12 @@
     public class LoginResponse
     {
         public string Token { get; set; }
-        public List<string> Cnpjs { get; set; }
+        public IEnumerable<CompanyUserDto> CompanyUser { get; set; }
+
+        public class CompanyUserDto
+        {
+            public string CompanyName { get; set; }
+            public string Cnpj { get; set; }
+        }
     }
 }

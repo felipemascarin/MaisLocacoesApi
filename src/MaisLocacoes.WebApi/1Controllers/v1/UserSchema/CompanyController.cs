@@ -67,6 +67,24 @@ namespace MaisLocacoes.WebApi.Controllers.v1.UserSchema
         }
 
         [Authorize(Roles = "adm")]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            try
+            {
+                _logger.LogInformation("GetAll {@dateTime} UTC User:{@email} Cnpj:{@cnpj}", System.DateTime.UtcNow, _email, _cnpj);
+
+                var company = await _companyService.GetAllCompany();
+                return Ok(company);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize(Roles = "adm")]
         [HttpGet("{cnpj}")]
         public async Task<IActionResult> GetByCnpj(string cnpj)
         {

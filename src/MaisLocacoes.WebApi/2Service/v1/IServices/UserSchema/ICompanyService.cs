@@ -7,6 +7,7 @@ namespace Service.v1.IServices.UserSchema
     public interface ICompanyService
     {
         Task<CreateCompanyResponse> CreateCompany(CreateCompanyRequest companyRequest);
+        Task<IEnumerable<GetAllCompanyResponse>> GetAllCompany();
         Task<GetCompanyByCnpjResponse> GetCompanyByCnpj(string cnpj);
         Task UpdateCompany(UpdateCompanyRequest companyRequest, string cnpj);
         Task UpdateStatus(string status, string cnpj);

@@ -313,6 +313,16 @@ namespace Service.v1.Services
             return productTuitionsResponseList;
         }
 
+        public Task<IEnumerable<GetAllProductPlacesReponse>> GetAllProductPlaces()
+        {
+            //var productPlacesList = await _productTuitionRepository.GetAllProductPlaces();
+
+            //var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductPlacesReponse>>(productTuitionEntityList);
+
+            //return productTuitionsResponseList;
+            return null;
+        }
+
         public async Task UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id)
         {
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
