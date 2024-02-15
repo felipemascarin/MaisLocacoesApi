@@ -12,13 +12,17 @@ fi
 docker pull mcr.microsoft.com/dotnet/sdk:6.0
 docker pull mcr.microsoft.com/dotnet/aspnet:6.0
 
+# Limpar recursos não utilizados do Docker
+echo "Limpando recursos não utilizados do Docker..."
+docker system prune -f
+
 cd ~/MaisLocacoesApi/src
 git clean -df
 git pull
 
 docker-compose down
 docker-compose build
-docker-compose up 
+docker-compose up -d
 
 cd ~
 #tenta criar o arquivo de log se não existir

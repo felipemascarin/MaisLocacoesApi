@@ -212,7 +212,7 @@ namespace Service.v1.Services
                 _productTuitionService.FinishRentIfTheLast(productTuitionEntity);
             }
 
-            await _rentedPlaceRepository.CreateRentedPlace(rentedPlace);
+            //await _rentedPlaceRepository.CreateRentedPlace(rentedPlace);
 
             await _osRepository.UpdateOs(os);
         }
