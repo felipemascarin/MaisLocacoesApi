@@ -18,7 +18,7 @@ git pull
 
 docker-compose down
 docker-compose build
-docker-compose up -d
+docker-compose up 
 
 cd ~
 #tenta criar o arquivo de log se não existir
