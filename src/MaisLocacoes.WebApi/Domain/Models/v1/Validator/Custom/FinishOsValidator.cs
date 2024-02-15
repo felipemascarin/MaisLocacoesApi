@@ -14,14 +14,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.Custom
 
             RuleFor(closeOs => closeOs.ProductCode)
                 .MaximumLength(255)
-                .WithMessage("O Código do produto ultrapassou o limite máximo de caracteres")
-               .When(closeOs => !string.IsNullOrEmpty(closeOs.ProductCode));
+                .WithMessage("O Código do produto ultrapassou o limite máximo de caracteres");
 
-            RuleFor(closeOs => closeOs.QgId)
-                .Must(qgId => int.TryParse(qgId.ToString(), out var result) &&
-                 result > 0)
-                .WithMessage("Id do QG se inserido deve ser um número inteiro maior que 0")
-                .When(closeOs => closeOs.QgId != null);
+            RuleFor(closeOs => closeOs.ProductCode)
+                .NotEmpty()
+                .WithMessage("O Código do produto é obrigatório para finalizar uma nota");
 
             RuleFor(closeOs => closeOs.DeliveryObservation)
                .MaximumLength(1000)

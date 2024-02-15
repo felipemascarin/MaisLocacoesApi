@@ -14,9 +14,11 @@ using MaisLocacoes.WebApi._3Repository.v1.Repository.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Create.UserSchema;
+using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Domain.Models.v1.Validator;
+using MaisLocacoes.WebApi.Domain.Models.v1.Validator.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema;
 using MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema.Authentication;
 using MaisLocacoes.WebApi.Repository.v1.IRepository.UserSchema;
@@ -123,6 +125,8 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IValidator<UpdateRentedPlaceRequest>, UpdateRentedPlaceValidator>();
             services.AddScoped<IValidator<UpdateRentRequest>, UpdateRentValidator>();
             services.AddScoped<IValidator<UpdateSupplierRequest>, UpdateSupplierValidator>();
+            services.AddScoped<IValidator<FinishOsRequest>, FinishOsValidator>();
+            services.AddScoped<IValidator<RenewProductTuitionRequest>, RenewProductTuitionValidator>();
         }
     }
 }

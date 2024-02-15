@@ -1,6 +1,7 @@
 ﻿using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request.Custom;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Domain.Models.v1.Response.Product;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
 using Repository.v1.Entity;
 
@@ -16,7 +17,6 @@ namespace Service.v1.IServices
         Task<IEnumerable<GetAllProductTuitionByRentIdReponse>> GetAllProductTuitionByRentId(int rentId);
         Task<GetAllProductTuitionByProductIdResponse> GetAllProductTuitionByProductId(int productId);
         Task<IEnumerable<GetAllProductTuitionToRemoveReponse>> GetAllProductTuitionToRemove();
-        Task<IEnumerable<GetAllProductPlacesReponse>> GetAllProductPlaces();
         Task UpdateProductTuition(UpdateProductTuitionRequest productTuitionRequest, int id);
         Task UpdateProductCode(string productCode, int id);
         Task UpdateStatus(string status, int id);

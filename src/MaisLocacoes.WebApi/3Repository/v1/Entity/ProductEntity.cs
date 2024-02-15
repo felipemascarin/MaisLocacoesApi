@@ -36,8 +36,6 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string Status { get; set; }
 
-        public int? CurrentRentedPlaceId { get; set; }
-
         public int Parts { get; set; }
 
         public int RentedParts { get; set; }
@@ -56,7 +54,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string UpdatedBy { get; set; }
 
-        public bool? Deleted { get; set; }
+        public bool Deleted { get; set; }
 
         public ICollection<RentedPlaceEntity> RentedPlaces { get; set; }
         public ICollection<ProductWasteEntity> ProductWastes { get; set; }

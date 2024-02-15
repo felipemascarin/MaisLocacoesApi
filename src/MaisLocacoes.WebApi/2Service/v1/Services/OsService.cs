@@ -144,9 +144,6 @@ namespace Service.v1.Services
             if (os.Status != OsStatus.OsStatusEnum.ElementAt(1) /*started*/)
                 throw new HttpRequestException("Não é possível finalizar uma nota de serviço não iniciada", null, HttpStatusCode.NotFound);
 
-            var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId.Value) ??
-                throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
-
             os.DeliveryCpf = JwtManager.GetCpfByToken(_httpContextAccessor);
             os.Status = OsStatus.OsStatusEnum.ElementAt(2) /*completed*/;
             os.FinalDateTime = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
@@ -158,58 +155,64 @@ namespace Service.v1.Services
             rentedPlace.Latitude = finishOsRequest.Latitude;
             rentedPlace.Longitude = finishOsRequest.Longitude;
             rentedPlace.ArrivalDate = os.FinalDateTime;
-            rentedPlace.ProductParts = productTuitionEntity.Parts;
             rentedPlace.CreatedBy = _email;
 
-            if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //entrega
+            if (os.Type == OsTypes.OsTypesEnum.ElementAt(0)) //delivery
             {
-                if (string.IsNullOrEmpty(finishOsRequest.ProductCode))
-                    throw new HttpRequestException("Código do produto é obrigatório para finalizar uma nota de entrega", null, HttpStatusCode.NotFound);
+                var productTuitionEntity = await _productTuitionRepository.GetById(finishOsRequest.ProductTuitionId.Value) ??
+                    throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
                 var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
-                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
+                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);                             
 
-                await _productTuitionService.RetainProduct(productTuitionEntity, product);
+                //Se for um producttuition que esta sendo alterado o codigo do produto, então o produto novo é retido e o antigo liberado
+                if (productTuitionEntity.ProductCode != finishOsRequest.ProductCode)
+                {
+                    await _productTuitionService.RetainProduct(productTuitionEntity, product);
+
+                    if (productTuitionEntity.ProductCode != null)
+                        await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
+                }
+
+                //Se o produto tem várias partes, então cria um place com Id do producttuition, mas se for uma única parte cria um place com Id do próprio produto
+                if (product.ProductType.IsManyParts == true)
+                    rentedPlace.ProductTuitionId = productTuitionEntity.Id;
+                else
+                    rentedPlace.ProductId = product.Id;
 
                 productTuitionEntity.ProductCode = finishOsRequest.ProductCode;
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/;
                 productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
-                rentedPlace.RentId = productTuitionEntity.RentId;
-                rentedPlace.QgId = null;
-                rentedPlace.ProductId = product.Id;
-                rentedPlace.ProductParts = productTuitionEntity.Parts;
+                await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
             }
 
-            if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //retirada
+            if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //withdraw
             {
+                if (os.ProductTuitionId != finishOsRequest.ProductTuitionId)
+                    throw new HttpRequestException("Informe o mesmo producttuitionId que está na nota para finalizar uma nota de retirada", null, HttpStatusCode.NotFound);
+
+                var productTuitionEntity = await _productTuitionRepository.GetById(os.ProductTuitionId) ??
+                    throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
+
                 var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
                     throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-                if (finishOsRequest.QgId == null)
-                    throw new HttpRequestException("Id do Qg é obrigatório para finalizar uma nota de retirada", null, HttpStatusCode.NotFound);
+                rentedPlace.ProductId = product.Id;
 
-                var qg = await _qgRepository.GetById(finishOsRequest.QgId.Value) ??
-                    throw new HttpRequestException("Qg não encontrado", null, HttpStatusCode.NotFound);
-
-                product = await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
+                await _productTuitionService.ReleaseProduct(productTuitionEntity, product);
 
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/;
                 productTuitionEntity.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                 productTuitionEntity.UpdatedBy = _email;
 
-                rentedPlace.RentId = null;
-                rentedPlace.QgId = qg.Id;
-                rentedPlace.ProductId = product.Id;
-                rentedPlace.ProductParts = product.Parts - product.RentedParts;
+                await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
                 _productTuitionService.FinishRentIfTheLast(productTuitionEntity);
             }
 
             await _rentedPlaceRepository.CreateRentedPlace(rentedPlace);
-
-            await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
 
             await _osRepository.UpdateOs(os);
         }

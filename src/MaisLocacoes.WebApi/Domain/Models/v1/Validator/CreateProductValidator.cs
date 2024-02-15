@@ -35,23 +35,10 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("O Valor de compra se inserido deve ser um número")
                 .When(product => product.BoughtValue != null);
 
-            RuleFor(product => product.CurrentRentedPlaceId)
-                .Must(currentRentedPlaceId => int.TryParse(currentRentedPlaceId.ToString(), out var result) &&
-                 result >= 0)
-                .WithMessage("O Id da localidade atual do produto se inserido deve ser um número positivo")
-                .When(product => product.CurrentRentedPlaceId != null);
-
                 RuleFor(product => product.Parts)
                 .Must(parts => int.TryParse(parts.ToString(), out var result) &&
                  result > 0)
-                .WithMessage("A quantidade de peças do produto deve ser um número inteiro maior que 0")
-                .When(product => product.CurrentRentedPlaceId != null);
-
-            RuleFor(product => product.Parts)
-                .Must(parts => int.TryParse(parts.ToString(), out var result) &&
-                 result >= 0)
-                .WithMessage("A quantidade de peças alugadas do produto se inserido deve ser um número positivo")
-                .When(product => product.CurrentRentedPlaceId != null);
+                .WithMessage("A quantidade de peças do produto deve ser um número inteiro maior que 0");
         }
     }
 }

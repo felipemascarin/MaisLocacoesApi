@@ -14,6 +14,7 @@ namespace Repository.v1.IRepository
         Task<IEnumerable<GetProductForRentDtoResponse>> GetProductsForRent(int productTypeId);
         Task<IEnumerable<ProductEntity>> GetProductsByProductCodeList(List<string> productCodeList);
         Task<ProductEntity> GetTheLastsCreated(int productTypeId);
+        Task<IEnumerable<ProductEntity>> GetAllProducts();
         Task<int> UpdateProduct(ProductEntity productForUpdate);
     }
 }

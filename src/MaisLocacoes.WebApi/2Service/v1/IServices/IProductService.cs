@@ -10,6 +10,7 @@ namespace Service.v1.IServices
         Task<GetProductByTypeCodeResponse> GetProductByTypeCode(int typeId, string code);
         Task<IEnumerable<GetProductsByPageResponse>> GetProductsByPage(int items, int page, string query);
         Task<IEnumerable<GetProductsForRentResponse>> GetProductsForRent(int productTypeId);
+        Task<GetAllProductPlacesReponse> GetAllProductPlaces();
         Task UpdateProduct(UpdateProductRequest productRequest, int id);
         Task UpdateStatus(string status, int id);
         Task DeleteById(int id);

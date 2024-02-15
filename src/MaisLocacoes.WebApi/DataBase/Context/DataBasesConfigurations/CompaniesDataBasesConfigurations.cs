@@ -257,12 +257,6 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasForeignKey(many => new { many.AddressId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.Addresses));
 
-            modelBuilder.Entity<RentedPlaceEntity>()
-            .HasOne(many => many.Product)
-            .WithMany(one => one.RentedPlaces)
-            .HasForeignKey(many => new { many.ProductId })
-            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
-
             modelBuilder.Entity<RentEntity>()
             .HasOne(many => many.Address)
             .WithMany(one => one.Rents)

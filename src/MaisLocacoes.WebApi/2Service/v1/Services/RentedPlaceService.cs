@@ -43,24 +43,6 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             rentedPlaceRequest = TimeZoneConverter<CreateRentedPlaceRequest>.ConvertToTimeZoneLocal(rentedPlaceRequest, _timeZone);
 
-            var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId.Value);
-            if (!existsproduct)
-                throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
-
-            if (rentedPlaceRequest.RentId != null)
-            {
-                var existsRent = await _rentRepository.RentExists(rentedPlaceRequest.RentId.Value);
-                if (!existsRent)
-                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
-            }
-
-            if (rentedPlaceRequest.QgId != null)
-            {
-                var existsQg = await _qgRepository.QgExists(rentedPlaceRequest.QgId.Value);
-                if (!existsQg)
-                    throw new HttpRequestException("Não existe esse QG", null, HttpStatusCode.BadRequest);
-            }
-
             var rentedPlaceEntity = _mapper.Map<RentedPlaceEntity>(rentedPlaceRequest);
 
             rentedPlaceEntity.CreatedBy = _email;
@@ -91,35 +73,11 @@ namespace Service.v1.Services
             var rentedPlaceForUpdate = await _rentedPlaceRepository.GetById(id) ??
                 throw new HttpRequestException("Local não encontrado", null, HttpStatusCode.NotFound);
 
-            if (rentedPlaceRequest.ProductId != rentedPlaceForUpdate.ProductId)
-            {
-                var existsproduct = await _productRepository.ProductExists(rentedPlaceRequest.ProductId.Value);
-                if (!existsproduct)
-                {
-                    throw new HttpRequestException("Não existe esse produto", null, HttpStatusCode.BadRequest);
-                }
-            }
-
-            if (rentedPlaceRequest.RentId != null)
-            {
-                var existsRent = await _rentRepository.RentExists(rentedPlaceRequest.RentId.Value);
-                if (!existsRent)
-                    throw new HttpRequestException("Não existe essa locação", null, HttpStatusCode.BadRequest);
-            }
-
-            if (rentedPlaceRequest.QgId != null)
-            {
-                var existsQg = await _qgRepository.QgExists(rentedPlaceRequest.QgId.Value);
-                if (!existsQg)
-                    throw new HttpRequestException("Não existe esse QG", null, HttpStatusCode.BadRequest);
-            }
-
-            rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId.Value;
-            rentedPlaceForUpdate.RentId = rentedPlaceRequest.RentId;
-            rentedPlaceForUpdate.QgId = rentedPlaceRequest.QgId;
+            rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId;
+            rentedPlaceForUpdate.ProductTuitionId = rentedPlaceRequest.ProductTuitionId;
             rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
             rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
-            rentedPlaceForUpdate.ProductParts = rentedPlaceRequest.ProductParts.Value;
+            rentedPlaceForUpdate.ArrivalDate = rentedPlaceRequest.ArrivalDate;
             rentedPlaceForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentedPlaceForUpdate.UpdatedBy = _email;
 

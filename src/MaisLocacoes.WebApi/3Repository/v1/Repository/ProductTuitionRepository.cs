@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
+using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -64,6 +65,13 @@ namespace Repository.v1.Repository
             return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
         }
 
+        public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductIdForRentedPlaces(List<int> productIds)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Set<ProductTuitionEntity>()
+                .Where(p => productIds.Contains(p.ProductId.Value) && (p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ || p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4)) /*withdraw*/ && p.Deleted == false).ToListAsync();
+        }
+
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove(DateTime todayDate)
         {
             using var context = _contextFactory.CreateContext();
@@ -74,11 +82,6 @@ namespace Repository.v1.Repository
             .Include(p => p.Rent.Client)
             .ThenInclude(p => p.Address)
             .Where(p => p.FinalDateTime.Date <= todayDate && p.Deleted == false).ToListAsync();
-        }
-
-        public Task<IEnumerable<ProductTuitionEntity>> GetAllProductPlaces()
-        {
-            return null;
         }
 
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)

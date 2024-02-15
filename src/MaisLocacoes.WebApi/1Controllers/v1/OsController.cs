@@ -185,7 +185,7 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpGet]
-        public async Task<IActionResult> GetAllByStatus([FromQuery(Name = "status")] string status)
+        public async Task<IActionResult> GetAllByStatus([FromQuery] string status)
         {
             try
             {

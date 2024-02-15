@@ -67,7 +67,7 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductEntity>()
-                .Include(p => p.ProductType).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) && p.ProductType.Id == productTypeId && p.Deleted == false)
+                .Include(p => p.ProductType).Where(p => p.Status == ProductStatus.ProductStatusEnum.ElementAt(0) /*free*/ && p.ProductType.Id == productTypeId && p.Deleted == false)
                 .Select(p => new GetProductForRentDtoResponse
                 {
                     Code = p.Code,
@@ -86,6 +86,12 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductEntity>().OrderByDescending(p => p.CreatedAt).FirstOrDefaultAsync(p => p.ProductType.Id == productTypeId && p.Deleted == false);
+        }
+
+        public async Task<IEnumerable<ProductEntity>> GetAllProducts()
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => p.Deleted == false).ToListAsync();
         }
 
         public async Task<int> UpdateProduct(ProductEntity productForUpdate)

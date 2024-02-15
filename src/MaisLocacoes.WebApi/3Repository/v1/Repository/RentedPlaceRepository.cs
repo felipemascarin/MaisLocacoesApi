@@ -30,6 +30,19 @@ namespace Repository.v1.Repository
             return await context.Set<RentedPlaceEntity>().FirstOrDefaultAsync(r => r.Id == id);
         }
 
+        public async Task<IEnumerable<RentedPlaceEntity>> GetTheLastRentedPlaceByIds(List<int> ids)
+        {
+            using var context = _contextFactory.CreateContext();
+
+            var lastRentedPlaces = await context.Set<RentedPlaceEntity>()
+            .Where(r => ids.Contains(r.ProductTuitionId.Value) || ids.Contains(r.ProductId.Value))
+            .GroupBy(r => new { r.ProductTuitionId, r.ProductId })
+            .Select(g => g.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
+            .ToListAsync();
+
+            return lastRentedPlaces;
+        }
+
         public async Task<int> UpdateRentedPlace(RentedPlaceEntity rentedPlaceForUpdate)
         {
             using var context = _contextFactory.CreateContext();

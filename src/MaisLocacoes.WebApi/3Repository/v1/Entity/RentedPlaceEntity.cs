@@ -11,12 +11,9 @@ namespace Repository.v1.Entity
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        public int ProductId { get; set; }
-        public virtual ProductEntity Product { get; set; }
+        public int? ProductId { get; set; }
 
-        public int? QgId { get; set; }
-
-        public int? RentId { get; set; }
+        public int? ProductTuitionId { get; set; }
 
         public double? Latitude { get; set; }
 
@@ -24,8 +21,6 @@ namespace Repository.v1.Entity
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? ArrivalDate { get; set; }
-
-        public int ProductParts { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }

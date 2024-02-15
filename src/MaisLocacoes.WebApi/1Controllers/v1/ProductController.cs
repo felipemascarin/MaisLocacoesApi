@@ -148,6 +148,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("productPlaces")]
+        public async Task<IActionResult> GetAllProductPlaces()
+        {
+            try
+            {
+                _logger.LogInformation("GetAllProductPlaces {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
+
+                var productPlaces = await _productService.GetAllProductPlaces();
+                return Ok(productPlaces);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct([FromBody] UpdateProductRequest productRequest, int id)
         {
