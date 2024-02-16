@@ -53,7 +53,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string TimePeriod { get; set; }
 
-        public bool IsEditable { get; set; }
+        public bool? IsEditable { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }

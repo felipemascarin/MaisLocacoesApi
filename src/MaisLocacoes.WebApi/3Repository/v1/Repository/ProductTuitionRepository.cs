@@ -87,7 +87,11 @@ namespace Repository.v1.Repository
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId && p.ProductCode.ToLower() == productCode.ToLower() && p.Deleted == false);
+            return await context.Set<ProductTuitionEntity>()
+                .AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId &&
+                p.ProductCode.ToLower() == productCode.ToLower() &&
+                p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/ &&
+                p.Deleted == false);
         }
 
         public async Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate)

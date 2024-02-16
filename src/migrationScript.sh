@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Caminho dentro do contêiner
-container_folder="/app/Migrations"
+container_folder="/app/MaisLocacoes.WebApi/Migrations"
 
 # Verifica se a pasta foi copiada com sucesso
 if [ $? -eq 0 ]; then

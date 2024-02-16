@@ -31,15 +31,17 @@ namespace MaisLocacoes.WebApi._1Controllers.v1.TimeZone
             {
                 _logger.LogInformation("GetTimeZoneNames {@dateTime} User:{@email}", System.DateTime.UtcNow, _email);
 
-                var timeZoneListNames = new List<string>();
+                //var timeZoneListNames = new List<string>();
 
-                foreach (var timeZoneInfo in TimeZoneInfo.GetSystemTimeZones())
-                {
-                    string tz = TZConvert.WindowsToIana(timeZoneInfo.Id);
-                    timeZoneListNames.Add(tz);
-                }                    
+                var timezonesInfosList = TimeZoneInfo.GetSystemTimeZones();
 
-                return Ok(timeZoneListNames);
+                //foreach (var timeZoneInfo in timezonesInfosList)
+                //{
+                //    string tz = TZConvert.WindowsToIana(timeZoneInfo.Id);
+                //    timeZoneListNames.Add(tz);
+                //}                    
+
+                return Ok(timezonesInfosList);
             }
             catch (HttpRequestException ex)
             {
