@@ -52,9 +52,11 @@ namespace Service.v1.Services
 
             var clientEntity = _mapper.Map<ClientEntity>(clientRequest);
 
+            if (clientEntity.BornDate != null)
+                clientEntity.BornDate = clientEntity.BornDate.Value.Date;
+
             clientEntity.Address.Id = addressResponse.Id;
             clientEntity.Address = addressEntity;
-            clientEntity.BornDate = clientEntity.BornDate.Value.Date;
             clientEntity.CreatedBy = _email;
             clientEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
@@ -219,6 +221,6 @@ namespace Service.v1.Services
             clientForDelete.UpdatedBy = _email;
 
             await _clientRepository.UpdateClient(clientForDelete);
-        }        
+        }
     }
 }

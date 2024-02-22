@@ -2,11 +2,11 @@
 {
     public class GenericException
     {
-        public string Message { get; set; }
-
         public GenericException(string message)
         {
             Message = message;
         }
+
+        public string Message { get; set; }
     }
 }
