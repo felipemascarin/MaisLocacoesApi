@@ -13,25 +13,16 @@ namespace Service.v1.Services
     public class RentedPlaceService : IRentedPlaceService
     {
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IRentRepository _rentRepository;
-        private readonly IQgRepository _qgRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
         private readonly string _email;
 
         public RentedPlaceService(IRentedPlaceRepository rentedPlaceRepository,
-            IProductRepository productRepository,
-            IRentRepository rentRepository,
-            IQgRepository qgRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _rentedPlaceRepository = rentedPlaceRepository;
-            _productRepository = productRepository;
-            _rentRepository = rentRepository;
-            _qgRepository = qgRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));

@@ -25,8 +25,12 @@ docker-compose build
 docker-compose up -d
 
 cd ~
-#tenta criar o arquivo de log se não existir
-touch container.log
 
-#Redireciona a saída de logs para o arquivo de log
-docker logs -f maislocacoes >> /root/container.log 2>&1 &
+# Especifica o caminho absoluto para o arquivo de log
+log_file="/root/container.log"
+
+# Tenta criar o arquivo de log se não existir
+touch $log_file
+
+# Redireciona a saída de logs para o arquivo de log
+docker logs -f maislocacoes >> $log_file 2>&1 &

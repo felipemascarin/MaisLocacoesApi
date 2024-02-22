@@ -2,8 +2,6 @@
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
-using TimeZoneConverter;
 
 namespace MaisLocacoes.WebApi._1Controllers.v1.TimeZone
 {
@@ -31,15 +29,7 @@ namespace MaisLocacoes.WebApi._1Controllers.v1.TimeZone
             {
                 _logger.LogInformation("GetTimeZoneNames {@dateTime} User:{@email}", System.DateTime.UtcNow, _email);
 
-                //var timeZoneListNames = new List<string>();
-
                 var timezonesInfosList = TimeZoneInfo.GetSystemTimeZones();
-
-                //foreach (var timeZoneInfo in timezonesInfosList)
-                //{
-                //    string tz = TZConvert.WindowsToIana(timeZoneInfo.Id);
-                //    timeZoneListNames.Add(tz);
-                //}                    
 
                 return Ok(timezonesInfosList);
             }
