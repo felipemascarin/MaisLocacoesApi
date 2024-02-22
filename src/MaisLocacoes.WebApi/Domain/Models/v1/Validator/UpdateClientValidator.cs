@@ -51,8 +51,6 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .When(client => !string.IsNullOrEmpty(client.ClientName));
 
             RuleFor(client => client.Rg)
-                .Must(rg => long.TryParse(rg, out var result) && result > 0)
-                .WithMessage("RG se informado deve conter somente números")
                 .MaximumLength(18)
                 .WithMessage("RG ultrapassou o limite máximo de caracteres")
                 .When(client => !string.IsNullOrEmpty(client.Rg));
