@@ -39,6 +39,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             .Must(parts => int.TryParse(parts.ToString(), out var result) &&
              result > 0)
             .WithMessage("A quantidade de peças do produto deve ser um número inteiro maior que 0");
+
+            RuleFor(product => product.RentedParts)
+            .Must(parts => int.TryParse(parts.ToString(), out var result) &&
+             result >= 0)
+            .WithMessage("Quantidade de partes alugadas é obrigatória");
         }
     }
 }
