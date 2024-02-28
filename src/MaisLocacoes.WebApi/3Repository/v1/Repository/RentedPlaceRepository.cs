@@ -34,13 +34,11 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
 
-            var lastRentedPlaces = await context.Set<RentedPlaceEntity>()
+            return await context.Set<RentedPlaceEntity>()
             .Where(r => ids.Contains(r.ProductTuitionId.Value) || ids.Contains(r.ProductId.Value))
             .GroupBy(r => new { r.ProductTuitionId, r.ProductId })
             .Select(g => g.OrderByDescending(r => r.CreatedAt).FirstOrDefault())
             .ToListAsync();
-
-            return lastRentedPlaces;
         }
 
         public async Task<int> UpdateRentedPlace(RentedPlaceEntity rentedPlaceForUpdate)

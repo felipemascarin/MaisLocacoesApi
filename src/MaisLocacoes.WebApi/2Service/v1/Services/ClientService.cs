@@ -172,6 +172,9 @@ namespace Service.v1.Services
                 }
             }
 
+            if (clientRequest.BornDate != null)
+                clientForUpdate.BornDate = clientRequest.BornDate.Value.Date;
+
             clientForUpdate.Type = clientRequest.Type;
             clientForUpdate.Cpf = clientRequest.Cpf;
             clientForUpdate.Rg = clientRequest.Rg;
@@ -183,7 +186,6 @@ namespace Service.v1.Services
             clientForUpdate.Cel = clientRequest.Cel;
             clientForUpdate.Tel = clientRequest.Tel;
             clientForUpdate.Email = clientRequest.Email;
-            clientForUpdate.BornDate = clientRequest.BornDate.Value.Date;
             clientForUpdate.Career = clientRequest.Career;
             clientForUpdate.CivilStatus = clientRequest.CivilStatus;
             clientForUpdate.Segment = clientRequest.Segment;

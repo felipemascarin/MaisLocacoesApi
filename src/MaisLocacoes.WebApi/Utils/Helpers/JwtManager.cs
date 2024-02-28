@@ -63,9 +63,8 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
         public static string ExtractTokenByAuthorization(IHttpContextAccessor httpContextAccessor)
         {
             if (!httpContextAccessor.HttpContext.Request.Headers.ContainsKey("Authorization"))
-            {
                 throw new HttpRequestException("Código acessado sem token válido", null, HttpStatusCode.BadRequest);
-            }
+
             return httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
         }
 
