@@ -48,7 +48,7 @@ namespace MaisLocacoes.WebApi.Utils.Helpers
                     new Claim("timeZone", user.TimeZone),
                     new Claim("dataBase", user.DataBase)
                 }),
-                Expires = System.DateTime.UtcNow.AddHours(tokenTime),
+                Expires = System.DateTime.UtcNow.AddHours(0),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             };
 
