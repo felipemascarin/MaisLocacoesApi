@@ -18,6 +18,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 result > 0)
                .WithMessage("Id do tipo de produto deve ser um número inteiro maior que 0");
 
+            RuleFor(product => product.RentedId)
+            .Must(parts => int.TryParse(parts.ToString(), out var result) &&
+             result > 0)
+            .WithMessage("Id da localização é obrigatório");
+
             RuleFor(product => product.SupplierId)
                 .Must(supplierId => int.TryParse(supplierId.ToString(), out var result) &&
                  result > 0)
