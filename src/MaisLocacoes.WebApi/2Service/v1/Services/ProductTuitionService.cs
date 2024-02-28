@@ -287,7 +287,7 @@ namespace Service.v1.Services
 
                 foreach (var bill in bills)
                 {
-                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)) //payed
+                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)/*payed*/ && bill.ProductTuitionId != null)
                     {
                         productTuitionsResponse.TotalBilledValue += bill.Value;
                         productTuitionDto.BilledValue += bill.Value;

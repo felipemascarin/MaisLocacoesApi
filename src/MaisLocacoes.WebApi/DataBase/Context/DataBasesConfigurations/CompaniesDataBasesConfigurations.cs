@@ -30,6 +30,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
                 .Property(p => p.Parts)
                 .HasDefaultValue(1);
 
+            //modelBuilder.Entity<ProductEntity>()
+            //    .Property(p => p.BoughtValue)
+            //    .HasDefaultValue(0);
+
             modelBuilder.Entity<ProductEntity>()
                 .Property(p => p.RentedParts)
                 .HasDefaultValue(0);

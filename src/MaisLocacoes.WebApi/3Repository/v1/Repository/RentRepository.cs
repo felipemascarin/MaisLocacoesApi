@@ -45,6 +45,7 @@ namespace Repository.v1.Repository
             return await context.Set<RentEntity>()
                 .Include(r => r.Address)
                 .Include(r => r.Bills)
+                .Include(r => r.ProductTuitions)
                 .Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
         }
 

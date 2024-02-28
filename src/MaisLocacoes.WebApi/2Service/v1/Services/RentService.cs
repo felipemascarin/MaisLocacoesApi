@@ -105,7 +105,8 @@ namespace Service.v1.Services
 
         public async Task<GetAllRentsByClientIdResponse> GetAllRentsByClientId(int clientId)
         {
-            var rentsEntityList = await _rentRepository.GetAllByClientId(clientId);
+            var rentsEntityList = (await _rentRepository.GetAllByClientId(clientId)).ToList();
+            rentsEntityList.RemoveAll(rent => rent.ProductTuitions.Count == 0);
 
             var clientRentsResponse = new GetAllRentsByClientIdResponse
             {
@@ -119,7 +120,7 @@ namespace Service.v1.Services
 
                 foreach (var bill in bills)
                 {
-                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)) //payed
+                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)/*payed*/ && bill.ProductTuitionId != null)
                     {
                         clientRentsResponse.TotalBilledValue += bill.Value;
                         rentDto.BilledValue += bill.Value;
@@ -127,6 +128,15 @@ namespace Service.v1.Services
                 }
 
                 bills.Clear();
+
+                foreach (var rentEntity in rentsEntityList)
+                {
+                    if (rentEntity.Id == rentDto.Id && rentEntity.ProductTuitions.Count > 0)
+                    {
+                        rentDto.InitialDate = rentEntity.ProductTuitions.OrderBy(x => x.InitialDateTime).FirstOrDefault().InitialDateTime;
+                        rentDto.FinalDate = rentEntity.ProductTuitions.OrderByDescending(x => x.FinalDateTime).FirstOrDefault().FinalDateTime;
+                    }
+                }
             }
 
             clientRentsResponse.ClientRentsResponse.OrderByDescending(r => r.Id);
