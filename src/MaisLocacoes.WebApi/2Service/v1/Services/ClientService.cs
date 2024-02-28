@@ -174,6 +174,8 @@ namespace Service.v1.Services
 
             if (clientRequest.BornDate != null)
                 clientForUpdate.BornDate = clientRequest.BornDate.Value.Date;
+            if (clientRequest.BornDate == null)
+                clientForUpdate.BornDate = clientRequest.BornDate;
 
             clientForUpdate.Type = clientRequest.Type;
             clientForUpdate.Cpf = clientRequest.Cpf;

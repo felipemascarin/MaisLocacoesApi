@@ -2,10 +2,10 @@
 {
     public class GetAllProductTuitionByProductIdResponse
     {
-        public List<ResumedRentDto> ProductTuitionsRentResponse { get; set; }
+        public List<ResumedProductRentDto> ProductTuitionsRentResponse { get; set; }
         public decimal TotalBilledValue { get; set; }
 
-        public class ResumedRentDto
+        public class ResumedProductRentDto
         {
             public int Id { get; set; }
             public DateTime InitialDateTime { get; set; }

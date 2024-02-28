@@ -176,7 +176,7 @@ namespace Configuration
                 config.CreateMap<UpdateProductTuitionRequest, ProductTuitionEntity>();
                 config.CreateMap<ProductTuitionEntity, CreateProductTuitionResponse>();
 
-                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionByProductIdResponse.ResumedRentDto>();
+                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionByProductIdResponse.ResumedProductRentDto>();
 
                 config.CreateMap<ProductTuitionEntity, GetAllProductTuitionByRentIdReponse>();
                 config.CreateMap<RentEntity, GetAllProductTuitionByRentIdReponse.RentResponse>();
@@ -237,7 +237,7 @@ namespace Configuration
                 config.CreateMap<ClientEntity, GetRentByIdResponse.ClientResponse>();
                 config.CreateMap<AddressEntity, GetRentByIdResponse.AddressResponse>();
 
-                config.CreateMap<RentEntity, GetAllRentsByClientIdResponse>();
+                config.CreateMap<RentEntity, GetAllRentsByClientIdResponse.ResumedClientRentDto>();
                 config.CreateMap<AddressEntity, GetAllRentsByClientIdResponse.AddressResponse>();
 
                 config.CreateMap<RentEntity, CreateRentResponse>();

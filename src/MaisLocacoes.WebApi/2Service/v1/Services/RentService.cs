@@ -10,6 +10,7 @@ using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent.GetAllRentsByClientIdResponse;
 
 namespace Service.v1.Services
 {
@@ -102,13 +103,35 @@ namespace Service.v1.Services
             return rentResponse;
         }
 
-        public async Task<IEnumerable<GetAllRentsByClientIdResponse>> GetAllRentsByClientId(int clientId)
+        public async Task<GetAllRentsByClientIdResponse> GetAllRentsByClientId(int clientId)
         {
             var rentsEntityList = await _rentRepository.GetAllByClientId(clientId);
 
-            var rentsResponseList = _mapper.Map<IEnumerable<GetAllRentsByClientIdResponse>>(rentsEntityList);
+            var clientRentsResponse = new GetAllRentsByClientIdResponse
+            {
+                ClientRentsResponse = _mapper.Map<List<ResumedClientRentDto>>(rentsEntityList),
+                TotalBilledValue = 0
+            };
 
-            return rentsResponseList;
+            foreach (var rentDto in clientRentsResponse.ClientRentsResponse)
+            {
+                var bills = rentsEntityList.FirstOrDefault(r => r.Id == rentDto.Id).Bills;
+
+                foreach (var bill in bills)
+                {
+                    if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)) //payed
+                    {
+                        clientRentsResponse.TotalBilledValue += bill.Value;
+                        rentDto.BilledValue += bill.Value;
+                    }
+                }
+
+                bills.Clear();
+            }
+
+            clientRentsResponse.ClientRentsResponse.OrderByDescending(r => r.Id);
+
+            return clientRentsResponse;
         }
 
         public async Task<IEnumerable<GetRentByPageResponse>> GetRentsByPage(int items, int page, string query, string status)

@@ -64,11 +64,11 @@ namespace Service.v1.Services
             var companyTuitionForUpdate = await _companyTuitionRepository.GetById(id) ??
                throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
+            companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate.Value;
             companyTuitionForUpdate.AsaasNumber = companyTuitionRequest.AsaasNumber;
             companyTuitionForUpdate.TuitionNumber = companyTuitionRequest.TuitionNumber;
             companyTuitionForUpdate.Value = companyTuitionRequest.Value;
             companyTuitionForUpdate.PayDate = companyTuitionRequest.PayDate;
-            companyTuitionForUpdate.DueDate = companyTuitionRequest.DueDate.Value;
             companyTuitionForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForUpdate.UpdatedBy = _email;
 

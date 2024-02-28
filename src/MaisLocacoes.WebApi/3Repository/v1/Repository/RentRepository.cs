@@ -42,7 +42,10 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<RentEntity>().Include(r => r.Address).Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
+            return await context.Set<RentEntity>()
+                .Include(r => r.Address)
+                .Include(r => r.Bills)
+                .Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query, string status)

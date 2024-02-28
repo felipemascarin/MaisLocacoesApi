@@ -2,16 +2,24 @@
 {
     public class GetAllRentsByClientIdResponse
     {
-        public int Id { get; set; }
-        public int ClientId { get; set; }
-        public string Status { get; set; }
-        public decimal? Carriage { get; set; }
-        public string Description { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public string UpdatedBy { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public AddressResponse Address { get; set; }
+        public List<ResumedClientRentDto> ClientRentsResponse { get; set; }
+        public decimal TotalBilledValue { get; set; }
+
+
+        public class ResumedClientRentDto
+        {
+            public int Id { get; set; }
+            public int ClientId { get; set; }
+            public string Status { get; set; }
+            public decimal? Carriage { get; set; }
+            public decimal BilledValue { get; set; }
+            public string Description { get; set; }
+            public string CreatedBy { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+            public AddressResponse Address { get; set; }
+        }
 
         public class AddressResponse
         {

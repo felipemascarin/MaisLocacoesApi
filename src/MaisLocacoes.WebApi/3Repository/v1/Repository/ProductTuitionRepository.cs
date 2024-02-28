@@ -62,7 +62,11 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
+            return await context.Set<ProductTuitionEntity>()
+                .Include(p => p.Rent)
+                .Include(p => p.Rent.Address)
+                .Include(p => p.Bills)
+                .Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductIdForRentedPlaces(List<int> productIds)

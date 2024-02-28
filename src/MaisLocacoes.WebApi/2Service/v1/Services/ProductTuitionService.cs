@@ -277,20 +277,20 @@ namespace Service.v1.Services
 
             var productTuitionsResponse = new GetAllProductTuitionByProductIdResponse
             {
-                ProductTuitionsRentResponse = _mapper.Map<List<ResumedRentDto>>(productTuitionEntityList),
+                ProductTuitionsRentResponse = _mapper.Map<List<ResumedProductRentDto>>(productTuitionEntityList),
                 TotalBilledValue = 0
             };
 
-            foreach (var productTuition in productTuitionsResponse.ProductTuitionsRentResponse)
+            foreach (var productTuitionDto in productTuitionsResponse.ProductTuitionsRentResponse)
             {
-                var bills = (await _billRepository.GetByProductTuitionId(productTuition.Id)).ToList();
+                var bills = productTuitionEntityList.FirstOrDefault(p => p.Id == productTuitionDto.Id).Bills;
 
                 foreach (var bill in bills)
                 {
                     if (bill.Status == BillStatus.BillStatusEnum.ElementAt(1)) //payed
                     {
                         productTuitionsResponse.TotalBilledValue += bill.Value;
-                        productTuition.BilledValue += bill.Value;
+                        productTuitionDto.BilledValue += bill.Value;
                     }
                 }
 
@@ -307,7 +307,7 @@ namespace Service.v1.Services
             var todayDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             var productTuitionEntityList = await _productTuitionRepository.GetAllToRemove(todayDate);
-            
+
             var productTuitionsResponseList = _mapper.Map<IEnumerable<GetAllProductTuitionToRemoveReponse>>(productTuitionEntityList);
 
             return productTuitionsResponseList;
