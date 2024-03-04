@@ -66,8 +66,8 @@ namespace Service.v1.Services
 
             rentedPlaceForUpdate.ProductId = rentedPlaceRequest.ProductId;
             rentedPlaceForUpdate.ProductTuitionId = rentedPlaceRequest.ProductTuitionId;
-            rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude;
-            rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude;
+            rentedPlaceForUpdate.Latitude = rentedPlaceRequest.Latitude.Value;
+            rentedPlaceForUpdate.Longitude = rentedPlaceRequest.Longitude.Value;
             rentedPlaceForUpdate.ArrivalDate = rentedPlaceRequest.ArrivalDate;
             rentedPlaceForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             rentedPlaceForUpdate.UpdatedBy = _email;

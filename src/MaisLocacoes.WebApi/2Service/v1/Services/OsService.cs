@@ -152,8 +152,8 @@ namespace Service.v1.Services
             os.UpdatedBy = _email;
 
             var rentedPlace = new RentedPlaceEntity();
-            rentedPlace.Latitude = finishOsRequest.Latitude;
-            rentedPlace.Longitude = finishOsRequest.Longitude;
+            rentedPlace.Latitude = finishOsRequest.Latitude.Value;
+            rentedPlace.Longitude = finishOsRequest.Longitude.Value;
             rentedPlace.ArrivalDate = os.FinalDateTime;
             rentedPlace.CreatedBy = _email;
 

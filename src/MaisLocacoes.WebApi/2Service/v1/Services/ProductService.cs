@@ -44,10 +44,10 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productRequest = TimeZoneConverter<CreateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
 
-            var productroductType = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
+            var productroductTypeEntity = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
-            if (!productroductType.IsManyParts)
+            if (!productroductTypeEntity.IsManyParts)
             {
                 if (productRequest.Parts > 1)
                     throw new HttpRequestException("Só é possível cadastrar 1 unidade desse tipo de produto, não possui partes", null, HttpStatusCode.BadRequest);
@@ -65,6 +65,7 @@ namespace Service.v1.Services
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
+            productEntity.ProductType = productroductTypeEntity;
             productEntity.CreatedBy = _email;
             productEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 

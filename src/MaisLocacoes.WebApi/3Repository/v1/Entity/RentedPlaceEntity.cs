@@ -15,9 +15,9 @@ namespace Repository.v1.Entity
 
         public int? ProductTuitionId { get; set; }
 
-        public double? Latitude { get; set; }
+        public double Latitude { get; set; }
 
-        public double? Longitude { get; set; }
+        public double Longitude { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime? ArrivalDate { get; set; }
