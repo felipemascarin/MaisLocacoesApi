@@ -14,14 +14,13 @@ namespace Repository.v1.Entity
         public int AddressId { get; set; }
         public virtual AddressEntity Address { get; set; }
 
+        public int RentedPlaceId { get; set; }
+        public virtual RentedPlaceEntity RentedPlace { get; set; }
+
         [Required]
         [StringLength(1000)]
         [Column(TypeName = "character varying(1000)")]
         public string Description { get; set; }
-
-        public double? Latitude { get; set; }
-
-        public double? Longitude { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }

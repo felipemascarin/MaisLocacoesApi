@@ -43,13 +43,17 @@ namespace Service.v1.Services
             var rentedPlaceEntity = new RentedPlaceEntity()
             {
                 Latitude = qgRequest.Latitude.Value,
-                Longitude = qgRequest.Longitude.Value
+                Longitude = qgRequest.Longitude.Value,
+                CreatedBy = _email,
+                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)
             };
 
             await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
 
             var qgEntity = _mapper.Map<QgEntity>(qgRequest);
 
+            qgEntity.RentedPlaceId = rentedPlaceEntity.Id;
+            qgEntity.RentedPlace = rentedPlaceEntity;
             qgEntity.AddressId = addressResponse.Id;
             qgEntity.Address = addressEntity;
             qgEntity.CreatedBy = _email;
@@ -58,7 +62,6 @@ namespace Service.v1.Services
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 
             var qgResponse = _mapper.Map<CreateQgResponse>(qgEntity);
-            qgResponse.RentedPlaceId = rentedPlaceEntity.Id;
 
             return qgResponse;
         }
@@ -87,13 +90,23 @@ namespace Service.v1.Services
             var qgForUpdate = await _qgRepository.GetById(id) ??
                     throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
 
+            var rentedPlace = await _rentedPlaceRepository.GetById(qgForUpdate.RentedPlaceId) ??
+                    throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
+
+            var updatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+
             qgForUpdate.Description = qgRequest.Description;
-            qgForUpdate.Latitude = qgRequest.Latitude;
-            qgForUpdate.Longitude = qgRequest.Longitude;
-            qgForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+            qgForUpdate.UpdatedAt = updatedAt;
             qgForUpdate.UpdatedBy = _email;
 
+            rentedPlace.Latitude = qgRequest.Latitude.Value;
+            rentedPlace.Longitude = qgRequest.Longitude.Value;
+            rentedPlace.UpdatedAt = updatedAt;
+            rentedPlace.UpdatedBy = _email;
+
             await _addressService.UpdateAddress(qgRequest.Address, qgForUpdate.Address.Id);
+
+            await _rentedPlaceRepository.UpdateRentedPlace(rentedPlace);
 
             await _qgRepository.UpdateQg(qgForUpdate);
         }

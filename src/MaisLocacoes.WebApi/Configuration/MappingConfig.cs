@@ -218,13 +218,18 @@ namespace Configuration
 
                 //Qg
                 config.CreateMap<CreateQgRequest, QgEntity>();
+
                 config.CreateMap<QgEntity, CreateQgResponse>();
+                config.CreateMap<AddressEntity, CreateQgResponse.AddressResponse>();
+                config.CreateMap<RentedPlaceEntity, CreateQgResponse.RentedPlaceResponse>();
 
                 config.CreateMap<QgEntity, GetQgByIdResponse>();
                 config.CreateMap<AddressEntity, GetQgByIdResponse.AddressResponse>();
+                config.CreateMap<RentedPlaceEntity, GetQgByIdResponse.RentedPlaceResponse>();
 
                 config.CreateMap<QgEntity, GetAllQgsResponse>();
                 config.CreateMap<AddressEntity, GetAllQgsResponse.AddressResponse>();
+                config.CreateMap<RentedPlaceEntity, GetAllQgsResponse.RentedPlaceResponse>();
 
                 //RentedPlace
                 config.CreateMap<CreateRentedPlaceRequest, RentedPlaceEntity>();

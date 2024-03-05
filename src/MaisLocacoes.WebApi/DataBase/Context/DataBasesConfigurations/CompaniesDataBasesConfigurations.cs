@@ -285,6 +285,12 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasForeignKey(many => new { many.RentId })
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Contracts, TableNameEnum.Rents));
 
+            modelBuilder.Entity<QgEntity>()
+            .HasOne(many => many.RentedPlace)
+            .WithMany(one => one.Qgs)
+            .HasForeignKey(many => new { many.RentedPlaceId })
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.RentedPlaces));
+
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)

@@ -3,15 +3,13 @@
     public class GetAllQgsResponse
     {
         public int Id { get; set; }
-        public int AddressId { get; set; }
         public string Description { get; set; }
-        public double? Latitude { get; set; }
-        public double? Longitude { get; set; }
         public string CreatedBy { get; set; }
         public DateTime CreatedAt { get; set; }
         public string UpdatedBy { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public AddressResponse Address { get; set; }
+        public RentedPlaceResponse RentedPlace { get; set; }
 
         public class AddressResponse
         {
@@ -24,6 +22,16 @@
             public string City { get; set; }
             public string State { get; set; }
             public string Country { get; set; }
+            public string CreatedBy { get; set; }
+            public DateTime CreatedAt { get; set; }
+            public string UpdatedBy { get; set; }
+            public DateTime? UpdatedAt { get; set; }
+        }
+        public class RentedPlaceResponse
+        {
+            public int Id { get; set; }
+            public double? Latitude { get; set; }
+            public double? Longitude { get; set; }
             public string CreatedBy { get; set; }
             public DateTime CreatedAt { get; set; }
             public string UpdatedBy { get; set; }

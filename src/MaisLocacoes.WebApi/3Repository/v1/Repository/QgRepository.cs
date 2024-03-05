@@ -7,11 +7,11 @@ namespace Repository.v1.Repository
 {
     public class QgRepository : IQgRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
+        private readonly PostgreSqlContextFactory _contextFactory;
 
         public QgRepository(PostgreSqlContextFactory contextFactory)
         {
-            _contextFactory = contextFactory; 
+            _contextFactory = contextFactory;
         }
 
         public async Task<QgEntity> CreateQg(QgEntity qgEntity)
@@ -27,13 +27,19 @@ namespace Repository.v1.Repository
         public async Task<QgEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<QgEntity>().Include(q => q.Address).FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+            return await context.Set<QgEntity>()
+                .Include(q => q.Address)
+                .Include(q => q.RentedPlace)
+                .FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
         }
 
         public async Task<IEnumerable<QgEntity>> GetAll()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<QgEntity>().Include(q => q.Address).Where(q => q.Deleted == false).ToListAsync();
+            return await context.Set<QgEntity>()
+                .Include(q => q.Address)
+                .Include(q => q.RentedPlace)
+                .Where(q => q.Deleted == false).ToListAsync();
         }
 
         public async Task<bool> QgExists(int id)
