@@ -6,7 +6,7 @@
         public string Code { get; set; }
         public int? SupplierId { get; set; }
         public string Description { get; set; }
-        public int? RentedId { get; set; }
+        public int? RentedPlaceId { get; set; }
         public DateTime? DateBought { get; set; }
         public decimal? BoughtValue { get; set; }
         public int? Parts { get; set; }

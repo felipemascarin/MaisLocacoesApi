@@ -25,6 +25,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("O CPF do intregador inserido é inválido")
                 .When(os => !string.IsNullOrEmpty(os.DeliveryCpf));
 
+            RuleFor(os => os.DeliveryCpf)
+                .Matches(@"^\d{11}$")
+                .WithMessage("O CPF do intregador se inserido deve ser somente os números")
+                .When(os => !string.IsNullOrEmpty(os.DeliveryCpf));
+
             RuleFor(os => os.ProductTuitionId)
                 .Must(productTuitionId => int.TryParse(productTuitionId.ToString(), out var result) &&
                  result > 0)

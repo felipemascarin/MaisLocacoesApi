@@ -14,6 +14,7 @@ namespace Service.v1.Services
     {
         private readonly IQgRepository _qgRepository;
         private readonly IAddressService _addressService;
+        private readonly IRentedPlaceRepository _rentedPlaceRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
@@ -21,11 +22,13 @@ namespace Service.v1.Services
 
         public QgService(IQgRepository qgRepository,
             IAddressService addressService,
+            IRentedPlaceRepository rentedPlaceRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
             _qgRepository = qgRepository;
             _addressService = addressService;
+            _rentedPlaceRepository = rentedPlaceRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
@@ -37,6 +40,14 @@ namespace Service.v1.Services
             var addressResponse = await _addressService.CreateAddress(qgRequest.Address);
             var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
+            var rentedPlaceEntity = new RentedPlaceEntity()
+            {
+                Latitude = qgRequest.Latitude.Value,
+                Longitude = qgRequest.Longitude.Value
+            };
+
+            await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
+
             var qgEntity = _mapper.Map<QgEntity>(qgRequest);
 
             qgEntity.AddressId = addressResponse.Id;
@@ -47,6 +58,7 @@ namespace Service.v1.Services
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 
             var qgResponse = _mapper.Map<CreateQgResponse>(qgEntity);
+            qgResponse.RentedPlaceId = rentedPlaceEntity.Id;
 
             return qgResponse;
         }

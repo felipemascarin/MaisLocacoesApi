@@ -60,7 +60,7 @@ namespace Service.v1.Services
             if (productRequest.RentedParts > productRequest.Parts)
                 throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
 
-            var rentedPlaceEntity = await _rentedPlaceRepository.GetById(productRequest.RentedId.Value) ??
+            var rentedPlaceEntity = await _rentedPlaceRepository.GetById(productRequest.RentedPlaceId.Value) ??
                 throw new HttpRequestException("Antes de criar produto deve existir uma localização pelo menos - RentedId", null, HttpStatusCode.BadRequest);
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);

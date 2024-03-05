@@ -38,6 +38,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .When(client => !string.IsNullOrEmpty(client.Cpf) &&
                 client.Type == ClientType.ClientTypesEnum.ElementAt(1));
 
+            RuleFor(client => client.Cpf)
+                .Matches(@"^\d{11}$")
+                .WithMessage("O CPF deve ser informado somente os números")
+                .When(client => client.Type == ClientType.ClientTypesEnum.ElementAt(0));
+
             RuleFor(client => client.ClientName)
                 .Must(clientName => !string.IsNullOrEmpty(clientName))
                 .WithMessage("O Nome do cliente deve ser informado para pessoa física")
@@ -107,6 +112,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("O CNPJ informado é inválido")
                 .When(client => !string.IsNullOrEmpty(client.Cnpj) &&
                 client.Type == ClientType.ClientTypesEnum.ElementAt(1));
+
+            RuleFor(client => client.Cnpj)
+                .Matches(@"^\d{14}$")
+                .WithMessage("O CNPJ deve ser informado somente os números")
+                .When(client => client.Type == ClientType.ClientTypesEnum.ElementAt(1));
 
             RuleFor(client => client.CompanyName)
                 .Must(companyName => string.IsNullOrEmpty(companyName))

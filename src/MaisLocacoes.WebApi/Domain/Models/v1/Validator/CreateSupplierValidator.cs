@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
-using MaisLocacoes.WebApi.Utils.Enum;
 using MaisLocacoes.WebApi.Utils.Helpers;
 
 namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
@@ -18,6 +17,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
             RuleFor(supplier => supplier.Cnpj)
                 .Must(cnpj => DocumentValidator.IsCnpj(cnpj))
                 .WithMessage("O CNPJ se informado deve ser válido")
+                .When(supplier => !string.IsNullOrEmpty(supplier.Cnpj));
+
+            RuleFor(supplier => supplier.Cnpj)
+                .Matches(@"^\d{14}$")
+                .WithMessage("O CNPJ se inserido deve ser somente os números")
                 .When(supplier => !string.IsNullOrEmpty(supplier.Cnpj));
 
             RuleFor(supplier => supplier.Cel)

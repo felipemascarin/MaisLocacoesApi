@@ -19,6 +19,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                 .WithMessage("O CNPJ se informado deve ser válido")
                 .When(supplier => !string.IsNullOrEmpty(supplier.Cnpj));
 
+            RuleFor(supplier => supplier.Cnpj)
+                .Matches(@"^\d{14}$")
+                .WithMessage("O CNPJ se inserido deve ser somente os números")
+                .When(supplier => !string.IsNullOrEmpty(supplier.Cnpj));
+
             RuleFor(supplier => supplier.Cel)
                 .Must(cel => long.TryParse(cel, out var result) && result > 0)
                 .WithMessage("Celular se informado deve conter somente números")

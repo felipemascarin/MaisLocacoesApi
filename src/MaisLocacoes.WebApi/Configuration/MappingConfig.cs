@@ -228,7 +228,9 @@ namespace Configuration
 
                 //RentedPlace
                 config.CreateMap<CreateRentedPlaceRequest, RentedPlaceEntity>();
+
                 config.CreateMap<RentedPlaceEntity, GetRentedPlaceByIdResponse>();
+
                 config.CreateMap<RentedPlaceEntity, CreateRentedPlaceResponse>();
 
                 //Rent

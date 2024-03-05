@@ -18,6 +18,11 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator.UserSchema
                 .WithMessage("O CPF informado é inválido")
                 .When(person => !string.IsNullOrEmpty(person.Cpf));
 
+            RuleFor(person => person.Cpf)
+                .Matches(@"^\d{11}$")
+                .WithMessage("O CPF se inserido deve ser informado somente os números")
+                .When(person => !string.IsNullOrEmpty(person.Cpf));
+
             RuleFor(person => person.Rg)
                .Must(rg => long.TryParse(rg, out var result) && result > 0)
                .WithMessage("RG se informado deve conter somente números")
