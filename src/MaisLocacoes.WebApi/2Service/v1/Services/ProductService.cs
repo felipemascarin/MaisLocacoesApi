@@ -44,6 +44,14 @@ namespace Service.v1.Services
             //Converte todas as propridades que forem data (utc) para o timezone da empresa
             productRequest = TimeZoneConverter<CreateProductRequest>.ConvertToTimeZoneLocal(productRequest, _timeZone);
 
+            var userModule = JwtManager.GetModuleByToken(_httpContextAccessor);
+
+            if (userModule != ProjectModules.Modules.ElementAt(0) /*basic*/)
+            {
+                if (productRequest.RentedPlaceId == null)
+                    throw new HttpRequestException("Id da localização do QG é obrigatório", null, HttpStatusCode.BadRequest);
+            }
+
             var productroductTypeEntity = await _productTypeRepository.GetById(productRequest.ProductTypeId.Value) ??
                 throw new HttpRequestException("Não existe esse tipo de produto", null, HttpStatusCode.BadRequest);
 
@@ -60,9 +68,6 @@ namespace Service.v1.Services
             if (productRequest.RentedParts > productRequest.Parts)
                 throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
 
-            var rentedPlaceQgEntity = await _rentedPlaceRepository.GetById(productRequest.RentedPlaceId.Value) ??
-                throw new HttpRequestException("Antes de criar produto deve existir uma localização pelo menos - RentedId", null, HttpStatusCode.BadRequest);
-
             var dateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
@@ -71,19 +76,29 @@ namespace Service.v1.Services
             productEntity.CreatedBy = _email;
             productEntity.CreatedAt = dateTimeNow;
 
-            productEntity = await _productRepository.CreateProduct(productEntity);
-
-            var rentedPlaceProductEntity = new RentedPlaceEntity()
+            if (userModule != ProjectModules.Modules.ElementAt(0) /*basic*/)
             {
-                ProductId = productEntity.Id,
-                Latitude = rentedPlaceQgEntity.Latitude,
-                Longitude = rentedPlaceQgEntity.Longitude,
-                ArrivalDate = dateTimeNow,
-                CreatedBy = _email,
-                CreatedAt = dateTimeNow
-            };
+                var rentedPlaceQgEntity = await _rentedPlaceRepository.GetById(productRequest.RentedPlaceId.Value) ??
+                throw new HttpRequestException("Antes de criar produto deve existir uma localização pelo menos - RentedId", null, HttpStatusCode.BadRequest);
 
-            await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceProductEntity);
+                productEntity = await _productRepository.CreateProduct(productEntity);
+
+                var rentedPlaceProductEntity = new RentedPlaceEntity()
+                {
+                    ProductId = productEntity.Id,
+                    Latitude = rentedPlaceQgEntity.Latitude,
+                    Longitude = rentedPlaceQgEntity.Longitude,
+                    ArrivalDate = dateTimeNow,
+                    CreatedBy = _email,
+                    CreatedAt = dateTimeNow
+                };
+
+                await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceProductEntity);
+            }
+            else
+            {
+                productEntity = await _productRepository.CreateProduct(productEntity);
+            }
 
             var productResponse = _mapper.Map<CreateProductResponse>(productEntity);
 
