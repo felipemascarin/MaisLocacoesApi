@@ -8,12 +8,12 @@ namespace Repository.v1.Repository
 {
     public class BillRepository : IBillRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
+        private readonly PostgreSqlContextFactory _contextFactory;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public BillRepository(PostgreSqlContextFactory contextFactory, IHttpContextAccessor httpContextAccessor)
         {
-            _contextFactory = contextFactory; 
+            _contextFactory = contextFactory;
             _httpContextAccessor = httpContextAccessor;
         }
 
@@ -52,6 +52,18 @@ namespace Repository.v1.Repository
             .ThenInclude(rent => rent.Client)
             .ThenInclude(client => client.Address)
             .FirstOrDefaultAsync(b => b.Id == id && b.Deleted == false);
+        }
+
+        public async Task<int?> GetTheLastInvoiceId()
+        {
+            using var context = _contextFactory.CreateContext();
+            var invoiceId = await context.Set<BillEntity>().OrderByDescending(b => b.InvoiceId)
+                                                 .Select(b => b.InvoiceId)
+                                                 .FirstOrDefaultAsync();
+            if (invoiceId != null)
+                return invoiceId;
+            else
+                return 0;
         }
 
         public async Task<IEnumerable<BillEntity>> GetByRentId(int rentId)

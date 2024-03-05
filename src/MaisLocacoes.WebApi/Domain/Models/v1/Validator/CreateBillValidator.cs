@@ -24,14 +24,14 @@ namespace MaisLocacoes.WebApi.Domain.Models.v1.Validator
                  result >= 0)
                 .WithMessage("Valor da fatura inválido");
 
-            RuleFor(bill => bill.NfIdFireBase)
-                .Must(nfIdFireBase => int.TryParse(nfIdFireBase.ToString(), out var result) &&
+            RuleFor(bill => bill.InvoiceId)
+                .Must(InvoiceId => int.TryParse(InvoiceId.ToString(), out var result) &&
                  result > 0)
                 .WithMessage("Id da nota fiscal se inserido deve ser número")
-                .When(bill => bill.NfIdFireBase != null);
+                .When(bill => bill.InvoiceId != null);
 
             RuleFor(bill => bill.Order)
-                .Must(nfIdFireBase => int.TryParse(nfIdFireBase.ToString(), out var result) &&
+                .Must(InvoiceId => int.TryParse(InvoiceId.ToString(), out var result) &&
                  result > 0)
                 .WithMessage("Número para ordenação da nota fiscal se inserido deve ser número inteiro maior que 0")
                 .When(bill => bill.Order != null);

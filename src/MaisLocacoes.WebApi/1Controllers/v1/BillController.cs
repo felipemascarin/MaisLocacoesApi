@@ -197,16 +197,16 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPut("id/{id}/status/{status}")]
-        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, [FromQuery(Name = "payDate")] DateTime? payDate, [FromQuery(Name = "nfIdFireBase")] int? nfIdFireBase, int id)
+        public async Task<IActionResult> UpdateStatus(string status, [FromQuery(Name = "paymentMode")] string paymentMode, [FromQuery(Name = "payDate")] DateTime? payDate, [FromQuery(Name = "invoiceId")] int? invoiceId, int id)
         {
             try
             {
-                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} payDate:{@payDate} nfIdFireBase:{@nfIdFireBase} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, paymentMode, payDate, nfIdFireBase, id, _email, _cnpj);
+                _logger.LogInformation("UpdateStatus {@dateTime} status:{@status} paymentMode:{@paymentMode} payDate:{@payDate} invoiceId:{@invoiceId} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), status, paymentMode, payDate, invoiceId, id, _email, _cnpj);
 
                 if (!BillStatus.BillStatusEnum.Contains(status.ToLower()))
                     return BadRequest("Insira um status válido");
 
-                await _billService.UpdateStatus(status, paymentMode, payDate, nfIdFireBase, id);
+                await _billService.UpdateStatus(status, paymentMode, payDate, invoiceId, id);
                 
                 return Ok();
             }

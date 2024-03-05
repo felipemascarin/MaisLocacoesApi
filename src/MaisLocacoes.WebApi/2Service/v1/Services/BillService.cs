@@ -83,6 +83,12 @@ namespace Service.v1.Services
             var billEntity = await _billRepository.GetForTaxInvoice(billId) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
+            if(billEntity.InvoiceId == null)
+            {
+                billEntity.InvoiceId = (await _billRepository.GetTheLastInvoiceId()) + 1;
+                await _billRepository.UpdateBill(billEntity);
+            }
+
             var companyEntity = await _companyRepository.GetByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor)) ??
                 throw new HttpRequestException("Empresa não encontrada", null, HttpStatusCode.NotFound);
 
@@ -168,7 +174,7 @@ namespace Service.v1.Services
                     RentId = bill.Rent.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description,
-                    NfIdFireBase = bill.NfIdFireBase,
+                    InvoiceId = bill.InvoiceId,
                     ProductTypeName = productTypeName,
                     ProductCode = productCode,
                     Parts = parts,
@@ -220,7 +226,7 @@ namespace Service.v1.Services
                     RentId = bill.Rent.Id,
                     BillId = bill.Id,
                     BillDescription = bill.Description,
-                    NfIdFireBase = bill.NfIdFireBase,
+                    InvoiceId = bill.InvoiceId,
                     ProductTypeName = productTypeName,
                     ProductCode = productCode,
                     Parts = parts,
@@ -242,7 +248,7 @@ namespace Service.v1.Services
             var billForUpdate = await _billRepository.GetById(id) ??
                throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (billForUpdate.NfIdFireBase != null)
+            if (billForUpdate.InvoiceId != null)
                 throw new HttpRequestException("Fatura não pode ser editada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             //Se estiver sendo atualizada a locação que a bill pertence, é verificado a mesma existe
@@ -283,7 +289,7 @@ namespace Service.v1.Services
             billForUpdate.PayDate = billRequest.PayDate;
             billForUpdate.DueDate = billRequest.DueDate.Value;
             billForUpdate.InvoiceEmittedDate = billRequest.InvoiceEmittedDate;
-            billForUpdate.NfIdFireBase = billRequest.NfIdFireBase;
+            billForUpdate.InvoiceId = billRequest.InvoiceId;
             billForUpdate.PaymentMode = billRequest.PaymentMode;
             billForUpdate.Description = billRequest.Description;
             billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
@@ -292,7 +298,7 @@ namespace Service.v1.Services
             await _billRepository.UpdateBill(billForUpdate);
         }
 
-        public async Task UpdateStatus(string status, string paymentMode, DateTime? payDate, int? nfIdFireBase, int id)
+        public async Task UpdateStatus(string status, string paymentMode, DateTime? payDate, int? InvoiceId, int id)
         {
             var billForUpdate = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
@@ -333,7 +339,7 @@ namespace Service.v1.Services
 
             billForUpdate.Status = status;
             billForUpdate.PaymentMode = paymentMode;
-            billForUpdate.NfIdFireBase = nfIdFireBase;
+            billForUpdate.InvoiceId = InvoiceId;
             billForUpdate.PayDate = payDate;
             billForUpdate.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             billForUpdate.UpdatedBy = _email;
@@ -346,7 +352,7 @@ namespace Service.v1.Services
             var billForDelete = await _billRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if (billForDelete.NfIdFireBase != null)
+            if (billForDelete.InvoiceId != null)
                 throw new HttpRequestException("Fatura não pode ser deletada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
             billForDelete.Deleted = true;

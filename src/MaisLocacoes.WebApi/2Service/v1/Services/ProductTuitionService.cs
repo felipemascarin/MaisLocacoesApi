@@ -610,7 +610,7 @@ namespace Service.v1.Services
 
             foreach (var bill in oldBills)
             {
-                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && bill.NfIdFireBase == null)
+                if (bill.Status != BillStatus.BillStatusEnum.ElementAt(1) /*payed*/ && bill.InvoiceId == null)
                     _billRepository.DeleteBill(bill);
                 else payedOldBills.Add(bill);
             }

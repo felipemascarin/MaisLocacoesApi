@@ -14,6 +14,6 @@
         public int? Parts { get; set; }
         public DateTime? InvoiceEmittedDate { get; set; }
         public bool? IsManyParts { get; set; }
-        public int? NfIdFireBase { get; set; }
+        public int? InvoiceId { get; set; }
     }
 }

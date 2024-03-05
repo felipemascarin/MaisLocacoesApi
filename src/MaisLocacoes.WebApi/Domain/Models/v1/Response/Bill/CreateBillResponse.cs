@@ -11,7 +11,7 @@
         public DateTime DueDate { get; set; }
         public DateTime? InvoiceEmittedDate { get; set; }
         public string Status { get; set; }
-        public int? NfIdFireBase { get; set; }
+        public int? InvoiceId { get; set; }
         public string PaymentMode { get; set; }
         public string Description { get; set; }
         public string CreatedBy { get; set; }

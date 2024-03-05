@@ -36,7 +36,7 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string Status { get; set; }
 
-        public int? NfIdFireBase { get; set; }
+        public int? InvoiceId { get; set; }
 
         public int? Order { get; set; }
 
