@@ -60,19 +60,30 @@ namespace Service.v1.Services
             if (productRequest.RentedParts > productRequest.Parts)
                 throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
 
-            var rentedPlaceEntity = await _rentedPlaceRepository.GetById(productRequest.RentedPlaceId.Value) ??
+            var rentedPlaceQgEntity = await _rentedPlaceRepository.GetById(productRequest.RentedPlaceId.Value) ??
                 throw new HttpRequestException("Antes de criar produto deve existir uma localização pelo menos - RentedId", null, HttpStatusCode.BadRequest);
+
+            var dateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             var productEntity = _mapper.Map<ProductEntity>(productRequest);
 
             productEntity.ProductType = productroductTypeEntity;
             productEntity.CreatedBy = _email;
-            productEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+            productEntity.CreatedAt = dateTimeNow;
 
             productEntity = await _productRepository.CreateProduct(productEntity);
 
-            rentedPlaceEntity.ProductId = productEntity.Id;
-            await _rentedPlaceRepository.UpdateRentedPlace(rentedPlaceEntity);
+            var rentedPlaceProductEntity = new RentedPlaceEntity()
+            {
+                ProductId = productEntity.Id,
+                Latitude = rentedPlaceQgEntity.Latitude,
+                Longitude = rentedPlaceQgEntity.Longitude,
+                ArrivalDate = dateTimeNow,
+                CreatedBy = _email,
+                CreatedAt = dateTimeNow
+            };
+
+            await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceProductEntity);
 
             var productResponse = _mapper.Map<CreateProductResponse>(productEntity);
 

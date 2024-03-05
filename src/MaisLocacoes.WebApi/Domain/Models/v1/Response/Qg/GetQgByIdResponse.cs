@@ -33,6 +33,7 @@
             public int Id { get; set; }
             public double? Latitude { get; set; }
             public double? Longitude { get; set; }
+            public DateTime? ArrivalDate { get; set; }
             public string CreatedBy { get; set; }
             public DateTime CreatedAt { get; set; }
             public string UpdatedBy { get; set; }

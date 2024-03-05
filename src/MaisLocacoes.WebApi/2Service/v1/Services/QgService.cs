@@ -40,12 +40,15 @@ namespace Service.v1.Services
             var addressResponse = await _addressService.CreateAddress(qgRequest.Address);
             var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
 
+            var dateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+
             var rentedPlaceEntity = new RentedPlaceEntity()
             {
                 Latitude = qgRequest.Latitude.Value,
                 Longitude = qgRequest.Longitude.Value,
+                ArrivalDate = dateTimeNow,
                 CreatedBy = _email,
-                CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone)
+                CreatedAt = dateTimeNow
             };
 
             await _rentedPlaceRepository.CreateRentedPlace(rentedPlaceEntity);
@@ -57,7 +60,7 @@ namespace Service.v1.Services
             qgEntity.AddressId = addressResponse.Id;
             qgEntity.Address = addressEntity;
             qgEntity.CreatedBy = _email;
-            qgEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+            qgEntity.CreatedAt = dateTimeNow;
 
             qgEntity = await _qgRepository.CreateQg(qgEntity);
 
