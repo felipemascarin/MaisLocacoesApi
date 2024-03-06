@@ -95,8 +95,12 @@ namespace Configuration
 
                 //Bill
                 config.CreateMap<CreateBillRequest, BillEntity>();
+
                 config.CreateMap<BillEntity, CreateBillResponse>();
+
                 config.CreateMap<BillEntity, GetBillByRentIdResponse>();
+                config.CreateMap<ProductTypeEntity, GetBillByRentIdResponse.ProductTypeResponse>();
+
                 config.CreateMap<BillEntity, GetBillByIdResponse>();
 
                 config.CreateMap<BillEntity, GetBillForTaxInvoiceResponse>();

@@ -129,8 +129,11 @@ namespace Service.v1.Services
             {
                 if (bill.ProductTuitionId != null)
                 {
-                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuitionId == bill.ProductTuitionId).ProductTuition.ProductCode;
-                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuitionId == bill.ProductTuitionId).ProductTuition.Parts;
+                    var productTuition = billsEntityList.FirstOrDefault(p => p.ProductTuitionId == bill.ProductTuitionId).ProductTuition;
+
+                    bill.ProductCode = productTuition.ProductCode;
+                    bill.ProductTuitionParts = productTuition.Parts;
+                    bill.ProductType = _mapper.Map<GetBillByRentIdResponse.ProductTypeResponse>(productTuition.ProductType);
                 }
             }
 
