@@ -137,6 +137,8 @@ namespace Service.v1.Services
                 }
             }
 
+            billsResponseList.OrderBy(b => b.ProductCode).ThenBy(b => b.Order);
+
             return billsResponseList;
         }
 
