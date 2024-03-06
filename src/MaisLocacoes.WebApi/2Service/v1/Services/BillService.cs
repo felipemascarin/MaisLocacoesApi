@@ -86,7 +86,7 @@ namespace Service.v1.Services
             if (billEntity.InvoiceId == null)
             {
                 billEntity.InvoiceId = (await _billRepository.GetTheLastInvoiceId()) + 1;
-                
+
                 if (billEntity.InvoiceEmittedDate == null)
                     billEntity.InvoiceEmittedDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
@@ -129,8 +129,8 @@ namespace Service.v1.Services
             {
                 if (bill.ProductTuitionId != null)
                 {
-                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuition.Id == bill.ProductTuitionId).ProductTuition.ProductCode;
-                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuition.Id == bill.ProductTuitionId).ProductTuition.Parts;
+                    bill.ProductCode = billsEntityList.FirstOrDefault(p => p.ProductTuitionId == bill.ProductTuitionId).ProductTuition.ProductCode;
+                    bill.ProductTuitionParts = billsEntityList.FirstOrDefault(p => p.ProductTuitionId == bill.ProductTuitionId).ProductTuition.Parts;
                 }
             }
 
