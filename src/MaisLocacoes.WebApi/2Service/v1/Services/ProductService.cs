@@ -291,7 +291,7 @@ namespace Service.v1.Services
                                 IsManyParts = rentedProductSecondIteration.IsManyParts,
                                 Code = rentedProductSecondIteration.Code,
                                 Parts = rentedProductSecondIteration.Parts,
-                                Status = rentedProductSecondIteration.Status,
+                                Status = ProductStatus.ProductStatusEnum.ElementAt(1) /*rented*/,
                             });
 
                         }
