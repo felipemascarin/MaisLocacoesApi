@@ -212,7 +212,7 @@ namespace Service.v1.Services
                     {
                         productPlace.Type = manyPartsProduct.ProductType.Type;
                         productPlace.Code = manyPartsProduct.Code;
-                        productPlace.Status = ProductStatus.ProductStatusEnum.ElementAt(1); //rented
+                        productPlace.Status = ProductStatus.ProductStatusEnum.ElementAt(1); /*rented*/
                     }
                 }
 
