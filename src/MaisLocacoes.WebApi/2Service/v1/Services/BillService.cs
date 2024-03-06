@@ -83,9 +83,13 @@ namespace Service.v1.Services
             var billEntity = await _billRepository.GetForTaxInvoice(billId) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
-            if(billEntity.InvoiceId == null)
+            if (billEntity.InvoiceId == null)
             {
                 billEntity.InvoiceId = (await _billRepository.GetTheLastInvoiceId()) + 1;
+                
+                if (billEntity.InvoiceEmittedDate == null)
+                    billEntity.InvoiceEmittedDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+
                 await _billRepository.UpdateBill(billEntity);
             }
 

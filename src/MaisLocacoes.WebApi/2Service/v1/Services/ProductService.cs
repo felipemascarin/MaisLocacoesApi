@@ -8,6 +8,8 @@ using Repository.v1.IRepository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Product.GetAllProductPlacesDTO;
+using static MaisLocacoes.WebApi.Domain.Models.v1.Response.Product.GetAllProductPlacesResponse;
 
 namespace Service.v1.Services
 {
@@ -155,7 +157,7 @@ namespace Service.v1.Services
             return productForRentResponse.OrderBy(p => p.Code);
         }
 
-        public async Task<GetAllProductPlacesReponse> GetAllProductPlaces()
+        public async Task<GetAllProductPlacesResponse> GetAllProductPlaces()
         {
             var manyPartsProductsIdsList = new List<int>();
             var manyPartsProductsList = new List<ProductEntity>();
@@ -186,11 +188,11 @@ namespace Service.v1.Services
             //Buscar todos os últimos places de todos os produtos e producttuitions de many partes
             var rentedPlacesList = (await _rentedPlaceRepository.GetTheLastRentedPlaceByIds(productsIdsList)).ToList();
 
-            var response = new GetAllProductPlacesReponse();
+            var responseDTO = new GetAllProductPlacesDTO();
 
             foreach (var manyPartsProductTuition in rentedManyPartsProductTuitionList)
             {
-                var productPlace = new GetAllProductPlacesReponse.ProductPlace();
+                var productPlace = new GetAllProductPlacesDTO.ProductPlace();
 
                 productPlace.IsManyParts = true;
                 productPlace.Parts = manyPartsProductTuition.Parts;
@@ -214,12 +216,12 @@ namespace Service.v1.Services
                     }
                 }
 
-                response.RentedProducts.Add(productPlace);
+                responseDTO.RentedProducts.Add(productPlace);
             }
 
             foreach (var manyPartsProduct in manyPartsProductsList)
             {
-                var productPlace = new GetAllProductPlacesReponse.ProductPlace();
+                var productPlace = new GetAllProductPlacesDTO.ProductPlace();
 
                 productPlace.Parts = manyPartsProduct.Parts - manyPartsProduct.RentedParts;
                 if (productPlace.Parts == 0) continue;
@@ -238,12 +240,12 @@ namespace Service.v1.Services
                     }
                 }
 
-                response.FreeProducts.Add(productPlace);
+                responseDTO.FreeProducts.Add(productPlace);
             }
 
             foreach (var singlePartProduct in singlePartProductsList)
             {
-                var productPlace = new GetAllProductPlacesReponse.ProductPlace();
+                var productPlace = new GetAllProductPlacesDTO.ProductPlace();
 
                 productPlace.Type = singlePartProduct.ProductType.Type;
                 productPlace.IsManyParts = false;
@@ -261,12 +263,98 @@ namespace Service.v1.Services
                 }
 
                 if (singlePartProduct.RentedParts == 1)
-                    response.RentedProducts.Add(productPlace);
+                    responseDTO.RentedProducts.Add(productPlace);
                 else
-                    response.FreeProducts.Add(productPlace);
+                    responseDTO.FreeProducts.Add(productPlace);
             }
 
-            return response;
+            var samePinRentedProducts = new List<GetAllProductPlacesResponse.PinResponse>();
+            var samePinFreeProducts = new List<GetAllProductPlacesResponse.PinResponse>();
+
+            var samePinProducts = new List<ProductsPinResponse>();
+            var sameProductsNotRepeat = new List<ProductPlace>();
+
+            foreach (var rentedProductFirstIteration in responseDTO.RentedProducts)
+            {
+                samePinProducts = new List<ProductsPinResponse>();
+
+                foreach (var rentedProductSecondIteration in responseDTO.RentedProducts)
+                {
+                    //Se tiver a mesma coordenada e for produto diferente:
+                    if (!sameProductsNotRepeat.Any(p => p.Latitude == rentedProductSecondIteration.Latitude && p.Longitude == rentedProductSecondIteration.Longitude))
+                    {
+                        if (rentedProductFirstIteration.Latitude == rentedProductSecondIteration.Latitude && rentedProductFirstIteration.Longitude == rentedProductSecondIteration.Longitude)
+                        {
+                            samePinProducts.Add(new ProductsPinResponse()
+                            {
+                                Type = rentedProductSecondIteration.Type,
+                                IsManyParts = rentedProductSecondIteration.IsManyParts,
+                                Code = rentedProductSecondIteration.Code,
+                                Parts = rentedProductSecondIteration.Parts,
+                                Status = rentedProductSecondIteration.Status,
+                            });
+
+                        }
+                    }
+                }
+
+                if (samePinProducts.Count > 0)
+                {
+                    samePinRentedProducts.Add(new GetAllProductPlacesResponse.PinResponse()
+                    {
+                        Latitude = rentedProductFirstIteration.Latitude,
+                        Longitude = rentedProductFirstIteration.Longitude,
+                        Products = samePinProducts
+                    });
+                }
+
+                sameProductsNotRepeat.Add(rentedProductFirstIteration);
+            }
+
+            sameProductsNotRepeat = new List<ProductPlace>();
+
+            foreach (var freeProductFirstIteration in responseDTO.FreeProducts)
+            {
+                samePinProducts = new List<ProductsPinResponse>();
+
+                foreach (var freeProductSecondIteration in responseDTO.FreeProducts)
+                {
+                    //Se tiver a mesma coordenada e for produto diferente:
+                    if (!sameProductsNotRepeat.Any(p => p.Latitude == freeProductSecondIteration.Latitude && p.Longitude == freeProductSecondIteration.Longitude))
+                    {
+                        if (freeProductFirstIteration.Latitude == freeProductSecondIteration.Latitude && freeProductFirstIteration.Longitude == freeProductSecondIteration.Longitude)
+                        {
+                            samePinProducts.Add(new ProductsPinResponse()
+                            {
+                                Type = freeProductSecondIteration.Type,
+                                IsManyParts = freeProductSecondIteration.IsManyParts,
+                                Code = freeProductSecondIteration.Code,
+                                Parts = freeProductSecondIteration.Parts,
+                                Status = freeProductSecondIteration.Status,
+                            });
+
+                        }
+                    }
+                }
+
+                if (samePinProducts.Count > 0)
+                {
+                    samePinFreeProducts.Add(new GetAllProductPlacesResponse.PinResponse()
+                    {
+                        Latitude = freeProductFirstIteration.Latitude,
+                        Longitude = freeProductFirstIteration.Longitude,
+                        Products = samePinProducts
+                    });
+                }
+
+                sameProductsNotRepeat.Add(freeProductFirstIteration);
+            }
+
+            return new GetAllProductPlacesResponse()
+            {
+                RentedProducts = samePinRentedProducts,
+                FreeProducts = samePinFreeProducts
+            };
         }
 
         public async Task UpdateProduct(UpdateProductRequest productRequest, int id)
