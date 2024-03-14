@@ -85,7 +85,7 @@ namespace Repository.v1.Repository
             .ThenInclude(p => p.Address)
             .Include(p => p.Rent.Client)
             .ThenInclude(p => p.Address)
-            .Where(p => p.FinalDateTime.Date <= todayDate && p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false).ToListAsync();
+            .Where(p => p.FinalDateTime.Date <= todayDate /*&& p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2)*/ && p.Deleted == false).ToListAsync();
         }
 
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)
