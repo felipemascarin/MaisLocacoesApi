@@ -4,9 +4,9 @@
     {
         public int Id { get; set; }
         public RentResponse Rent { get; set; }
+        public ProductResponse Product { get; set; }
         public ProductTypeResponse ProductType { get; set; }
         public int? ProductId { get; set; }
-        public string ProductCode { get; set; }
         public decimal Value { get; set; }
         public DateTime InitialDateTime { get; set; }
         public DateTime FinalDateTime { get; set; }
@@ -93,6 +93,12 @@
             public DateTime CreatedAt { get; set; }
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
+        }
+
+        public class ProductResponse
+        {
+            public string Code { get; set; }
+            public int FreeParts { get; set; }
         }
     }
 }

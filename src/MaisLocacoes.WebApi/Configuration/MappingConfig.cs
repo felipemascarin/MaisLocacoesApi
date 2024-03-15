@@ -187,6 +187,7 @@ namespace Configuration
                 config.CreateMap<ClientEntity, GetAllProductTuitionByRentIdReponse.ClientResponse>();
                 config.CreateMap<AddressEntity, GetAllProductTuitionByRentIdReponse.AddressResponse>();
                 config.CreateMap<ProductTypeEntity, GetAllProductTuitionByRentIdReponse.ProductTypeResponse>();
+                config.CreateMap<ProductEntity, GetAllProductTuitionByRentIdReponse.ProductResponse>();
 
                 config.CreateMap<ProductTuitionEntity, GetProductTuitionByIdResponse>();
                 config.CreateMap<RentEntity, GetProductTuitionByIdResponse.RentResponse>();
