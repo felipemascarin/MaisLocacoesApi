@@ -21,6 +21,7 @@ namespace Service.v1.Services
         private readonly IProductTuitionRepository _productTuitionRepository;
         private readonly IProductRepository _productRepository;
         private readonly IRentedPlaceRepository _rentedPlaceRepository;
+        private readonly IRentRepository _rentRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo _timeZone;
@@ -32,6 +33,7 @@ namespace Service.v1.Services
             IProductTuitionRepository productTuitionRepository,
             IProductRepository productRepository,
             IRentedPlaceRepository rentedPlaceRepository,
+            IRentRepository rentRepository,
             IHttpContextAccessor httpContextAccessor,
             IMapper mapper)
         {
@@ -41,6 +43,7 @@ namespace Service.v1.Services
             _productTuitionRepository = productTuitionRepository;
             _productRepository = productRepository;
             _rentedPlaceRepository = rentedPlaceRepository;
+            _rentRepository = rentRepository;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
             _timeZone = TZConvert.GetTimeZoneInfo(JwtManager.GetTimeZoneByToken(_httpContextAccessor));
@@ -163,7 +166,7 @@ namespace Service.v1.Services
                     throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
                 var product = await _productRepository.GetByTypeCode(productTuitionEntity.ProductTypeId, productTuitionEntity.ProductCode) ??
-                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);                             
+                    throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
                 //Se for um producttuition que esta sendo alterado o codigo do produto, então o produto novo é retido e o antigo liberado
                 if (productTuitionEntity.ProductCode != finishOsRequest.ProductCode)
@@ -231,7 +234,14 @@ namespace Service.v1.Services
         {
             var osEntityList = await _osRepository.GetAllByStatus(status);
 
-            return _mapper.Map<List<GetAllOsByStatusResponse>>(osEntityList); ;
+            return _mapper.Map<List<GetAllOsByStatusResponse>>(osEntityList);
+        }
+
+        public async Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList()
+        {
+            var rents = await _rentRepository.GetOsDeliveryList();
+
+            return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
         }
 
         public async Task UpdateOs(UpdateOsRequest osRequest, int id)

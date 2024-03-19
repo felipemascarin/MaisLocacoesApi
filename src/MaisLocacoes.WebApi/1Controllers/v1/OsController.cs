@@ -206,6 +206,25 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
+        [HttpGet("deliveryList")]
+        public async Task<IActionResult> GetDeliveryList()
+        {
+            try
+            {
+                _logger.LogInformation("GetDeliveryList {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
+
+                var osList = await _osService.GetDeliveryList();
+                return Ok(osList);
+            }
+            catch (HttpRequestException ex)
+            {
+                _logger.LogError("Log Warning: {@Message}", ex.Message);
+                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
+            }
+        }
+
+        [Authorize]
+        [TokenValidationDataBase]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOs([FromBody] UpdateOsRequest osRequest, int id)
         {

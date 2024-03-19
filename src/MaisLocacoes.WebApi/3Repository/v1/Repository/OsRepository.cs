@@ -30,6 +30,7 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             return await context.Set<OsEntity>().FirstOrDefaultAsync(o => o.Id == id && o.Deleted == false);
         }
+
         public async Task<IEnumerable<OsEntity>> GetAllByStatus(string status)
         {
             using var context = _contextFactory.CreateContext();
@@ -38,7 +39,7 @@ namespace Repository.v1.Repository
                     .Include(o => o.ProductTuition).ThenInclude(p => p.ProductType)
                     .Include(o => o.ProductTuition.Rent).ThenInclude(r => r.Address)
                     .Include(o => o.ProductTuition.Rent.Client).ThenInclude(c => c.Address)
-                    .Where(o => o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) && o.Deleted == false).ToListAsync();
+                    .Where(o => o.Status != OsStatus.OsStatusEnum.ElementAt(2) && o.Status != OsStatus.OsStatusEnum.ElementAt(4) /*canceled*/ && o.Deleted == false).ToListAsync();
 
             return await context.Set<OsEntity>()
                     .Include(o => o.ProductTuition).ThenInclude(p => p.ProductType)

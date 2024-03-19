@@ -159,6 +159,12 @@ namespace Configuration
                 config.CreateMap<AddressEntity, GetAllOsByStatusResponse.AddressResponse>();
                 config.CreateMap<ProductTypeEntity, GetAllOsByStatusResponse.ProductTypeResponse>();
 
+                config.CreateMap<RentEntity, GetDeliveryListResponse>();
+                config.CreateMap<ClientEntity, GetDeliveryListResponse.ClientResponse>();
+                config.CreateMap<AddressEntity, GetDeliveryListResponse.RentAddressResponse>();
+                config.CreateMap<ProductTypeEntity, GetDeliveryListResponse.ProductTypeResponse>();
+                config.CreateMap<OsEntity, GetDeliveryListResponse.OsResponse>();
+                config.CreateMap<ProductTuitionEntity, GetDeliveryListResponse.ProductTuitionResponse>();
 
                 //Product
                 config.CreateMap<CreateProductRequest, ProductEntity>();
@@ -193,18 +199,15 @@ namespace Configuration
                 config.CreateMap<RentEntity, GetProductTuitionByIdResponse.RentResponse>();
                 config.CreateMap<AddressEntity, GetProductTuitionByIdResponse.AddressResponse>();
 
-                //ProductTuitionValue
-                config.CreateMap<CreateProductTuitionValueRequest, ProductTuitionValueEntity>();
-
-                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionToRemoveReponse>()
-                .ForMember(dest => dest.Rent, opt => opt.MapFrom(src => src.Rent))
-                .ForMember(dest => dest.ProductType, opt => opt.MapFrom(src => src.ProductType));
+                config.CreateMap<ProductTuitionEntity, GetAllProductTuitionToRemoveReponse>();
                 config.CreateMap<RentEntity, GetAllProductTuitionToRemoveReponse.RentResponse>();
                 config.CreateMap<ClientEntity, GetAllProductTuitionToRemoveReponse.ClientResponse>();
                 config.CreateMap<AddressEntity, GetAllProductTuitionToRemoveReponse.AddressResponse>();
                 config.CreateMap<ProductTypeEntity, GetAllProductTuitionToRemoveReponse.ProductTypeResponse>();
 
 
+                //ProductTuitionValue
+                config.CreateMap<CreateProductTuitionValueRequest, ProductTuitionValueEntity>();
                 config.CreateMap<ProductTuitionValueEntity, CreateProductTuitionValueResponse>();
                 config.CreateMap<ProductTuitionValueEntity, GetProductTuitionValueByIdResponse>();
                 config.CreateMap<ProductTuitionValueEntity, GetAllProductTuitionValueByProductTypeIdResponse>();

@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
+using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -7,11 +8,11 @@ namespace Repository.v1.Repository
 {
     public class RentRepository : IRentRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
+        private readonly PostgreSqlContextFactory _contextFactory;
 
         public RentRepository(PostgreSqlContextFactory contextFactory)
         {
-            _contextFactory = contextFactory; 
+            _contextFactory = contextFactory;
         }
 
         public async Task<RentEntity> CreateRent(RentEntity rentEntity)
@@ -113,6 +114,22 @@ namespace Repository.v1.Repository
                      r.Address.Country.ToLower().Contains(query.ToLower())))
                     .Skip((page - 1) * items).Take(items).ToListAsync();
             }
+        }
+
+        public async Task<IEnumerable<RentEntity>> GetOsDeliveryList()
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Set<RentEntity>()
+               .Include(r => r.Address)
+               .Include(r => r.Client)
+               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
+               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+                    .ThenInclude(p => p.Oss).Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.Deleted == false)
+               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
+               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+                    .ThenInclude(p => p.ProductType).Where(p => p.Deleted == false)
+               .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
+               .ToListAsync();
         }
 
         public async Task<int> UpdateRent(RentEntity rentForUpdate)

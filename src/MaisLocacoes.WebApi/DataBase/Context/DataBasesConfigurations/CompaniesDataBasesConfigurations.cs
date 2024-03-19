@@ -199,102 +199,119 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne(many => many.Rent)
             .WithMany(one => one.Bills)
             .HasForeignKey(many => new { many.RentId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.Rents));
 
             modelBuilder.Entity<BillEntity>()
-           .HasOne(many => many.ProductTuition)
-           .WithMany(one => one.Bills)
-           .HasForeignKey(many => new { many.ProductTuitionId })
-           .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
+            .HasOne(many => many.ProductTuition)
+            .WithMany(one => one.Bills)
+            .HasForeignKey(many => new { many.ProductTuitionId })
+            .OnDelete(DeleteBehavior.Cascade)
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ClientEntity>()
             .HasOne(many => many.Address)
             .WithMany(one => one.Clients)
             .HasForeignKey(many => new { many.AddressId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Clients, TableNameEnum.Addresses));
 
             modelBuilder.Entity<OsEntity>()
             .HasOne(many => many.ProductTuition)
             .WithMany(one => one.Oss)
             .HasForeignKey(many => new { many.ProductTuitionId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Oss, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ProductEntity>()
             .HasOne(many => many.ProductType)
             .WithMany(one => one.Products)
             .HasForeignKey(many => new { many.ProductTypeId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Products, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne(many => many.ProductType)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductTypeId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne(many => many.Product)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
             .HasOne(many => many.Rent)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.RentId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Rents));
 
             modelBuilder.Entity<ProductTuitionValueEntity>()
             .HasOne(many => many.ProductType)
             .WithMany(one => one.ProductTuitionValues)
             .HasForeignKey(many => new { many.ProductTypeId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitionValues, TableNameEnum.ProductTypes));
 
             modelBuilder.Entity<ProductWasteEntity>()
             .HasOne(many => many.Product)
             .WithMany(one => one.ProductWastes)
             .HasForeignKey(many => new { many.ProductId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductWastes, TableNameEnum.Products));
 
             modelBuilder.Entity<QgEntity>()
             .HasOne(many => many.Address)
             .WithMany(one => one.Qgs)
             .HasForeignKey(many => new { many.AddressId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentEntity>()
             .HasOne(many => many.Address)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.AddressId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Addresses));
 
             modelBuilder.Entity<RentEntity>()
             .HasOne(many => many.Client)
             .WithMany(one => one.Rents)
             .HasForeignKey(many => new { many.ClientId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Rents, TableNameEnum.Clients));
 
             modelBuilder.Entity<SupplierEntity>()
             .HasOne(many => many.Address)
             .WithMany(one => one.Suppliers)
             .HasForeignKey(many => new { many.AddressId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Suppliers, TableNameEnum.Addresses));
 
             modelBuilder.Entity<ContractEntity>()
             .HasOne(many => many.Rent)
             .WithMany(one => one.Contracts)
             .HasForeignKey(many => new { many.RentId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Contracts, TableNameEnum.Rents));
 
             modelBuilder.Entity<QgEntity>()
             .HasOne(many => many.RentedPlace)
             .WithMany(one => one.Qgs)
             .HasForeignKey(many => new { many.RentedPlaceId })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.RentedPlaces));
 
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
+            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
     }
