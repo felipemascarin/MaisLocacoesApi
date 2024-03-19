@@ -84,7 +84,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.Escolher)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
     }

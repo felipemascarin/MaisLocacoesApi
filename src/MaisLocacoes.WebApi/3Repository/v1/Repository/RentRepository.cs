@@ -123,10 +123,10 @@ namespace Repository.v1.Repository
                .Include(r => r.Address)
                .Include(r => r.Client)
                .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
-               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
                     .ThenInclude(p => p.Oss).Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.Deleted == false)
                .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
-               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
                     .ThenInclude(p => p.ProductType).Where(p => p.Deleted == false)
                .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
                .ToListAsync();

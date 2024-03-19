@@ -241,7 +241,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne(many => many.Product)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductId })
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.ClientSetNull) //Verificar se no banco essa FK esta como ON DELETE SET NULL,
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
@@ -311,7 +311,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.Escolher)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
     }

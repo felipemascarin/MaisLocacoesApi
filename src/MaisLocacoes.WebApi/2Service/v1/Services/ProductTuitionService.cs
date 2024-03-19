@@ -71,8 +71,6 @@ namespace Service.v1.Services
 
             var productTuitionEntity = _mapper.Map<ProductTuitionEntity>(productTuitionRequest);
 
-            var productEntity = new ProductEntity();
-
             //Se estiver já sendo cadastrado um produto, verifica se já existe esse produto nessa locação e retém o produto no estoque
             if (!string.IsNullOrEmpty(productTuitionRequest.ProductCode))
             {
@@ -80,12 +78,13 @@ namespace Service.v1.Services
                 if (existsproductTuition)
                     throw new HttpRequestException("Já existe esse produto nessa locação", null, HttpStatusCode.BadRequest);
 
-                productEntity = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId.Value, productTuitionRequest.ProductCode) ??
+                var productEntity = await _productRepository.GetByTypeCode(productTuitionRequest.ProductTypeId.Value, productTuitionRequest.ProductCode) ??
                                 throw new HttpRequestException("Esse produto não existe", null, HttpStatusCode.BadRequest);
                 await RetainProduct(productTuitionEntity, productEntity);
-            }
 
-            productTuitionEntity.ProductId = productEntity.Id;
+                productTuitionEntity.ProductId = productEntity.Id;
+            }
+            
             productTuitionEntity.CreatedBy = _email;
             productTuitionEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 

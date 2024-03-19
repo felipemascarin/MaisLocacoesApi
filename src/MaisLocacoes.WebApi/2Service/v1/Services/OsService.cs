@@ -241,7 +241,20 @@ namespace Service.v1.Services
         {
             var rents = await _rentRepository.GetOsDeliveryList();
 
-            return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
+            var rentsNotStarteds = new List<RentEntity>();
+
+            var dateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
+
+            foreach (var rent in rents)
+            {
+                if ((!rent.ProductTuitions.Any(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/))) && rent.ProductTuitions.Any())
+                {
+                    if (!rentsNotStarteds.Contains(rent))
+                        rentsNotStarteds.Add(rent);
+                }
+            }
+
+            return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rentsNotStarteds);
         }
 
         public async Task UpdateOs(UpdateOsRequest osRequest, int id)
