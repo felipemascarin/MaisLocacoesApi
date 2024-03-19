@@ -247,7 +247,9 @@ namespace Service.v1.Services
 
             foreach (var rent in rents)
             {
-                if ((!rent.ProductTuitions.Any(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/))) && rent.ProductTuitions.Any())
+                if ((!rent.ProductTuitions.Any(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/ ||
+                os.FinalDateTime >= dateTimeNow.AddMinutes(-10))) && //Tempo para uma locação, que ainda tenha os, aparecer na lista dps q uma de suas os é finalizada e que não tenha nenhuma os ma))) 
+                rent.ProductTuitions.Any()))
                 {
                     if (!rentsNotStarteds.Contains(rent))
                         rentsNotStarteds.Add(rent);
