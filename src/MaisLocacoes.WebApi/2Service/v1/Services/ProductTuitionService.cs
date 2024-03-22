@@ -7,6 +7,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -179,7 +180,6 @@ namespace Service.v1.Services
 
                 if (osForDelete != null)
                 {
-                    osForDelete.Deleted = true;
                     osForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
                     osForDelete.UpdatedBy = _email;
 
@@ -509,40 +509,27 @@ namespace Service.v1.Services
             var productTuitionForDelete = await _productTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Fatura do produto não encontrada", null, HttpStatusCode.NotFound);
 
-            if (productTuitionForDelete.ProductCode != null)
-            {
-                var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForDelete.ProductTypeId, productTuitionForDelete.ProductCode) ??
-                    throw new HttpRequestException("Não foi possível encontrar o produto antigo", null, HttpStatusCode.InternalServerError);
-                await ReleaseProduct(productTuitionForDelete, oldProductEntity);
-            }
+            if (productTuitionForDelete.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ ||
+                productTuitionForDelete.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4) /*withdraw*/ ||
+                productTuitionForDelete.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/)
+                throw new HttpRequestException("Produto que já foi entregue no local não pode ser deletado da locação", null, HttpStatusCode.NotFound);
+
+            if (productTuitionForDelete.Oss.Any(o => o.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/))
+                throw new HttpRequestException("Produto com OS iniciada não pode ser deletado da locação", null, HttpStatusCode.NotFound);
 
             var bills = (await _billRepository.GetByProductTuitionId(id)).ToList();
 
+            if (bills.Any(b => b.Status == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/))
+                throw new HttpRequestException("Produto com fatura paga não pode ser deletado da locação", null, HttpStatusCode.NotFound);
+
             foreach (var bill in bills)
+                    await _billService.DeleteById(bill.Id);
+
+            if (productTuitionForDelete.ProductCode != null)
             {
-                await _billService.DeleteById(bill.Id);
-            }
-
-            if (JwtManager.GetModuleByToken(_httpContextAccessor) == ProjectModules.Modules.ElementAt(1)) //delivery
-            {
-                var deliveryOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(0))); //delivery
-                var withdrawOs = (await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1))); //withdraw
-
-                if (deliveryOs != null)
-                {
-                    deliveryOs.Deleted = true;
-                    deliveryOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-                    deliveryOs.UpdatedBy = _email;
-                    await _osRepository.UpdateOs(deliveryOs);
-                }
-
-                if (withdrawOs != null)
-                {
-                    withdrawOs.Deleted = true;
-                    withdrawOs.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-                    withdrawOs.UpdatedBy = _email;
-                    await _osRepository.UpdateOs(withdrawOs);
-                }
+                var oldProductEntity = await _productRepository.GetByTypeCode(productTuitionForDelete.ProductTypeId, productTuitionForDelete.ProductCode) ??
+                    throw new HttpRequestException("Não foi possível encontrar o produto para liberação de estoque", null, HttpStatusCode.InternalServerError);
+                await ReleaseProduct(productTuitionForDelete, oldProductEntity);
             }
 
             //Se o contrato da locação desse produto já foi assinado, então cria um novo contrato
@@ -566,11 +553,8 @@ namespace Service.v1.Services
                 await _contractRepository.CreateContract(contractEntity);
             }
 
-            productTuitionForDelete.Deleted = true;
-            productTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            productTuitionForDelete.UpdatedBy = _email;
 
-            await _productTuitionRepository.UpdateProductTuition(productTuitionForDelete);
+            await _productTuitionRepository.DeleteProductTuition(productTuitionForDelete); //Delete Cascade ON
         }
 
         public IEnumerable<BillEntity> CreateBills(ProductTuitionEntity productTuition)

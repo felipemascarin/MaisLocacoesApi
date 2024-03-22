@@ -10,5 +10,6 @@ namespace Repository.v1.IRepository
         Task<bool> ProductTypeExists(int id);
         Task<IEnumerable<ProductTypeEntity>> GetAll();
         Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate);
+        Task<int> DeleteProductType(ProductTypeEntity productTypeForDelete);
     }
 }

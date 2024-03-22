@@ -9,8 +9,8 @@ namespace Service.v1.IServices
         Task<GetBillByIdResponse> GetBillById(int id);
         Task<GetBillForTaxInvoiceResponse> GetBillForTaxInvoice(int billId);
         Task<IEnumerable<GetBillByRentIdResponse>> GetBillByRentId(int rentId);
-        Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills();
-        Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts();
+        Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills(int items, int page);
+        Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts(int items, int page);
         Task UpdateBill(UpdateBillRequest billRequest, int id);
         Task UpdateStatus(string status, string paymentMode, DateTime? payDate, int? invoiceId, int id);
         Task DeleteById(int id);

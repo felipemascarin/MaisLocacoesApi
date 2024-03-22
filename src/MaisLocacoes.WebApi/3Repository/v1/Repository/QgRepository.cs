@@ -30,7 +30,7 @@ namespace Repository.v1.Repository
             return await context.Set<QgEntity>()
                 .Include(q => q.Address)
                 .Include(q => q.RentedPlace)
-                .FirstOrDefaultAsync(q => q.Id == id && q.Deleted == false);
+                .FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public async Task<IEnumerable<QgEntity>> GetAll()
@@ -39,13 +39,13 @@ namespace Repository.v1.Repository
             return await context.Set<QgEntity>()
                 .Include(q => q.Address)
                 .Include(q => q.RentedPlace)
-                .Where(q => q.Deleted == false).ToListAsync();
+                .ToListAsync();
         }
 
         public async Task<bool> QgExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<QgEntity>().AnyAsync(q => q.Id == id && q.Deleted == false);
+            return await context.Set<QgEntity>().AnyAsync(q => q.Id == id);
         }
 
         public async Task<int> UpdateQg(QgEntity qgForUpdate)
@@ -53,6 +53,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(qgForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteQg(QgEntity qgForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(qgForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

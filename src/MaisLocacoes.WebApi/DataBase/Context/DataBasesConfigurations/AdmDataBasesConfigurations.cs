@@ -63,28 +63,25 @@ namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBasesConfigurations
             .HasOne(many => many.CompanyAddress)
             .WithMany(one => one.Companies)
             .HasForeignKey(many => new { many.CompanyAddressId })
-            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Companies, TableNameEnum.CompaniesAddresses));
 
             modelBuilder.Entity<CompanyUserEntity>()
             .HasOne(many => many.User)
             .WithMany(one => one.CompaniesUsers)
             .HasForeignKey(many => new { many.Email })
-            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.CompaniesUsers, TableNameEnum.Users));
 
             modelBuilder.Entity<CompanyUserEntity>()
             .HasOne(many => many.Company)
             .WithMany(one => one.CompaniesUsers)
             .HasForeignKey(many => new { many.Cnpj })
-            .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.CompaniesUsers, TableNameEnum.Companies));
 
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
-            .OnDelete(DeleteBehavior.Escolher)
+            .OnDelete(DeleteBehavior.escolher) - se preciso
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
     }

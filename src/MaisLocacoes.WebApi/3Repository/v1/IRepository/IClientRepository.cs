@@ -14,5 +14,6 @@ namespace Repository.v1.IRepository
         Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query);
         Task<IEnumerable<GetClientForRentDtoResponse>> GetClientsForRent();
         Task<int> UpdateClient(ClientEntity clientForUpdate);
+        Task<int> DeleteClient(ClientEntity clientForDelete);
     }
 }

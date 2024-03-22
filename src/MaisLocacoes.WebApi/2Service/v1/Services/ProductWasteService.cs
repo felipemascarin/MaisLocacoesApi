@@ -127,7 +127,6 @@ namespace Service.v1.Services
             var productWasteForDelete = await _productWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto de produto não encontrado", null, HttpStatusCode.NotFound);
 
-            productWasteForDelete.Deleted = true;
             productWasteForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             productWasteForDelete.UpdatedBy = _email;
 

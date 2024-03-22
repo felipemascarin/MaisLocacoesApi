@@ -16,5 +16,6 @@ namespace Repository.v1.IRepository
         Task<ProductEntity> GetTheLastsCreated(int productTypeId);
         Task<IEnumerable<ProductEntity>> GetAllProducts();
         Task<int> UpdateProduct(ProductEntity productForUpdate);
+        Task<int> DeleteProduct(ProductEntity productForDelete);
     }
 }

@@ -5,6 +5,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Rent;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -224,11 +225,16 @@ namespace Service.v1.Services
             var rentForDelete = await _rentRepository.GetById(id) ??
                 throw new HttpRequestException("Locação não encontrada", null, HttpStatusCode.NotFound);
 
-            rentForDelete.Deleted = true;
-            rentForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            rentForDelete.UpdatedBy = _email;
+            if (rentForDelete.Status == RentStatus.RentStatusEnum.ElementAt(1) /*finished*/)
+                throw new HttpRequestException("Locação finalizada não pode ser deletada", null, HttpStatusCode.NotFound);
 
-            await _rentRepository.UpdateRent(rentForDelete);
+            if (rentForDelete.ProductTuitions.Any())
+                throw new HttpRequestException("Locação que possui produto não pode ser deletada", null, HttpStatusCode.NotFound);
+
+            if (rentForDelete.Bills.Any(b => b.Status == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/))
+                throw new HttpRequestException("Locação que possui faturas criadas não pode ser deletada", null, HttpStatusCode.NotFound);
+
+            await _rentRepository.DeleteRent(rentForDelete); //Delete Cascade ON
         }
 
         public void CreateCarriageBill(RentEntity rentEntity)

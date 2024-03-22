@@ -3,7 +3,7 @@ using MaisLocacoes.WebApi.Repository.v1.Entity.UserSchema;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity.UserSchema;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.Adm
+namespace MaisLocacoes.WebApi.DataBase.Context.DataBases
 {
     public class DataBaseContextAdm : DbContext
     {

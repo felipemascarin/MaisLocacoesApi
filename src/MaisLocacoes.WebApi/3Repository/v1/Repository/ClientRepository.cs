@@ -29,7 +29,10 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<ClientEntity>()
+                .Include(c => c.Address)
+                .Include(c => c.Rents)
+                .FirstOrDefaultAsync(c => c.Id == id );
         }
 
         public async Task<ClientEntity> GetByIdDetails(int id)
@@ -41,28 +44,28 @@ namespace Repository.v1.Repository
         public async Task<ClientEntity> GetByCpf(string cpf)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => (c.Cpf == cpf && c.Deleted == false) && (c.Cnpj == null || c.Cnpj == string.Empty));
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => (c.Cpf == cpf ) && (c.Cnpj == null || c.Cnpj == string.Empty));
         }
 
         public async Task<ClientEntity> GetByCnpj(string cnpj)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Cnpj == cnpj && c.Deleted == false);
+            return await context.Set<ClientEntity>().Include(c => c.Address).FirstOrDefaultAsync(c => c.Cnpj == cnpj );
         }
 
         public async Task<bool> ClientExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ClientEntity>().AnyAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<ClientEntity>().AnyAsync(c => c.Id == id );
         }
 
         public async Task<IEnumerable<ClientEntity>> GetClientsByPage(int items, int page, string query)
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-            return await context.Set<ClientEntity>().Include(c => c.Address).Where(c => c.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+            return await context.Set<ClientEntity>().Include(c => c.Address).Skip((page - 1) * items).Take(items).ToListAsync();
             else
-            return await context.Set<ClientEntity>().Include(c => c.Address).Where(c => c.Deleted == false && (
+            return await context.Set<ClientEntity>().Include(c => c.Address).Where(c => (
                  c.Cpf.Contains(query) ||
                  c.Cnpj.Contains(query) ||
                  c.CompanyName.ToLower().Contains(query.ToLower()) ||
@@ -79,7 +82,7 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ClientEntity>()
-                .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0) && c.Deleted == false)
+                .Where(c => c.Status == ClientStatus.ClientStatusEnum.ElementAt(0) )
                 .Select(c => new GetClientForRentDtoResponse
                 {
                     Id = c.Id,
@@ -95,6 +98,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(clientForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteClient(ClientEntity clientForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(clientForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

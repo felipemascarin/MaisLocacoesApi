@@ -53,7 +53,6 @@
             public DateTime CreatedAt { get; set; }
             public string UpdatedBy { get; set; }
             public DateTime? UpdatedAt { get; set; }
-            public bool Deleted { get; set; }
             public AddressResponse Address { get; set; }
         }
         public class AddressResponse

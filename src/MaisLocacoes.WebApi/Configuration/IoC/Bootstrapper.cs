@@ -69,7 +69,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IAddressRepository, AddressRepository>();
             services.AddScoped<IBillRepository, BillRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
-            services.AddScoped<ICompanyTuitionRepository, CompanyTuitionRepositoryRepository>();
+            services.AddScoped<ICompanyTuitionRepository, CompanyTuitionRepository>();
             services.AddScoped<ICompanyWasteRepository, CompanyWasteRepository>();
             services.AddScoped<IContractRepository, ContractRepository>();
             services.AddScoped<IOsRepository, OsRepository>();

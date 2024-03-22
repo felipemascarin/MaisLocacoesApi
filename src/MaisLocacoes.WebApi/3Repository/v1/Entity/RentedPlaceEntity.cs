@@ -12,8 +12,10 @@ namespace Repository.v1.Entity
         public int Id { get; set; }
 
         public int? ProductId { get; set; }
+        public virtual ProductEntity Product { get; set; }
 
         public int? ProductTuitionId { get; set; }
+        public virtual ProductTuitionEntity ProductTuition { get; set; }
 
         public double Latitude { get; set; }
 

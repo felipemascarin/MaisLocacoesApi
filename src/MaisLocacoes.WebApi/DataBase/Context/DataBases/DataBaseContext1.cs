@@ -1,7 +1,7 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations;
 using Microsoft.EntityFrameworkCore;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBases
+namespace MaisLocacoes.WebApi.DataBase.Context.DataBases
 {
     public class DataBaseContext1 : DataBasesContextBase
     {

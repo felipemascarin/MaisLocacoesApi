@@ -111,59 +111,6 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
                 .Property(x => x.DueDate)
                 .HasDefaultValueSql(currenteTimestamp);
 
-            //Definindo valores Default para os deleteds:
-            modelBuilder.Entity<BillEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<ClientEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<CompanyTuitionEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<CompanyWasteEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<ContractEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<OsEntity>()
-               .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<ProductEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<ProductTuitionEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<ProductTypeEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false); ;
-
-            modelBuilder.Entity<ProductWasteEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<QgEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<RentEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
-            modelBuilder.Entity<SupplierEntity>()
-                .Property(x => x.Deleted)
-                .HasDefaultValue(false);
-
             //Definindo valor Default para campo Country em AddressEntity
             modelBuilder.Entity<AddressEntity>()
                 .Property(x => x.Country)
@@ -206,7 +153,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne(many => many.ProductTuition)
             .WithMany(one => one.Bills)
             .HasForeignKey(many => new { many.ProductTuitionId })
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Bills, TableNameEnum.ProductTuitions));
 
             modelBuilder.Entity<ClientEntity>()
@@ -241,7 +188,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne(many => many.Product)
             .WithMany(one => one.ProductTuitions)
             .HasForeignKey(many => new { many.ProductId })
-            .OnDelete(DeleteBehavior.ClientSetNull) //Verificar se no banco essa FK esta como ON DELETE SET NULL,
+            .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.ProductTuitions, TableNameEnum.Products));
 
             modelBuilder.Entity<ProductTuitionEntity>()
@@ -290,7 +237,7 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .HasOne(many => many.Address)
             .WithMany(one => one.Suppliers)
             .HasForeignKey(many => new { many.AddressId })
-            .OnDelete(DeleteBehavior.Cascade)
+            .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Suppliers, TableNameEnum.Addresses));
 
             modelBuilder.Entity<ContractEntity>()
@@ -307,11 +254,25 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .OnDelete(DeleteBehavior.Cascade)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.Qgs, TableNameEnum.RentedPlaces));
 
+            modelBuilder.Entity<RentedPlaceEntity>()
+            .HasOne(many => many.ProductTuition)
+            .WithMany(one => one.RentedPlaces)
+            .HasForeignKey(many => new { many.ProductTuitionId })
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.ProductTuitions));
+
+            modelBuilder.Entity<RentedPlaceEntity>()
+            .HasOne(many => many.Product)
+            .WithMany(one => one.RentedPlaces)
+            .HasForeignKey(many => new { many.ProductId })
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
+
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)
             .HasForeignKey(MUITOS => new { MUITOS.PROPR1, MUITOS.PROPR2 })
-            .OnDelete(DeleteBehavior.Escolher)
+            .OnDelete(DeleteBehavior.escolher) - se preciso
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.MUITOS, TableNameEnum.UM));*/
         }
     }

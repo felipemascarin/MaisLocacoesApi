@@ -108,8 +108,6 @@ namespace Repository.v1.Entity
         [Column(TypeName = "character varying(255)")]
         public string UpdatedBy { get; set; }
 
-        public bool? Deleted { get; set; }
-
         public ICollection<RentEntity> Rents { get; set; }
     }
 }

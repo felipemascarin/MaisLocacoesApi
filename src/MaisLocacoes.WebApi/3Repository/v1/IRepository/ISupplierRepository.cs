@@ -8,5 +8,6 @@ namespace Repository.v1.IRepository
         Task<SupplierEntity> GetById(int id);
         Task<IEnumerable<SupplierEntity>> GetAll();
         Task<int> UpdateSupplier(SupplierEntity supplierForUpdate);
+        Task<int> DeleteSupplier(SupplierEntity supplierForDelete);
     }
 }

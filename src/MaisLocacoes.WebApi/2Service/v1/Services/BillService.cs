@@ -3,6 +3,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Bill;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Repository.v1.IRepository.UserSchema;
@@ -142,13 +143,13 @@ namespace Service.v1.Services
             return billsResponseList;
         }
 
-        public async Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills()
+        public async Task<IEnumerable<GetDuedsBillsResponse>> GetDuedBills(int items, int page)
         {
             var company = await _companyRepository.GetByCnpj(JwtManager.GetCnpjByToken(_httpContextAccessor));
 
             var todayDate = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
-            var billsEntityList = await _billRepository.GetDuedBills(company.NotifyDaysBefore, todayDate);
+            var billsEntityList = await _billRepository.GetDuedBills(items, page, company.NotifyDaysBefore, todayDate);
 
             var billDtoList = new List<GetDuedsBillsResponse>();
 
@@ -197,9 +198,9 @@ namespace Service.v1.Services
             return billDtoList;
         }
 
-        public async Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts()
+        public async Task<IEnumerable<GetAllBillsDebtsResponse>> GetAllBillsDebts(int items, int page)
         {
-            var billsEntityList = await _billRepository.GetAllDebts() ??
+            var billsEntityList = await _billRepository.GetAllDebts(items, page) ??
                 throw new HttpRequestException("Fatura não encontrada", null, HttpStatusCode.NotFound);
 
             var billDtoList = new List<GetAllBillsDebtsResponse>();
@@ -364,11 +365,10 @@ namespace Service.v1.Services
             if (billForDelete.InvoiceId != null)
                 throw new HttpRequestException("Fatura não pode ser deletada, pois possui Nota Fiscal", null, HttpStatusCode.NotFound);
 
-            billForDelete.Deleted = true;
-            billForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            billForDelete.UpdatedBy = _email;
+            if (billForDelete.PaymentMode == BillStatus.BillStatusEnum.ElementAt(1) /*payed*/)
+                throw new HttpRequestException("Fatura paga não pode ser deletada", null, HttpStatusCode.NotFound);
 
-            await _billRepository.UpdateBill(billForDelete);
+            await _billRepository.DeleteBill(billForDelete);
         }
     }
 }

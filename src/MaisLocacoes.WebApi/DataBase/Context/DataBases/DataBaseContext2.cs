@@ -1,15 +1,14 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.CompaniesDataBases
+namespace MaisLocacoes.WebApi.DataBase.Context.DataBases
 {
-    public class DataBaseContext3 : DataBasesContextBase
+    public class DataBaseContext2 : DataBasesContextBase
     {
-        private readonly string _database = "Database=3";
+        private readonly string _database = "Database=2";
 
         private readonly IConfiguration _configuration;
 
-        public DataBaseContext3(IConfiguration configuration)
+        public DataBaseContext2(IConfiguration configuration)
         {
             _configuration = configuration;
         }

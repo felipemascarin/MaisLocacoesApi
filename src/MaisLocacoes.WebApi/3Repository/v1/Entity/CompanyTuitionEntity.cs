@@ -39,7 +39,5 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string UpdatedBy { get; set; }
-
-        public bool? Deleted { get; set; }
     }
 }

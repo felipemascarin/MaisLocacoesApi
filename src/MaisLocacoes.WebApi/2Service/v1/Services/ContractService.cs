@@ -122,7 +122,6 @@ namespace MaisLocacoes.WebApi._2Service.v1.Services
             var contractForDelete = await _contractRepository.GetById(id) ??
                 throw new HttpRequestException("Contrato não encontrado", null, HttpStatusCode.NotFound);
 
-            contractForDelete.Deleted = true;
             contractForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             contractForDelete.UpdatedBy = _email;
 

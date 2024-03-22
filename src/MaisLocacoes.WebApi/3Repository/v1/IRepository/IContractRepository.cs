@@ -11,5 +11,6 @@ namespace MaisLocacoes.WebApi._3Repository.v1.IRepository
         Task<int> GetTheLastVersion(int rentId);
         Task<ContractEntity> GetTheLastContract(int rentId);
         Task<int> UpdateContract(ContractEntity contractForUpdate);
+        Task<int> DeleteContract(ContractEntity contractForDelete);
     }
 }

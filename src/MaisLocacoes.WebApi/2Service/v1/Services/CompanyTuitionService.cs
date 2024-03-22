@@ -80,7 +80,6 @@ namespace Service.v1.Services
             var companyTuitionForDelete = await _companyTuitionRepository.GetById(id) ??
                 throw new HttpRequestException("Mensalidade não encontrada", null, HttpStatusCode.NotFound);
 
-            companyTuitionForDelete.Deleted = true;
             companyTuitionForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyTuitionForDelete.UpdatedBy = _email;
 

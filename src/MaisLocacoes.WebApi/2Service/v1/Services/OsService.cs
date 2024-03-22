@@ -305,11 +305,7 @@ namespace Service.v1.Services
             var osForDelete = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
-            osForDelete.Deleted = true;
-            osForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            osForDelete.UpdatedBy = _email;
-
-            await _osRepository.UpdateOs(osForDelete);
+            await _osRepository.DeleteOs(osForDelete);
         }
     }
 }

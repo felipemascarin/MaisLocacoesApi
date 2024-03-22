@@ -11,5 +11,6 @@ namespace Repository.v1.IRepository
         Task<OsEntity> GetByProductTuitionId(int productTuitionId, string type);
         Task<OsEntity> GetByProductTuitionIdForCreate(int productTuitionId, string type);
         Task<int> UpdateOs(OsEntity osForUpdate);
+        Task<int> DeleteOs(OsEntity osForDelete);
     }
 }

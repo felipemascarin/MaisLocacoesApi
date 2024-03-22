@@ -53,7 +53,7 @@ namespace MaisLocacoes.WebApi._3_Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            context.Entry(productTuitionValueForDelete).State = EntityState.Modified;
+            context.Entry(productTuitionValueForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

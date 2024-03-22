@@ -93,7 +93,6 @@ namespace Service.v1.Services
             var supplierForDelete = await _supplierRepository.GetById(id) ??
                 throw new HttpRequestException("Fornecedor não encontrado", null, HttpStatusCode.NotFound);
 
-            supplierForDelete.Deleted = true;
             supplierForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             supplierForDelete.UpdatedBy = _email;
 

@@ -27,7 +27,7 @@ namespace Repository.v1.Repository
         public async Task<CompanyWasteEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<CompanyWasteEntity>().FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<CompanyWasteEntity>().FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<int> UpdateCompanyWaste(CompanyWasteEntity companyWasteForUpdate)
@@ -35,6 +35,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(companyWasteForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteCompanyWaste(CompanyWasteEntity companyWasteForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyWasteForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

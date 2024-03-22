@@ -7,5 +7,6 @@ namespace Repository.v1.IRepository
         Task<CompanyTuitionEntity> CreateCompanyTuition(CompanyTuitionEntity companyTuitionEntity);
         Task<CompanyTuitionEntity> GetById(int id);
         Task<int> UpdateCompanyTuition(CompanyTuitionEntity companyTuitionForUpdate);
+        Task<int> DeleteCompanyTuition(CompanyTuitionEntity companyTuitionForDelete);
     }
 }

@@ -119,7 +119,6 @@ namespace Service.v1.Services
             var qgForDelete = await _qgRepository.GetById(id) ??
                 throw new HttpRequestException("QG da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            qgForDelete.Deleted = true;
             qgForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             qgForDelete.UpdatedBy = _email;
 

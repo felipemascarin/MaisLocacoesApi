@@ -9,5 +9,6 @@ namespace Repository.v1.IRepository
         Task<IEnumerable<QgEntity>> GetAll();
         Task<bool> QgExists(int id);
         Task<int> UpdateQg(QgEntity qgForUpdate);
+        Task<int> DeleteQg(QgEntity qgForDelete);
     }
 }

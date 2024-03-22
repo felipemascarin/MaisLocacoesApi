@@ -27,13 +27,13 @@ namespace Repository.v1.Repository
         public async Task<SupplierEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<SupplierEntity>().Include(c => c.Address).FirstOrDefaultAsync(s => s.Id == id && s.Deleted == false);
+            return await context.Set<SupplierEntity>().Include(c => c.Address).FirstOrDefaultAsync(s => s.Id == id );
         }
 
         public async Task<IEnumerable<SupplierEntity>> GetAll()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<SupplierEntity>().Include(c => c.Address).Where(s => s.Deleted == false).ToListAsync();
+            return await context.Set<SupplierEntity>().Include(c => c.Address).ToListAsync();
         }
 
         public async Task<int> UpdateSupplier(SupplierEntity supplierForUpdate)
@@ -41,6 +41,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(supplierForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteSupplier(SupplierEntity supplierForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(supplierForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

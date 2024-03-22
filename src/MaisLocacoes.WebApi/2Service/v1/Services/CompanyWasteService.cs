@@ -78,7 +78,6 @@ namespace Service.v1.Services
             var companyWasteForDelete = await _companyWasteRepository.GetById(id) ??
                 throw new HttpRequestException("Gasto da empresa não encontrado", null, HttpStatusCode.NotFound);
 
-            companyWasteForDelete.Deleted = true;
             companyWasteForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             companyWasteForDelete.UpdatedBy = _email;
 

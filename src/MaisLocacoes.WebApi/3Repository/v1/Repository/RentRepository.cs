@@ -31,13 +31,15 @@ namespace Repository.v1.Repository
             return await context.Set<RentEntity>()
             .Include(r => r.Address)
             .Include(r => r.Client).ThenInclude(c => c.Address)
-            .FirstOrDefaultAsync(r => r.Id == id && r.Deleted == false);
+            .Include(r => r.ProductTuitions)
+            .Include(r => r.Bills)
+            .FirstOrDefaultAsync(r => r.Id == id );
         }
 
         public async Task<bool> RentExists(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<RentEntity>().AnyAsync(r => r.Id == id && r.Deleted == false);
+            return await context.Set<RentEntity>().AnyAsync(r => r.Id == id );
         }
 
         public async Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId)
@@ -47,7 +49,7 @@ namespace Repository.v1.Repository
                 .Include(r => r.Address)
                 .Include(r => r.Bills)
                 .Include(r => r.ProductTuitions)
-                .Where(r => r.ClientId == clientId && r.Deleted == false).OrderBy(p => p.CreatedAt).ToListAsync();
+                .Where(r => r.ClientId == clientId ).OrderBy(p => p.CreatedAt).ToListAsync();
         }
 
         public async Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query, string status)
@@ -58,16 +60,16 @@ namespace Repository.v1.Repository
                 if (status == null)
                 {
                     return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
-                        .Where(r => r.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+                        .Skip((page - 1) * items).Take(items).ToListAsync();
                 }
                 else return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
-                        .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower()).Skip((page - 1) * items).Take(items).ToListAsync();
+                        .Where(r => r.Status.ToLower() == status.ToLower()).Skip((page - 1) * items).Take(items).ToListAsync();
             }
             else
                 if (status == null)
             {
                 return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
-                    .Where(r => r.Deleted == false && (
+                    .Where(r => (
                      r.Status.Contains(query) ||
                      r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
                      r.Client.Cpf.Contains(query) ||
@@ -92,7 +94,7 @@ namespace Repository.v1.Repository
             else
             {
                 return await context.Set<RentEntity>().Include(r => r.Address).Include(r => r.Client).Include(r => r.Client.Address)
-                    .Where(r => r.Deleted == false && r.Status.ToLower() == status.ToLower() && (
+                    .Where(r => r.Status.ToLower() == status.ToLower() && (
                      r.Status.Contains(query) ||
                      r.Client.ClientName.ToLower().Contains(query.ToLower()) ||
                      r.Client.Cpf.Contains(query) ||
@@ -122,12 +124,12 @@ namespace Repository.v1.Repository
             return await context.Set<RentEntity>()
                .Include(r => r.Address)
                .Include(r => r.Client)
-               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
+               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ &&
                p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
-                    .ThenInclude(p => p.Oss).Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.Deleted == false)
-               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ && p.Deleted == false &&
+                    .ThenInclude(p => p.Oss).Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
+               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ &&
                p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
-                    .ThenInclude(p => p.ProductType).Where(p => p.Deleted == false)
+                    .ThenInclude(p => p.ProductType)
                .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
                .ToListAsync();
         }
@@ -137,6 +139,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(rentForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteRent(RentEntity rentForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(rentForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

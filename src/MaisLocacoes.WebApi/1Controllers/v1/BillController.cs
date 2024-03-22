@@ -6,6 +6,7 @@ using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using Service.v1.IServices;
 using TimeZoneConverter;
@@ -91,14 +92,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("debts")]
-        public async Task<IActionResult> GetAllDebts()
+        [HttpGet("debts/items/{items}/page/{page}")]
+        public async Task<IActionResult> GetAllDebts(int items, int page)
         {
             try
             {
                 _logger.LogInformation("GetAllDebts {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
-                var bill = await _billService.GetAllBillsDebts();
+                var bill = await _billService.GetAllBillsDebts(items, page);
                 return Ok(bill);
             }
             catch (HttpRequestException ex)
@@ -148,14 +149,14 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpGet("duedbills")]
-        public async Task<IActionResult> GetDuedBills()
+        [HttpGet("duedbills/items/{items}/page/{page}")]
+        public async Task<IActionResult> GetDuedBills(int items, int page)
         {
             try
             {
                 _logger.LogInformation("GetDuedBills {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
 
-                var billsList = await _billService.GetDuedBills();
+                var billsList = await _billService.GetDuedBills(items, page);
                 return Ok(billsList);
             }
             catch (HttpRequestException ex)

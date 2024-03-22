@@ -10,5 +10,6 @@ namespace Repository.v1.IRepository
         Task<IEnumerable<ProductWasteEntity>> GetAllByProductId(int productId);
         Task<IEnumerable<ProductWasteEntity>> GetProductWastesByPage(int items, int page, string query);
         Task<int> UpdateProductWaste(ProductWasteEntity productWasteForUpdate);
+        Task<int> DeleteProductWaste(ProductWasteEntity productWasteForDelete);
     }
 }

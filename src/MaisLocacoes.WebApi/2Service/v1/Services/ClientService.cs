@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Client;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -220,11 +221,10 @@ namespace Service.v1.Services
             var clientForDelete = await _clientRepository.GetById(id) ??
                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
-            clientForDelete.Deleted = true;
-            clientForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            clientForDelete.UpdatedBy = _email;
+            if (clientForDelete.Rents.Any(r => r.Status != RentStatus.RentStatusEnum.ElementAt(2) /*canceled*/))
+                throw new HttpRequestException("Somente é possível desativar clientes que já fizeram alguma locação", null, HttpStatusCode.NotFound);
 
-            await _clientRepository.UpdateClient(clientForDelete);
+            await _clientRepository.DeleteClient(clientForDelete); //Delete Cascade ON
         }
     }
 }

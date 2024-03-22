@@ -413,11 +413,15 @@ namespace Service.v1.Services
             var productForDelete = await _productRepository.GetById(id) ??
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
-            productForDelete.Deleted = true;
-            productForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            productForDelete.UpdatedBy = _email;
+            if (productForDelete.Status == ProductStatus.ProductStatusEnum.ElementAt(1) /*rented*/)
+                throw new HttpRequestException("Só é possível desativar um produto que já foi alugado", null, HttpStatusCode.NotFound);
 
-            await _productRepository.UpdateProduct(productForDelete);
+            if (productForDelete.ProductTuitions.Any(p => p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ ||
+                p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4) /*withdraw*/ ||
+                p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/))
+                throw new HttpRequestException("Só é possível desativar um produto que já foi alugado", null, HttpStatusCode.NotFound);
+
+            await _productRepository.DeleteProduct(productForDelete); //Delete Cascade ON
         }
     }
 }

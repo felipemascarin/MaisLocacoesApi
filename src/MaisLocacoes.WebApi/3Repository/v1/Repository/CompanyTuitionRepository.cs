@@ -5,11 +5,11 @@ using Repository.v1.IRepository;
 
 namespace Repository.v1.Repository
 {
-    public class CompanyTuitionRepositoryRepository : ICompanyTuitionRepository
+    public class CompanyTuitionRepository : ICompanyTuitionRepository
     {
         private readonly PostgreSqlContextFactory _contextFactory; 
 
-        public CompanyTuitionRepositoryRepository(PostgreSqlContextFactory contextFactory)
+        public CompanyTuitionRepository(PostgreSqlContextFactory contextFactory)
         {
             _contextFactory = contextFactory; 
         }
@@ -27,7 +27,7 @@ namespace Repository.v1.Repository
         public async Task<CompanyTuitionEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<CompanyTuitionEntity>().FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            return await context.Set<CompanyTuitionEntity>().FirstOrDefaultAsync(c => c.Id == id );
         }
 
         public async Task<int> UpdateCompanyTuition(CompanyTuitionEntity companyTuitionForUpdate)
@@ -35,6 +35,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(companyTuitionForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteCompanyTuition(CompanyTuitionEntity companyTuitionForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(companyTuitionForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

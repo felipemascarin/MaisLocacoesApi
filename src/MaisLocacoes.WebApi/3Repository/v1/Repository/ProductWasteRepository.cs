@@ -27,22 +27,22 @@ namespace Repository.v1.Repository
         public async Task<ProductWasteEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductWasteEntity>().FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductWasteEntity>().FirstOrDefaultAsync(p => p.Id == id );
         }
 
         public async Task<IEnumerable<ProductWasteEntity>> GetAllByProductId(int productId)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductWasteEntity>().Where(p => p.ProductId == productId && p.Deleted == false).OrderByDescending(p => p.Date).ToListAsync();
+            return await context.Set<ProductWasteEntity>().Where(p => p.ProductId == productId ).OrderByDescending(p => p.Date).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductWasteEntity>> GetProductWastesByPage(int items, int page, string query)
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-                return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false).Skip((page - 1) * items).Take(items).ToListAsync();
+                return await context.Set<ProductWasteEntity>().Skip((page - 1) * items).Take(items).ToListAsync();
             else
-                return await context.Set<ProductWasteEntity>().Where(p => p.Deleted == false && (
+                return await context.Set<ProductWasteEntity>().Where(p => (
                      p.Product.ProductType.Type.ToLower().Contains(query.ToLower()) ||
                      p.Product.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower())))
@@ -54,6 +54,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(productWasteForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteProductWaste(ProductWasteEntity productWasteForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productWasteForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

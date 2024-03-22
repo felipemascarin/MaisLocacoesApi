@@ -14,5 +14,6 @@ namespace Repository.v1.IRepository
         Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove(DateTime todayDate);
         Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode);
         Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate);
+        Task<int> DeleteProductTuition(ProductTuitionEntity productTuitionForDelete);
     }
 }

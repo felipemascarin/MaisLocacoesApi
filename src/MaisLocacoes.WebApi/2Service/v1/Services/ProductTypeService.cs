@@ -106,11 +106,10 @@ namespace Service.v1.Services
             var productTypeForDelete = await _productTypeRepository.GetById(id) ??
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
-            productTypeForDelete.Deleted = true;
-            productTypeForDelete.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-            productTypeForDelete.UpdatedBy = _email;
+            if (productTypeForDelete.Products.Any() || productTypeForDelete.ProductTuitions.Any())
+                throw new HttpRequestException("Tipo de produto que possui locação ou produto só é possível ser desativado", null, HttpStatusCode.NotFound);
 
-            await _productTypeRepository.UpdateProductType(productTypeForDelete);
+            await _productTypeRepository.DeleteProductType(productTypeForDelete); //Delete Cascade ON
         }
     }
 }

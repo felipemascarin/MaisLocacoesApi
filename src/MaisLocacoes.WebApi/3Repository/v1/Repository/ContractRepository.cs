@@ -2,6 +2,7 @@
 using MaisLocacoes.WebApi._3Repository.v1.IRepository;
 using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
 using Microsoft.EntityFrameworkCore;
+using Repository.v1.Entity;
 
 namespace MaisLocacoes.WebApi._3Repository.v1.Repository
 {
@@ -29,7 +30,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
             return await context.Set<ContractEntity>()
             .Include(c => c.Rent).ThenInclude(c => c.Address)
             .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
-            .FirstOrDefaultAsync(c => c.Id == id && c.Deleted == false);
+            .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IEnumerable<ContractEntity>> GetAll()
@@ -38,7 +39,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
             return await context.Set<ContractEntity>()
             .Include(c => c.Rent).ThenInclude(c => c.Address)
             .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
-            .Where(c => c.Deleted == false).ToListAsync();
+            .ToListAsync();
         }
 
         public async Task<ContractEntity> GetContractInfoByRentId(int rentId)
@@ -49,7 +50,7 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
             .Include(c => c.Rent.Client).ThenInclude(c => c.Address)
             .Include(c => c.Rent.ProductTuitions).ThenInclude(p => p.Product).ThenInclude(p => p.ProductType)
             .Include(c => c.Rent.ProductTuitions).ThenInclude(p => p.Bills)
-            .Where(c => c.Deleted == false).OrderByDescending(c => c.Version).FirstOrDefaultAsync();
+            .OrderByDescending(c => c.Version).FirstOrDefaultAsync();
         }
 
         public async Task<int> GetTheLastVersion(int rentId)
@@ -69,6 +70,14 @@ namespace MaisLocacoes.WebApi._3Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(contractForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteContract(ContractEntity contractForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(contractForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 
-namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
+namespace MaisLocacoes.WebApi.DataBase.Context.DataBases
 {
     public class DataBasesContextBase : DbContext
     {

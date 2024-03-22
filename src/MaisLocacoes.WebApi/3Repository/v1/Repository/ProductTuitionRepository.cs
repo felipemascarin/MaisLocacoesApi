@@ -30,20 +30,25 @@ namespace Repository.v1.Repository
         public async Task<ProductTuitionEntity> GetById(int id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().Include(p => p.Rent).Include(p => p.Rent.Address).Include(p => p.ProductType).FirstOrDefaultAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductTuitionEntity>()
+                .Include(p => p.Rent)
+                .Include(p => p.Rent.Address)
+                .Include(p => p.ProductType)
+                .Include(p => p.Oss)
+                .FirstOrDefaultAsync(p => p.Id == id );
         }
 
         public async Task<int> GetProductTuitionsQuantity(int rentId)
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductTuitionEntity>()
-            .Where(r => r.RentId == rentId && r.Deleted == false).CountAsync();
+            .Where(r => r.RentId == rentId).CountAsync();
         }
 
         public async Task<bool> ProductTuitionExists(int? id)
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTuitionEntity>().AnyAsync(p => p.Id == id && p.Deleted == false);
+            return await context.Set<ProductTuitionEntity>().AnyAsync(p => p.Id == id );
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByRentId(int rentId)
@@ -56,7 +61,7 @@ namespace Repository.v1.Repository
             .ThenInclude(p => p.Address)
             .Include(p => p.Rent.Client)
             .ThenInclude(p => p.Address)
-            .Where(p => p.RentId == rentId && p.Deleted == false).OrderBy(p => p.FinalDateTime).ToListAsync();
+            .Where(p => p.RentId == rentId ).OrderBy(p => p.FinalDateTime).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductTypeCode(int productTypeId, string productCode)
@@ -66,14 +71,14 @@ namespace Repository.v1.Repository
                 .Include(p => p.Rent)
                 .Include(p => p.Rent.Address)
                 .Include(p => p.Bills)
-                .Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode && p.Deleted == false).OrderBy(p => p.InitialDateTime).ToListAsync();
+                .Where(p => p.ProductTypeId == productTypeId && p.ProductCode == productCode ).OrderBy(p => p.InitialDateTime).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllByProductIdForRentedPlaces(List<int> productIds)
         {
             using var context = _contextFactory.CreateContext();
             return await context.Set<ProductTuitionEntity>()
-                .Where(p => productIds.Contains(p.ProductId.Value) && (p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ || p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4)) /*withdraw*/ && p.Deleted == false).ToListAsync();
+                .Where(p => productIds.Contains(p.ProductId.Value) && (p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ || p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4)) /*withdraw*/ ).ToListAsync();
         }
 
         public async Task<IEnumerable<ProductTuitionEntity>> GetAllToRemove(DateTime todayDate)
@@ -85,7 +90,7 @@ namespace Repository.v1.Repository
             .ThenInclude(p => p.Address)
             .Include(p => p.Rent.Client)
             .ThenInclude(p => p.Address)
-            .Where(p => p.FinalDateTime.Date <= todayDate /*&& p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2)*/ && p.Deleted == false).ToListAsync();
+            .Where(p => p.FinalDateTime.Date <= todayDate /*&& p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2)*/ ).ToListAsync();
         }
 
         public async Task<bool> ProductTuitionExists(int rentId, int productTypeId, string productCode)
@@ -94,8 +99,7 @@ namespace Repository.v1.Repository
             return await context.Set<ProductTuitionEntity>()
                 .AnyAsync(p => p.RentId == rentId && p.ProductTypeId == productTypeId &&
                 p.ProductCode.ToLower() == productCode.ToLower() &&
-                p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/ &&
-                p.Deleted == false);
+                p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/);
         }
 
         public async Task<int> UpdateProductTuition(ProductTuitionEntity productTuitionForUpdate)
@@ -103,6 +107,14 @@ namespace Repository.v1.Repository
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             context.Entry(productTuitionForUpdate).State = EntityState.Modified;
+            return await context.SaveChangesAsync();
+        }
+
+        public async Task<int> DeleteProductTuition(ProductTuitionEntity productTuitionForDelete)
+        {
+            using var context = _contextFactory.CreateContext();
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+            context.Entry(productTuitionForDelete).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }

@@ -45,7 +45,7 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            context.Entry(rentedPlaceForUpdate).State = EntityState.Modified;
+            context.Entry(rentedPlaceForUpdate).State = EntityState.Deleted;
             return await context.SaveChangesAsync();
         }
     }
