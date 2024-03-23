@@ -1,5 +1,5 @@
 ﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
-using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Helpers;
 using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
@@ -13,6 +13,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             //Definindo valores Unique com Fluent API:
             modelBuilder.Entity<ContractEntity>()
                 .HasIndex(e => e.GuidId)
+                .IsUnique();
+
+            modelBuilder.Entity<ProductTypeEntity>()
+                .HasIndex(e => e.Type)
                 .IsUnique();
 
             //Definindo valor Default IsEditable de ProductTuitionEntity:
@@ -38,10 +42,14 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
                 .Property(p => p.RentedParts)
                 .HasDefaultValue(0);
 
-            //Definindo valor Default Parts de ProductTuitionEntity:
+            //Definindo valores Defaults de ProductTuitionEntity:
             modelBuilder.Entity<ProductTuitionEntity>()
                 .Property(p => p.Parts)
                 .HasDefaultValue(1);
+
+            modelBuilder.Entity<ProductTuitionEntity>()
+                .Property(p => p.Status)
+                .HasDefaultValue(ProductTypeStatus.ProductTypeStatusEnum.ElementAt(0) /*active*/) ;
 
             //Definindo valores Default para campos CreatedAt como horario de inserção em UTC:
             var currenteTimestamp = "CURRENT_TIMESTAMP";
@@ -140,6 +148,10 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             modelBuilder.Entity<ProductTuitionEntity>()
               .Property(x => x.Status)
               .HasDefaultValue(ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(1));
+
+            modelBuilder.Entity<ProductTypeEntity>()
+              .Property(x => x.Status)
+              .HasDefaultValue(ProductTypeStatus.ProductTypeStatusEnum.ElementAt(0));
 
             //Definindo ForeignKey para as entidades:            
             modelBuilder.Entity<BillEntity>()

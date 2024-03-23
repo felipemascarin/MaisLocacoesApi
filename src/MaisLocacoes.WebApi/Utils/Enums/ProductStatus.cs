@@ -6,7 +6,8 @@
         {
             "free",
             "rented",
-            "maintenance"
+            "maintenance",
+            "inactive"
         };
     }
 }

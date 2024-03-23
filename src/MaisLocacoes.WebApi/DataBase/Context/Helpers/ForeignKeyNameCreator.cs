@@ -1,4 +1,4 @@
-﻿namespace MaisLocacoes.WebApi.DataBase
+﻿namespace MaisLocacoes.WebApi.DataBase.Context.Helpers
 {
     public class ForeignKeyNameCreator
     {

@@ -6,6 +6,7 @@ namespace Repository.v1.IRepository
     {
         Task<ProductTypeEntity> CreateProductType(ProductTypeEntity productTypeEntity);
         Task<ProductTypeEntity> GetById(int id);
+        Task<ProductTypeEntity> GetByType(string type);
         Task<bool> ProductTypeExists(string type);
         Task<bool> ProductTypeExists(int id);
         Task<IEnumerable<ProductTypeEntity>> GetAll();

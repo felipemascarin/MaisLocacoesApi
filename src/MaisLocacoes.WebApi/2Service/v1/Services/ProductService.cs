@@ -64,8 +64,20 @@ namespace Service.v1.Services
             }
 
             var product = await _productRepository.GetByTypeCode(productRequest.ProductTypeId.Value, productRequest.Code);
+
             if (product != null)
-                throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
+            {
+                if (product.Status == ProductStatus.ProductStatusEnum.ElementAt(3) /*inactive*/)
+                {
+                    product.Status = ProductStatus.ProductStatusEnum.ElementAt(0); /*free*/
+                    await _productRepository.UpdateProduct(product);
+                    return _mapper.Map<CreateProductResponse>(product);
+                }
+                else
+                {
+                    throw new HttpRequestException("Produto já cadastrado", null, HttpStatusCode.BadRequest);
+                }
+            }
 
             if (productRequest.RentedParts > productRequest.Parts)
                 throw new HttpRequestException("Não é possível alugar mais peças do que existe no produto", null, HttpStatusCode.BadRequest);
@@ -414,12 +426,20 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Produto não encontrado", null, HttpStatusCode.NotFound);
 
             if (productForDelete.Status == ProductStatus.ProductStatusEnum.ElementAt(1) /*rented*/)
-                throw new HttpRequestException("Só é possível desativar um produto que já foi alugado", null, HttpStatusCode.NotFound);
+            {
+                productForDelete.Status = ProductStatus.ProductStatusEnum.ElementAt(3) /*inactive*/;
+                await _productRepository.UpdateProduct(productForDelete);
+                return;
+            }
 
             if (productForDelete.ProductTuitions.Any(p => p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ ||
                 p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4) /*withdraw*/ ||
                 p.Status == ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(5) /*returned*/))
-                throw new HttpRequestException("Só é possível desativar um produto que já foi alugado", null, HttpStatusCode.NotFound);
+            {
+                productForDelete.Status = ProductStatus.ProductStatusEnum.ElementAt(3) /*inactive*/;
+                await _productRepository.UpdateProduct(productForDelete);
+                return;
+            }
 
             await _productRepository.DeleteProduct(productForDelete); //Delete Cascade ON
         }

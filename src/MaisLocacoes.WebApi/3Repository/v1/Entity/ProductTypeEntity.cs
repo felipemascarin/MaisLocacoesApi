@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,6 +16,10 @@ namespace Repository.v1.Entity
         public string Type { get; set; }
 
         public bool IsManyParts { get; set; }
+
+        [StringLength(255)]
+        [Column(TypeName = "character varying(255)")]
+        public string Status { get; set; }
 
         [Column(TypeName = "timestamp without time zone")]
         public DateTime CreatedAt { get; set; }

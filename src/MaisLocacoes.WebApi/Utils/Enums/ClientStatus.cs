@@ -5,7 +5,8 @@
         public static IEnumerable<string> ClientStatusEnum = new List<string>
         {
             "regular",
-            "blocked"
+            "blocked",
+            "inactive"
         };
     }
 }

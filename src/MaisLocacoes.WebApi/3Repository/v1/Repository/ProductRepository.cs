@@ -9,11 +9,11 @@ namespace Repository.v1.Repository
 {
     public class ProductRepository : IProductRepository
     {
-        private readonly PostgreSqlContextFactory _contextFactory; 
+        private readonly PostgreSqlContextFactory _contextFactory;
 
         public ProductRepository(PostgreSqlContextFactory contextFactory)
         {
-            _contextFactory = contextFactory; 
+            _contextFactory = contextFactory;
         }
 
         public async Task<ProductEntity> CreateProduct(ProductEntity productEntity)
@@ -57,12 +57,13 @@ namespace Repository.v1.Repository
         {
             using var context = _contextFactory.CreateContext();
             if (query == null)
-                return await context.Set<ProductEntity>().Include(p => p.ProductType).Skip((page - 1) * items).Take(items).ToListAsync();
+                return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => p.Status != ProductStatus.ProductStatusEnum.ElementAt(3) /*inactive*/).Skip((page - 1) * items).Take(items).ToListAsync();
             else
                 return await context.Set<ProductEntity>().Include(p => p.ProductType).Where(p => (
                      p.Code.ToLower().Contains(query.ToLower()) ||
                      p.Description.ToLower().Contains(query.ToLower()) ||
-                     p.ProductType.Type.ToLower().Contains(query.ToLower())))
+                     p.ProductType.Type.ToLower().Contains(query.ToLower())) &&
+                     p.Status != ProductStatus.ProductStatusEnum.ElementAt(3) /*inactive*/)
                     .Skip((page - 1) * items).Take(items).ToListAsync();
         }
 

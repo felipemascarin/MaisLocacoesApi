@@ -1,4 +1,4 @@
-﻿using MaisLocacoes.WebApi.Context;
+﻿using MaisLocacoes.WebApi.DataBase.Context.Helpers;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Repository.v1.Entity.UserSchema;
 using System.ComponentModel.DataAnnotations;

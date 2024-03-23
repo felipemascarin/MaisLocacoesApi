@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using MaisLocacoes.WebApi.Domain.Models.v1.Request;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductType;
+using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
-using Repository.v1.Repository;
 using Service.v1.IServices;
 using System.Net;
 using TimeZoneConverter;
@@ -35,9 +35,21 @@ namespace Service.v1.Services
 
         public async Task<CreateProductTypeResponse> CreateProductType(CreateProductTypeRequest productTypeRequest)
         {
-            var existsproductType = await _productTypeRepository.ProductTypeExists(productTypeRequest.Type);
-            if (existsproductType)
-                throw new HttpRequestException("Tipo de produto já cadastrado", null, HttpStatusCode.BadRequest);
+            var productType = await _productTypeRepository.GetByType(productTypeRequest.Type);
+
+            if (productType != null)
+            {
+                if (productType.Status == ProductTypeStatus.ProductTypeStatusEnum.ElementAt(1) /*inactive*/)
+                {
+                    productType.Status = ProductTypeStatus.ProductTypeStatusEnum.ElementAt(0); /*active*/
+                    await _productTypeRepository.UpdateProductType(productType);
+                    return _mapper.Map<CreateProductTypeResponse>(productType);
+                }
+                else
+                {
+                    throw new HttpRequestException("Tipo de produto já cadastrado", null, HttpStatusCode.BadRequest);
+                }
+            }
 
             var productTypeEntity = _mapper.Map<ProductTypeEntity>(productTypeRequest);
 
@@ -107,7 +119,11 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Tipo de produto não encontrado", null, HttpStatusCode.NotFound);
 
             if (productTypeForDelete.Products.Any() || productTypeForDelete.ProductTuitions.Any())
-                throw new HttpRequestException("Tipo de produto que possui locação ou produto só é possível ser desativado", null, HttpStatusCode.NotFound);
+            {
+                productTypeForDelete.Status = ProductTypeStatus.ProductTypeStatusEnum.ElementAt(1) /*inactive*/;
+                await _productTypeRepository.UpdateProductType(productTypeForDelete);
+                return;
+            }
 
             await _productTypeRepository.DeleteProductType(productTypeForDelete); //Delete Cascade ON
         }

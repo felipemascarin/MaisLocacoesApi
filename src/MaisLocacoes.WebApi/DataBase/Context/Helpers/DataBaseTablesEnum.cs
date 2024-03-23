@@ -1,4 +1,4 @@
-﻿namespace MaisLocacoes.WebApi.Context
+﻿namespace MaisLocacoes.WebApi.DataBase.Context.Helpers
 {
     public class TableNameEnum
     {

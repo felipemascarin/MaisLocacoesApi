@@ -1,5 +1,4 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace MaisLocacoes.WebApi.DataBase.Context.DataBases
 {

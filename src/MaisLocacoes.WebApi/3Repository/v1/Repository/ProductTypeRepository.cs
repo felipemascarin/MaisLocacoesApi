@@ -1,4 +1,5 @@
 ﻿using MaisLocacoes.WebApi.DataBase.Context.ContextFactory;
+using MaisLocacoes.WebApi.Utils.Enums;
 using Microsoft.EntityFrameworkCore;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
@@ -22,6 +23,15 @@ namespace Repository.v1.Repository
             await context.SaveChangesAsync();
 
             return productTypeEntity;
+        }
+
+        public async Task<ProductTypeEntity> GetByType(string type)
+        {
+            using var context = _contextFactory.CreateContext();
+            return await context.Set<ProductTypeEntity>()
+            .Include(p => p.Products)
+            .Include(p => p.ProductTuitions)
+            .FirstOrDefaultAsync(p => p.Type.ToLower() == type.ToLower());
         }
 
         public async Task<ProductTypeEntity> GetById(int id)
@@ -48,7 +58,7 @@ namespace Repository.v1.Repository
         public async Task<IEnumerable<ProductTypeEntity>> GetAll()
         {
             using var context = _contextFactory.CreateContext();
-            return await context.Set<ProductTypeEntity>().ToListAsync();
+            return await context.Set<ProductTypeEntity>().Where(p => p.Status != ProductTypeStatus.ProductTypeStatusEnum.ElementAt(1) /*inactive*/).ToListAsync();
         }
 
         public async Task<int> UpdateProductType(ProductTypeEntity productTypeForUpdate)

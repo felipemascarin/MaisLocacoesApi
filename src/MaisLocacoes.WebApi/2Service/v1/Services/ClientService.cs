@@ -36,14 +36,25 @@ namespace Service.v1.Services
 
         public async Task<CreateClientResponse> CreateClient(CreateClientRequest clientRequest)
         {
-            ClientEntity existsClient;
+            ClientEntity client;
             if (string.IsNullOrEmpty(clientRequest.Cnpj))
-                existsClient = await _clientRepository.GetByCpf(clientRequest.Cpf);
+                client = await _clientRepository.GetByCpf(clientRequest.Cpf);
             else
-                existsClient = await _clientRepository.GetByCnpj(clientRequest.Cnpj);
+                client = await _clientRepository.GetByCnpj(clientRequest.Cnpj);
 
-            if (existsClient != null)
-                throw new HttpRequestException("Cliente já cadastrado", null, HttpStatusCode.BadRequest);
+            if (client != null)
+            {
+                if (client.Status == ClientStatus.ClientStatusEnum.ElementAt(2) /*inactive*/)
+                {
+                    client.Status = ClientStatus.ClientStatusEnum.ElementAt(0); /*regular*/
+                    await _clientRepository.UpdateClient(client);
+                    return _mapper.Map<CreateClientResponse>(client);
+                }
+                else
+                {
+                    throw new HttpRequestException("Cliente já cadastrado", null, HttpStatusCode.BadRequest);
+                }
+            }
 
             var addressResponse = await _addressService.CreateAddress(clientRequest.Address);
             var addressEntity = _mapper.Map<AddressEntity>(addressResponse);
@@ -222,7 +233,11 @@ namespace Service.v1.Services
                throw new HttpRequestException("Cliente não encontrado", null, HttpStatusCode.NotFound);
 
             if (clientForDelete.Rents.Any(r => r.Status != RentStatus.RentStatusEnum.ElementAt(2) /*canceled*/))
-                throw new HttpRequestException("Somente é possível desativar clientes que já fizeram alguma locação", null, HttpStatusCode.NotFound);
+            {
+                clientForDelete.Status = ClientStatus.ClientStatusEnum.ElementAt(2) /*inactive*/;
+                await _clientRepository.UpdateClient(clientForDelete);
+                return;
+            }
 
             await _clientRepository.DeleteClient(clientForDelete); //Delete Cascade ON
         }

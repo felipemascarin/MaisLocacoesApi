@@ -1,5 +1,5 @@
 ﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
-using MaisLocacoes.WebApi.Context;
+using MaisLocacoes.WebApi.DataBase.Context.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
