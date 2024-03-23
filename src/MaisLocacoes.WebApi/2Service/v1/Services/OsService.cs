@@ -241,22 +241,7 @@ namespace Service.v1.Services
         {
             var rents = await _rentRepository.GetOsDeliveryList();
 
-            var rentsNotStarteds = new List<RentEntity>();
-
-            var dateTimeNow = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
-
-            foreach (var rent in rents)
-            {
-                if ((!rent.ProductTuitions.Any(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/ ||
-                os.FinalDateTime >= dateTimeNow.AddMinutes(-10))) && //Tempo para uma locação, que ainda tenha os, aparecer na lista dps q uma de suas os é finalizada e que não tenha nenhuma os ma))) 
-                rent.ProductTuitions.Any()))
-                {
-                    if (!rentsNotStarteds.Contains(rent))
-                        rentsNotStarteds.Add(rent);
-                }
-            }
-
-            return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rentsNotStarteds);
+            return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
         }
 
         public async Task UpdateOs(UpdateOsRequest osRequest, int id)
