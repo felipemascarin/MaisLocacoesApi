@@ -82,6 +82,7 @@ namespace MaisLocacoes.WebApi.IoC
             services.AddScoped<IRentedPlaceRepository, RentedPlaceRepository>();
             services.AddScoped<IRentRepository, RentRepository>();
             services.AddScoped<ISupplierRepository, SupplierRepository>();
+            services.AddScoped<IOsPictureRepository, OsPictureRepository>();
 
             services.AddScoped<IValidator<LoginRequest>, LoginRequestValidator>();
             services.AddScoped<IValidator<LoginEnviromentRequest>, LoginEnviromentRequestValidator>();
