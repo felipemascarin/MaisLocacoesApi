@@ -127,11 +127,11 @@ namespace Repository.v1.Repository
                .Include(r => r.ProductTuitions
                .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
                     .ThenInclude(p => p.Oss)
-                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
+                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
                .Include(r => r.ProductTuitions
                .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
                     .ThenInclude(p => p.ProductType)
-                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
+                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
                .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
                .ToListAsync();
         }
