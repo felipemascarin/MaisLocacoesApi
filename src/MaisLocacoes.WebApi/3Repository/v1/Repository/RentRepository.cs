@@ -124,12 +124,14 @@ namespace Repository.v1.Repository
             return await context.Set<RentEntity>()
                .Include(r => r.Address)
                .Include(r => r.Client)
-               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ &&
-               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
-                    .ThenInclude(p => p.Oss).Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
-               .Include(r => r.ProductTuitions.Where(p => p.Status != ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/ &&
-               p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+               .Include(r => r.ProductTuitions
+               .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
+                    .ThenInclude(p => p.Oss)
+                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
+               .Include(r => r.ProductTuitions
+               .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
                     .ThenInclude(p => p.ProductType)
+                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ )
                .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
                .ToListAsync();
         }

@@ -1,4 +1,5 @@
-﻿using MaisLocacoes.WebApi.DataBase.Context.Helpers;
+﻿using MaisLocacoes.WebApi._3Repository.v1.Entity;
+using MaisLocacoes.WebApi.DataBase.Context.Helpers;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -51,5 +52,7 @@ namespace Repository.v1.Entity
         [StringLength(255)]
         [Column(TypeName = "character varying(255)")]
         public string UpdatedBy { get; set; }
+
+        public ICollection<OsPictureEntity> OsPictures { get; set; }
     }
 }

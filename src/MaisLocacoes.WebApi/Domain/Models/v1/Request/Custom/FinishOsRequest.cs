@@ -7,5 +7,6 @@
         public string DeliveryObservation { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
+        public List<string> PicturesUrl { get; set; }
     }
 }

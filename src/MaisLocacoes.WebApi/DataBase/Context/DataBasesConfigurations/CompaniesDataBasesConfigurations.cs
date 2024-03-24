@@ -280,6 +280,13 @@ namespace MaisLocacoes.WebApi.DataBase.Context.DataBasesConfigurations
             .OnDelete(DeleteBehavior.ClientSetNull)
             .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.RentedPlaces, TableNameEnum.Products));
 
+            modelBuilder.Entity<OsPictureEntity>()
+            .HasOne(many => many.Os)
+            .WithMany(one => one.OsPictures)
+            .HasForeignKey(many => new { many.OsId })
+            .OnDelete(DeleteBehavior.Cascade)
+            .HasConstraintName(ForeignKeyNameCreator.CreateForeignKeyName(TableNameEnum.OsPictures, TableNameEnum.Oss));
+
             /*modelBuilder.Entity<CLASSEMUITOS>()
             .HasOne<CLASSEUM>(MUITOS => MUITOS.UM)
             .WithMany(UM => UM.MUITOS)

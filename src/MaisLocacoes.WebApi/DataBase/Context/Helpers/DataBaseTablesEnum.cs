@@ -23,5 +23,6 @@
         public const string RentedPlaces = "RentedPlaces";
         public const string Rents = "Rents";
         public const string Suppliers = "Suppliers";
+        public const string OsPictures = "OsPictures";
     }
 }

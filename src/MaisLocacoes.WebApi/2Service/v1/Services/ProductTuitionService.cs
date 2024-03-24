@@ -7,7 +7,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.ProductTuition;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -85,18 +84,14 @@ namespace Service.v1.Services
 
                 productTuitionEntity.ProductId = productEntity.Id;
             }
-            
+
             productTuitionEntity.CreatedBy = _email;
             productTuitionEntity.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
 
             productTuitionEntity = await _productTuitionRepository.CreateProductTuition(productTuitionEntity);
 
             CreateBills(productTuitionEntity);
-
-            var module = JwtManager.GetModuleByToken(_httpContextAccessor);
-
-            if (module == ProjectModules.Modules.ElementAt(1))
-                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
+            CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(0)); //delivery
 
             //Sempre que adicionado producttuition o contrato é atualizado
             //Se o contrato da nova locação desse produto ainda não foi assinado, apenas é editado o último contrato
@@ -523,7 +518,7 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Produto com fatura paga não pode ser deletado da locação", null, HttpStatusCode.NotFound);
 
             foreach (var bill in bills)
-                    await _billService.DeleteById(bill.Id);
+                await _billService.DeleteById(bill.Id);
 
             if (productTuitionForDelete.ProductCode != null)
             {

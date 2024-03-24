@@ -116,26 +116,6 @@ namespace MaisLocacoes.WebApi.Controllers.v1
 
         [Authorize]
         [TokenValidationDataBase]
-        [HttpPost("cancel/{id}")]
-        public async Task<IActionResult> CancelOs(int id)
-        {
-            try
-            {
-                _logger.LogInformation("CancelOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
-
-                await _osService.CancelOs(id);
-
-                return Ok();
-            }
-            catch (HttpRequestException ex)
-            {
-                _logger.LogError("Log Warning: {@Message}", ex.Message);
-                return StatusCode((int)ex.StatusCode, new GenericException(ex.Message));
-            }
-        }
-
-        [Authorize]
-        [TokenValidationDataBase]
         [HttpPost("finish/{id}")]
         public async Task<IActionResult> FinishOs(int id, [FromBody] FinishOsRequest closeOsRequest)
         {
