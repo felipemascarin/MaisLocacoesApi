@@ -65,7 +65,7 @@ namespace Service.v1.Services
             if (!existsRent)
                 throw new HttpRequestException("Não existe esse ProductTuition", null, HttpStatusCode.BadRequest);
 
-            var os = await _osRepository.GetByProductTuitionIdForCreate(osRequest.ProductTuitionId.Value, osRequest.Type);
+            var os = await _osRepository.GetByProductTuitionIdForCreate(osRequest.ProductTuitionId.Value, osRequest.Type.ToLower());
 
             if (os != null)
                 throw new HttpRequestException("Uma nota de serviço desse tipo já existe para esse produto.", null, HttpStatusCode.BadRequest);
@@ -311,8 +311,8 @@ namespace Service.v1.Services
         public void ManageOs(List<OsEntity> oss)
         {
             //Esse método certifica que só terá 1 US de retirada e 1 US de entrega por Produto e mantém sempre as últimas criadas
-            var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderBy(o => o.CreatedAt).ToList();
-            var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdrawal*/).OrderBy(o => o.CreatedAt).ToList();
+            var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderByDescending(o => o.CreatedAt).ToList();
+            var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdrawal*/).OrderByDescending(o => o.CreatedAt).ToList();
             var correctOss = new List<OsEntity>();
 
             if (deliveryOss.Count() > 1)
@@ -344,7 +344,7 @@ namespace Service.v1.Services
             var waitingOsCount = 0;
             var startedOsCount = 0;
 
-            correctOss.OrderBy(o => o.CreatedAt).ToList();
+            correctOss.OrderByDescending(o => o.CreatedAt).ToList();
 
             foreach (var os in correctOss)
             {
