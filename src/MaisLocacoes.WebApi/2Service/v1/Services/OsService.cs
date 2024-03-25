@@ -313,9 +313,12 @@ namespace Service.v1.Services
             //Esse método certifica que só terá 1 US de retirada e 1 US de entrega por Produto e mantém sempre as últimas criadas
             var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderByDescending(o => o.CreatedAt).ToList();
             var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdraw*/).OrderByDescending(o => o.CreatedAt).ToList();
+            var correctOss = new List<OsEntity>();
 
             if (deliveryOss.Count() > 1)
             {
+                correctOss.Add(deliveryOss.ElementAt(0));
+
                 deliveryOss.RemoveAt(0);
 
                 deliveryOss.ForEach(os => _osRepository.DeleteOs(os));
@@ -323,9 +326,31 @@ namespace Service.v1.Services
 
             if (WithdrawOss.Count() > 1)
             {
+                correctOss.Add(WithdrawOss.ElementAt(0));
+
                 WithdrawOss.RemoveAt(0);
 
                 WithdrawOss.ForEach(os => _osRepository.DeleteOs(os));
+            }
+
+            var waitingOsCount = 0;
+            var startedOsCount = 0;
+
+            correctOss.OrderByDescending(o => o.CreatedAt).ToList();
+
+            foreach (var os in correctOss)
+            {
+                if (os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/)
+                    waitingOsCount++;
+
+                if (os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)
+                    startedOsCount++;
+            }
+
+            if (waitingOsCount > 1 || startedOsCount > 1)
+            {
+                correctOss.RemoveAt(0);
+                correctOss.ForEach(os => _osRepository.DeleteOs(os));
             }
         }
     }
