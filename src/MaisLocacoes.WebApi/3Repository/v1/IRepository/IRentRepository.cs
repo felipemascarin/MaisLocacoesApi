@@ -9,7 +9,7 @@ namespace Repository.v1.IRepository
         Task<bool> RentExists(int id);
         Task<IEnumerable<RentEntity>> GetAllByClientId(int clientId);
         Task<IEnumerable<RentEntity>> GetRentsByPage(int items, int page, string query, string status);
-        Task<IEnumerable<RentEntity>> GetOsDeliveryList();
+        Task<IEnumerable<RentEntity>> GetOsDeliveryList(int? rentId);
         Task<int> UpdateRent(RentEntity rentForUpdate);
         Task<int> DeleteRent(RentEntity rentForDelete);
     }

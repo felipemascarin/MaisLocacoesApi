@@ -118,22 +118,42 @@ namespace Repository.v1.Repository
             }
         }
 
-        public async Task<IEnumerable<RentEntity>> GetOsDeliveryList()
+        public async Task<IEnumerable<RentEntity>> GetOsDeliveryList(int? rentId)
         {
-            using var context = _contextFactory.CreateContext();
-            return await context.Set<RentEntity>()
-               .Include(r => r.Address)
-               .Include(r => r.Client)
-               .Include(r => r.ProductTuitions
-               .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
-                    .ThenInclude(p => p.Oss)
-                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
-               .Include(r => r.ProductTuitions
-               .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)))
-                    .ThenInclude(p => p.ProductType)
-                    .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
-               .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
-               .ToListAsync();
+            if (rentId != null)
+            {
+                using var context = _contextFactory.CreateContext();
+                return await context.Set<RentEntity>()
+                   .Include(r => r.Address)
+                   .Include(r => r.Client)
+                   .Include(r => r.ProductTuitions
+                   .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
+                        .ThenInclude(p => p.Oss)
+                        .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
+                   .Include(r => r.ProductTuitions
+                   .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
+                        .ThenInclude(p => p.ProductType)
+                        .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any() && r.Id == rentId)
+                   .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
+                   .ToListAsync();
+            }
+            else
+            {
+                using var context = _contextFactory.CreateContext();
+                return await context.Set<RentEntity>()
+                   .Include(r => r.Address)
+                   .Include(r => r.Client)
+                   .Include(r => r.ProductTuitions
+                   .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
+                        .ThenInclude(p => p.Oss)
+                        .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
+                   .Include(r => r.ProductTuitions
+                   .Where(p => p.Oss.Any(os => os.Status == OsStatus.OsStatusEnum.ElementAt(0) /*waiting*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/ || os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)))
+                        .ThenInclude(p => p.ProductType)
+                        .Where(r => r.Status == RentStatus.RentStatusEnum.ElementAt(0) /*activated*/ && r.ProductTuitions.Any())
+                   .OrderBy(r => r.ProductTuitions.Min(p => p.InitialDateTime))
+                   .ToListAsync();
+            }
         }
 
         public async Task<int> UpdateRent(RentEntity rentForUpdate)

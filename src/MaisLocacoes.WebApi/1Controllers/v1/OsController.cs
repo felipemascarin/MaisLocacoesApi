@@ -187,13 +187,13 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpGet("deliveryList")]
-        public async Task<IActionResult> GetDeliveryList()
+        public async Task<IActionResult> GetDeliveryList([FromQuery] int? rentId)
         {
             try
             {
-                _logger.LogInformation("GetDeliveryList {@dateTime} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), _email, _cnpj);
+                _logger.LogInformation("GetDeliveryList {@dateTime} rentId:{@rentId} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), rentId, _email, _cnpj);
 
-                var osList = await _osService.GetDeliveryList();
+                var osList = await _osService.GetDeliveryList(rentId);
                 return Ok(osList);
             }
             catch (HttpRequestException ex)

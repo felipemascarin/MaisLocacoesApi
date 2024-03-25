@@ -13,7 +13,7 @@ namespace Service.v1.IServices
         Task FinishOs(int id, FinishOsRequest closeOsRequest);
         Task<GetOsByIdResponse> GetOsById(int id);
         Task<IEnumerable<GetAllOsByStatusResponse>> GetAllOsByStatus(string status);
-        Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList();
+        Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList(int? rentId);
         Task UpdateOs(UpdateOsRequest osRequest, int id);
         Task UpdateStatus(string status, int id);
         Task DeleteById(int id);

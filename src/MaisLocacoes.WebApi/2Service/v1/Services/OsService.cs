@@ -7,6 +7,7 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Os;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
+using Microsoft.Extensions.Logging;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -244,9 +245,9 @@ namespace Service.v1.Services
             return _mapper.Map<List<GetAllOsByStatusResponse>>(osEntityList);
         }
 
-        public async Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList()
+        public async Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList(int? rentId)
         {
-            var rents = await _rentRepository.GetOsDeliveryList();
+            var rents = await _rentRepository.GetOsDeliveryList(rentId);
 
             foreach (var rent in rents)
             {
