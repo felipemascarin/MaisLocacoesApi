@@ -343,8 +343,9 @@ namespace Service.v1.Services
 
             var waitingOsCount = 0;
             var startedOsCount = 0;
+            var returnedOsCount = 0;
 
-            correctOss.OrderByDescending(o => o.CreatedAt).ToList();
+            correctOss = correctOss.OrderByDescending(o => o.CreatedAt).ToList();
 
             foreach (var os in correctOss)
             {
@@ -353,9 +354,12 @@ namespace Service.v1.Services
 
                 if (os.Status == OsStatus.OsStatusEnum.ElementAt(1) /*started*/)
                     startedOsCount++;
+
+                if (os.Status == OsStatus.OsStatusEnum.ElementAt(3) /*returned*/)
+                    returnedOsCount++;
             }
 
-            if (waitingOsCount > 1 || startedOsCount > 1)
+            if (waitingOsCount > 1 || startedOsCount > 1 || returnedOsCount > 1)
             {
                 correctOss.RemoveAt(0);
                 correctOss.ForEach(os => _osRepository.DeleteOs(os));
