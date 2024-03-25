@@ -7,7 +7,6 @@ using MaisLocacoes.WebApi.Domain.Models.v1.Response.Get;
 using MaisLocacoes.WebApi.Domain.Models.v1.Response.Os;
 using MaisLocacoes.WebApi.Utils.Enums;
 using MaisLocacoes.WebApi.Utils.Helpers;
-using Microsoft.Extensions.Logging;
 using Repository.v1.Entity;
 using Repository.v1.IRepository;
 using Service.v1.IServices;
@@ -249,6 +248,11 @@ namespace Service.v1.Services
         {
             var rents = (await _rentRepository.GetOsDeliveryList(rentId)).ToList();
 
+            rents.RemoveAll(r => r.ProductTuitions.Count() == 0);
+
+            if (rents.Count() == 0)
+                throw new HttpRequestException("Locação não possui ordem de serviço", null, HttpStatusCode.NotFound);
+
             foreach (var rent in rents)
             {
                 foreach (var productTuition in rent.ProductTuitions)
@@ -256,8 +260,6 @@ namespace Service.v1.Services
                     ManageOs(productTuition.Oss.ToList());
                 }
             }
-
-            rents.RemoveAll(r => r.ProductTuitions.Count() == 0);
 
             return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
         }
