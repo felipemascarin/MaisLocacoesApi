@@ -247,7 +247,7 @@ namespace Service.v1.Services
 
         public async Task<IEnumerable<GetDeliveryListResponse>> GetDeliveryList(int? rentId)
         {
-            var rents = await _rentRepository.GetOsDeliveryList(rentId);
+            var rents = (await _rentRepository.GetOsDeliveryList(rentId)).ToList();
 
             foreach (var rent in rents)
             {
@@ -256,6 +256,8 @@ namespace Service.v1.Services
                     ManageOs(productTuition.Oss.ToList());
                 }
             }
+
+            rents.RemoveAll(r => r.ProductTuitions.Count() == 0);
 
             return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
         }
