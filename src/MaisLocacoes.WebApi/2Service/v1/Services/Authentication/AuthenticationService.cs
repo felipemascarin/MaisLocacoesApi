@@ -16,7 +16,7 @@ namespace MaisLocacoes.WebApi._2_Service.v1.Services.Authentication
     public class AuthenticationService : IAuthenticationService
     {
         private const double TOKENHOURS = 15;
-        private const string ADMEMAIL = "luisfelipemascarinalmeida@gmail.com";
+        private const string ADMEMAIL = "maislocacoes@gmail.com";
         private const string ADMNAME = "adm";
         private const string ADMCPF = "adm";
         private const string ADMTIMEZONE = "America/Sao_Paulo";
