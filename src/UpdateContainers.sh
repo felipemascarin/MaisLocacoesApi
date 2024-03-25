@@ -24,6 +24,9 @@ docker-compose down
 docker-compose build
 docker-compose up -d
 
+echo "Limpando recursos não utilizados do Docker..."
+docker system prune -f
+
 cd ~
 
 # Especifica o caminho absoluto para o arquivo de log

@@ -156,8 +156,8 @@ namespace Service.v1.Services
 
             var osPictures = new List<OsPictureEntity>();
             foreach (var url in finishOsRequest.PicturesUrl)
-            {                
-                osPictures.Add(new OsPictureEntity () { OsId = id, PictureUrl = url } );
+            {
+                osPictures.Add(new OsPictureEntity() { OsId = id, PictureUrl = url });
             }
             await _osPictureRepository.CreateOsPictures(osPictures);
 
@@ -248,6 +248,14 @@ namespace Service.v1.Services
         {
             var rents = await _rentRepository.GetOsDeliveryList();
 
+            foreach (var rent in rents)
+            {
+                foreach (var productTuition in rent.ProductTuitions)
+                {
+                    ManageOs(productTuition.Oss.ToList());
+                }
+            }
+
             return _mapper.Map<IEnumerable<GetDeliveryListResponse>>(rents);
         }
 
@@ -298,6 +306,27 @@ namespace Service.v1.Services
                 throw new HttpRequestException("Nota de serviço não encontrada", null, HttpStatusCode.NotFound);
 
             await _osRepository.DeleteOs(osForDelete);
+        }
+
+        public void ManageOs(List<OsEntity> oss)
+        {
+            //Esse método certifica que só terá 1 US de retirada e 1 US de entrega por Produto e mantém sempre as últimas criadas
+            var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderByDescending(o => o.CreatedAt).ToList();
+            var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdraw*/).OrderByDescending(o => o.CreatedAt).ToList();
+
+            if (deliveryOss.Count() > 1)
+            {
+                deliveryOss.RemoveAt(0);
+
+                deliveryOss.ForEach(os => _osRepository.DeleteOs(os));
+            }
+
+            if (WithdrawOss.Count() > 1)
+            {
+                WithdrawOss.RemoveAt(0);
+
+                WithdrawOss.ForEach(os => _osRepository.DeleteOs(os));
+            }
         }
     }
 }
