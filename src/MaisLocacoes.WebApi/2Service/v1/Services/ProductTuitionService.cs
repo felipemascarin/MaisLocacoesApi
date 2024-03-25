@@ -143,7 +143,7 @@ namespace Service.v1.Services
                     }
                 }
 
-                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1)); //withdraw
+                CreateOs(productTuitionEntity, OsTypes.OsTypesEnum.ElementAt(1)); //withdrawal
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(4); //withdraw
                 productTuitionEntity.IsEditable = false;
             }
@@ -171,7 +171,7 @@ namespace Service.v1.Services
 
             do
             {
-                osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)); //withdraw
+                osForDelete = await _osRepository.GetByProductTuitionId(id, OsTypes.OsTypesEnum.ElementAt(1)); //withdrawal
 
                 if (osForDelete != null)
                 {

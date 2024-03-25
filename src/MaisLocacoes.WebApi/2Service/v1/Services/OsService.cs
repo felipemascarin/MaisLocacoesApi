@@ -126,7 +126,7 @@ namespace Service.v1.Services
             if (os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/)
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(0) /*activated*/;
 
-            else if (os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdraw*/)
+            else if (os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdrawal*/)
                 productTuitionEntity.Status = ProductTuitionStatus.ProductTuitionStatusEnum.ElementAt(2) /*delivered*/;
 
             os.DeliveryCpf = null;
@@ -198,7 +198,7 @@ namespace Service.v1.Services
                 await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
             }
 
-            if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //withdraw
+            if (os.Type == OsTypes.OsTypesEnum.ElementAt(1)) //withdrawal
             {
                 if (os.ProductTuitionId != finishOsRequest.ProductTuitionId)
                     throw new HttpRequestException("Informe o mesmo producttuitionId que está na nota para finalizar uma nota de retirada", null, HttpStatusCode.NotFound);
@@ -311,8 +311,8 @@ namespace Service.v1.Services
         public void ManageOs(List<OsEntity> oss)
         {
             //Esse método certifica que só terá 1 US de retirada e 1 US de entrega por Produto e mantém sempre as últimas criadas
-            var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderByDescending(o => o.CreatedAt).ToList();
-            var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdraw*/).OrderByDescending(o => o.CreatedAt).ToList();
+            var deliveryOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(0) /*delivery*/).OrderBy(o => o.CreatedAt).ToList();
+            var WithdrawOss = oss.Where(os => os.Type == OsTypes.OsTypesEnum.ElementAt(1) /*withdrawal*/).OrderBy(o => o.CreatedAt).ToList();
             var correctOss = new List<OsEntity>();
 
             if (deliveryOss.Count() > 1)
@@ -323,6 +323,10 @@ namespace Service.v1.Services
 
                 deliveryOss.ForEach(os => _osRepository.DeleteOs(os));
             }
+            else if (deliveryOss.Count() == 1)
+            {
+                correctOss.Add(deliveryOss.ElementAt(0));
+            }
 
             if (WithdrawOss.Count() > 1)
             {
@@ -332,11 +336,15 @@ namespace Service.v1.Services
 
                 WithdrawOss.ForEach(os => _osRepository.DeleteOs(os));
             }
+            else if (WithdrawOss.Count() == 1)
+            {
+                correctOss.Add(WithdrawOss.ElementAt(0));
+            }
 
             var waitingOsCount = 0;
             var startedOsCount = 0;
 
-            correctOss.OrderByDescending(o => o.CreatedAt).ToList();
+            correctOss.OrderBy(o => o.CreatedAt).ToList();
 
             foreach (var os in correctOss)
             {
