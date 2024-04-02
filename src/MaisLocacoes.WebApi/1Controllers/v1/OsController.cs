@@ -101,9 +101,9 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         {
             try
             {
-                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, JsonConvert.SerializeObject(returnOsRequest) _email, _cnpj);
+                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, JsonConvert.SerializeObject(returnOsRequest), _email, _cnpj);
 
-                await _osService.ReturnOs(id);
+                await _osService.ReturnOs(id, returnOsRequest);
 
                 return Ok();
             }

@@ -9,7 +9,7 @@ namespace Service.v1.IServices
     {
         Task<CreateOsResponse> CreateOs(CreateOsRequest osRequest);
         Task StartOs(int id);
-        Task ReturnOs(int id);
+        Task ReturnOs(int id, ReturnOsRequest returnOsRequest);
         Task FinishOs(int id, FinishOsRequest closeOsRequest);
         Task<GetOsByIdResponse> GetOsById(int id);
         Task<IEnumerable<GetAllOsByStatusResponse>> GetAllOsByStatus(string status);
