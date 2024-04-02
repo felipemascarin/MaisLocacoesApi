@@ -108,7 +108,7 @@ namespace Service.v1.Services
             await _productTuitionRepository.UpdateProductTuition(productTuitionEntity);
         }
 
-        public async Task ReturnOs(int id)
+        public async Task ReturnOs(int id, ReturnOsRequest returnOsRequest)
         {
             var os = await _osRepository.GetById(id) ??
                 throw new HttpRequestException("Nota se serviço não encontrada", null, HttpStatusCode.NotFound);
@@ -131,6 +131,7 @@ namespace Service.v1.Services
 
             os.DeliveryCpf = null;
             os.Status = OsStatus.OsStatusEnum.ElementAt(3) /*returned*/;
+            os.DeliveryObservation = returnOsRequest.DeliveryObservation;
             os.InitialDateTime = null;
             os.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone);
             os.UpdatedBy = _email;

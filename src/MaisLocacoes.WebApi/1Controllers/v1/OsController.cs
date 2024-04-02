@@ -97,11 +97,11 @@ namespace MaisLocacoes.WebApi.Controllers.v1
         [Authorize]
         [TokenValidationDataBase]
         [HttpPost("return/{id}")]
-        public async Task<IActionResult> ReturnOs(int id)
+        public async Task<IActionResult> ReturnOs(int id, [FromBody] ReturnOsRequest returnOsRequest)
         {
             try
             {
-                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, _email, _cnpj);
+                _logger.LogInformation("ReturnOs {@dateTime} id:{@id} request:{@request} User:{@email} Cnpj:{@cnpj}", TimeZoneInfo.ConvertTimeFromUtc(System.DateTime.UtcNow, _timeZone), id, JsonConvert.SerializeObject(returnOsRequest) _email, _cnpj);
 
                 await _osService.ReturnOs(id);
 
